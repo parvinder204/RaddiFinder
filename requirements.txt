@@ -1,0 +1,23 @@
+# Core
+Django>=4.2,<5.3
+djangorestframework>=3.15,<4.0
+djangorestframework-simplejwt>=5.3,<6.0
+drf-yasg>=1.21.8,<2.0
+django-environ>=0.11,<1.0
+django-crontab>=0.7.1,<1.0
+django-import-export>=4.0,<5.0
+
+# Database
+psycopg2-binary>=2.9,<3.0
+
+# Images, PDF invoices, HTTP
+Pillow>=10.0
+xhtml2pdf>=0.2.11,<1.0
+requests>=2.31,<3.0
+
+# Monitoring
+sentry-sdk>=1.40,<3.0
+
+# Optional (uncomment if you use them)
+# gunicorn>=21.2          # production WSGI server
+# redis>=5.0              # needed for CACHE_URL=rediscache://... (shared OTP rate limiting)
