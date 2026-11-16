@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title id="page_title">Account Deactivation</title>
+    <link rel="shortcut icon" href="{% static 'images/logo.png' %}" type="image/x-icon">  
+    <link rel="stylesheet" href="{% static 'customer/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'customer/css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'customer/font-awesome-4.7.0/css/font-awesome.min.css' %}">
+</head>
+<body>
+
+<!-- Header Start from here -->
+<header class="py-md-4 py-3 shadow-sm">
+    <div class="logo-center-style d-flex  justify-content-center">
+        <a href="https://raddifinder.com/">
+            <img src="{% static 'images/logo.png' %}" class="menu-logo" style="max-width:90px;">
+        </a>
+    </div>
+	{% comment %} <nav class="container d-flex align-items-center justify-content-between">
+	</nav> {% endcomment %}
+</header>
+<!-- Header end here -->
+
+<!-- Alert message start here -->
+{% if messages %}
+{% for i in messages %}
+<div class="alert alert-{% if i.tags == "success" %}success{% elif i.tags == "error" %}danger{% elif i.tags == "info" %}info{% elif i.tags == "warning" %}warning{% endif %} alert-style" role="alert">
+	{{i}}
+</div>
+{% endfor %}
+<script src="{% static 'libs/jquery/jquery.min.js' %}"></script>
+<script> 
+	$(document).ready(function(){
+		setTimeout(() => {
+			$(".alert-style").fadeTo(500,0.7,function(){
+				$('.alert-style').slideUp(400,function(){
+					// do nothing
+				})
+			})
+		}, 3000);
+	})
+</script>
+{% endif %}
+<!-- Alert message end here -->
+
+<!-- Alert message created with js -->
+
+<!-- Alert message created with js end -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--Main-wrapper Start from here -->
+<div class="main-wrapper py-4">
+    <div class="container">
+        <section class="schedule-pickup-section">
+            <div class="card schedule-form shadow-sm border-0">
+                <svg class="svg-one" xmlns="http://www.w3.org/2000/svg" width="61.32" height="50.152"><path data-name="Path 50" d="M61.32 0S30.31 5.69 29.38 28.24C28.43 50.78 0 50.15 0 50.15V10A10 10 0 0110 0z" fill="#5e5ce6"/></svg>
+                <div class="card-body text-center ">
+                    <h1 class="card-title text-center text-dark">Account Deactivation</h1><hr>
+                    <form method="post" action="{% url 'customer:phone-number' %}" id="c_valid">
+                        {% csrf_token %}
+                            {% comment %} <div class="row justify-content-center">
+                                <div class="col-md-6 my-3">
+                                    <div class="form-group text-start">
+                                        <input maxlength=10 minlength=10 name="phone" type="text" value="{{request.session.phone}}" required="required" class="form-control number-only length-limit" placeholder="Enter Phone Number">
+                                    </div>
+                                    
+                                    
+                                    <div class="text-end">
+                                        <button type="button" class="btn btn-primary-custom mt-3 pull-right">Next</button>
+                                    </div>
+                                </div>
+                            </div> {% endcomment %}
+                        <div class="row justify-content-center" id="phone_section">
+                            <h4 class="card-title text-center text-dark m-4">
+                                After authenticating, your account will be deactivated. Please enter your mobile to continue.
+                            </h4>
+                            <div class="col-md-6 my-3">
+                                <div class="form-group text-start">
+                                    <input maxlength=10 minlength=10 id="phone_otp" name="phone" type="text" value="{{request.session.phone}}"  required="required" class="form-control number-only length-limit" width="100" placeholder="Enter Phone Number">
+                                </div>
+                                <small class="text-danger" id="phone_error"></small>
+                                <div class="text-end">
+                                    <button type="button" name="otp_sent" value="otp_sent" id="clickme" class="btn btn-primary-custom mt-3 pull-right">Sent OTP</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body" id="input2" style="display: none;">
+                            {% comment %} <h2 class="card-title text-center text-dark mb-4">
+                                Enter OTP
+                            </h2> {% endcomment %}
+                            <h4 id="valid_till" class="card-title text-center text-dark mb-4">An OTP has been sent to +91 <span>{{request.session.phone}}, valid till {{request.session.otp.valid_till}}.</h4>
+                            <div class="row justify-content-center">
+                                <div class="col-md-6 my-3">
+                                    <div class="form-group text-start">
+                                        <input maxlength=5 minlength=5 type="text" id="check-otp" name="otp_next"
+                                            required="required" class="form-control number-only length-limit"
+                                            data-length=5 placeholder="Enter OTP">
+                                    </div>
+                                    <small class="text-danger" id="otp_error"></small>
+                                    <div class="text-end">
+                                        <div id="notification"></div>
+                                        <button type="button" class="btn btn-primary-custom mt-3 me-3"
+                                            id="resend_otp">Resend OTP</button>
+                                        {% comment %}
+                                        <a class="btn btn-primary-custom mt-3 me-3 anchor"
+                                            data-href="{% url 'customer:create-otp' %}">Resend OTP</a> <button
+                                            type="button" id="btn-model"
+                                            class="btn btn-primary-custom nextBtn mt-3 pull-right">Next</button>
+                                        {% endcomment %}
+                                        <button type="button" id="btn-verify" data-confirm="Your account will be deactivated and you will be signed out. This cannot be undone from the app." data-confirm-title="Deactivate your account?" data-confirm-ok="Deactivate" data-confirm-variant="danger"
+                                            class="btn btn-primary-custom nextBtn mt-3 pull-right">Next</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-center" id="show_deactivated">
+                        </div>
+                        
+
+                        <div class="text-center px-3">
+                        <label> Facing Problems? Call us at +917508777004, +917508777005
+                            <a href="https://wa.me/7508777004" class="d-inline-block whatsapp_icon_label mx-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 39 39" class="not-position"><path fill="#00E676" d="M10.7 32.8l.6.3c2.5 1.5 5.3 2.2 8.1 2.2 8.8 0 16-7.2 16-16 0-4.2-1.7-8.3-4.7-11.3s-7-4.7-11.3-4.7c-8.8 0-16 7.2-15.9 16.1 0 3 .9 5.9 2.4 8.4l.4.6-1.6 5.9 6-1.5z"></path><path fill="#FFF" d="M32.4 6.4C29 2.9 24.3 1 19.5 1 9.3 1 1.1 9.3 1.2 19.4c0 3.2.9 6.3 2.4 9.1L1 38l9.7-2.5c2.7 1.5 5.7 2.2 8.7 2.2 10.1 0 18.3-8.3 18.3-18.4 0-4.9-1.9-9.5-5.3-12.9zM19.5 34.6c-2.7 0-5.4-.7-7.7-2.1l-.6-.3-5.8 1.5L6.9 28l-.4-.6c-4.4-7.1-2.3-16.5 4.9-20.9s16.5-2.3 20.9 4.9 2.3 16.5-4.9 20.9c-2.3 1.5-5.1 2.3-7.9 2.3zm8.8-11.1l-1.1-.5s-1.6-.7-2.6-1.2c-.1 0-.2-.1-.3-.1-.3 0-.5.1-.7.2 0 0-.1.1-1.5 1.7-.1.2-.3.3-.5.3h-.1c-.1 0-.3-.1-.4-.2l-.5-.2c-1.1-.5-2.1-1.1-2.9-1.9-.2-.2-.5-.4-.7-.6-.7-.7-1.4-1.5-1.9-2.4l-.1-.2c-.1-.1-.1-.2-.2-.4 0-.2 0-.4.1-.5 0 0 .4-.5.7-.8.2-.2.3-.5.5-.7.2-.3.3-.7.2-1-.1-.5-1.3-3.2-1.6-3.8-.2-.3-.4-.4-.7-.5h-1.1c-.2 0-.4.1-.6.1l-.1.1c-.2.1-.4.3-.6.4-.2.2-.3.4-.5.6-.7.9-1.1 2-1.1 3.1 0 .8.2 1.6.5 2.3l.1.3c.9 1.9 2.1 3.6 3.7 5.1l.4.4c.3.3.6.5.8.8 2.1 1.8 4.5 3.1 7.2 3.8.3.1.7.1 1 .2h1c.5 0 1.1-.2 1.5-.4.3-.2.5-.2.7-.4l.2-.2c.2-.2.4-.3.6-.5s.4-.4.5-.6c.2-.4.3-.9.4-1.4v-.7s-.1-.1-.3-.2z"></path></svg>
+                            </a>
+                        </label>
+                        </div>
+                </div>
+                <svg class="svg-two " xmlns="http://www.w3.org/2000/svg" width="48.224" height="58.905"><path data-name="Path 51" d="M48.224.515v48.39a10 10 0 01-10 10h-26.87s-11.96-1.4-11.33-16.2 18.26-8.5 23.61-27.71S48.224.515 48.224.515z" fill="#0a84ff"/></svg>
+                
+            </div>
+        </section>
+    </div>
+</div>
+<!-- Main-wrapper end here -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script src="{% static 'libs/jquery/jquery.min.js' %}"></script>
+<script src="{% static 'customer/js/bootstrap.min.js' %}"></script>
+<script src="{% static 'customer/js/fontawesome.min.js' %}"></script>
+<script src="{% static 'customer/js/custom.js' %}"></script>
+<script src="{% static 'js/pages/form-validation.init.js' %}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/jquery.validate.min.js"></script>
+
+
+{% comment %} this is use for verify phone and otp {% endcomment %}
+<script>
+    $(document).ready(function () {
+
+$('#clickme').click(function () {
+    if ($('#phone_otp').val().length == 10) {
+        $.ajax({
+            method: "POST",
+            url: "{% url 'customer:popup-login' %}",
+            data: {
+                'phone': $('#phone_otp').val(),
+                'action': 'otp_sent',
+                'csrfmiddlewaretoken': '{{csrf_token}}',
+            },
+            success: function (data) {
+               
+                if (data.status == "sent") {
+                    $('#clickme').hide();
+                    $('#phone_section').hide();
+                    $('.input1').hide();
+                    $('#phone_otp').attr('disabled', true);
+                    $('#input2').show();
+                    $('#phone_error').html("")
+                    $('#otp_error').html("")
+                    $('#valid_till').html(`An OTP has been sent to +91${$('#phone_otp').val()}, valid till ${data.valid_till}.`);
+                    // generateOTP($('#phone_otp').val());
+                }
+            }
+        });
+    }
+    else {
+        console.log('Phone number not valid...')
+        $('#phone_error').html("Enter Valid Phone Number.")
+        $('#otp_error').html("")
+    }
+});
+
+$('#resend_otp').click(function () {
+    $.ajax({
+        method: "POST",
+        url: "{% url 'customer:create-otp' %}",
+        data: {
+            'phone': $('#phone_otp').val(),
+            'csrfmiddlewaretoken': '{{csrf_token}}',
+        },
+        success: function (data) {
+            if (data.status == "sent") {
+                $('#otp_error').html("");
+                $('#check-otp').attr('disabled', false);
+                $('#btn-verify').attr('disabled', false);
+                $('#valid_till').html(`An OTP has been sent to +91${$('#phone_otp').val()}, valid till ${data.valid_till}.`);
+                generateOTP($('#phone_otp').val());
+            }
+        }
+    });
+});
+});
+    $(document).ready(function () {
+        $('#btn-verify').click(function () {
+            $.ajax({
+                method: "POST",
+                url: "{% url 'customer:account_deactivation' %}",
+                data: {
+                    'phone': $('#phone_otp').val(),
+                    'action': 'otp_verify',
+                    'otp': $('#check-otp').val(),
+                    csrfmiddlewaretoken: '{{csrf_token}}',
+                },
+                success: function (data) {
+                    console.log(data);
+                    if (data.status == "Account deactivated!") {
+                        document.getElementById('input2').remove()
+                        document.getElementById('show_deactivated').innerHTML = `<h2 class="text-success">${data.status}</h2><h6 class="text-center text-dark mb-4"> <br>You can reactivate your account, please contact us.</h6>`
+                        setTimeout(() => {window.location.href = "{% url 'customer:select-items' %}"}, 7000);
+                    }
+                    else { $('#otp_error').html(data.status); }
+                }
+            });
+        });
+    });
+</script>
+
+
+
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

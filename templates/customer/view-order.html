@@ -1,0 +1,457 @@
+{% extends 'customer/base.html' %}
+{% load static %}
+{% block title %}View Order Details{% endblock title %}
+
+{% block extra_head %}
+
+<link rel="stylesheet" href="{% static 'customer/css/bootstrap.min.css' %}">
+<link rel="stylesheet" href="{% static 'customer/font-awesome-4.7.0/css/font-awesome.min.css' %}">
+<link rel="stylesheet" href="{% static 'customer/css/style.css' %}">
+{% endblock extra_head %}
+
+{% block content %}
+
+<!-- Floating button bottom-right side start here-->
+<a href="{% url 'customer:select-items' %}" class="btn btn-primary-custom floating-btn shadow">
+	<i class="fa fa-calendar-o" aria-hidden="true"></i>
+</a>
+<!-- Floating button bottom-right side end here-->
+
+
+
+<!-- Breadcrumbs start here -->
+<div class="breadcrumbs">
+	<div class="container">
+		<nav aria-label="breadcrumb">
+		  <ol class="breadcrumb mb-0 pt-4 justify-content-end">
+		    <li class="breadcrumb-item"><a href="{% url 'customer:history' %}">History</a></li>
+		    <li class="breadcrumb-item active" aria-current="page">View Order Details
+			</li>
+		</ol>
+	</nav>
+</div>
+</div>
+<!-- Breadcrumbs end here -->
+
+<!--Main-wrapper Start from here -->
+<div class="main-wrapper py-4">
+	<div class="container">
+		<section class="view-order-section">
+			<div class="row">
+				<div class="col-12">
+					<div class="ux-page-header">
+						<h2 class="ux-page-header__title">View Order Details</h2>
+						<span class="ux-status" data-status="{{pickup.status}}">{{pickup.status}}</span>
+					</div>
+				</div>
+				<div class="col-md-4">
+					
+					<div class="card shadow-sm border-0 mb-3">
+						<div class="card-body">
+							<h4>Pickup Time</h4>
+							<p class="fw-normal"><span class="text-muted mb-0">Request ID <br> </span>
+								<button type="button" class="ux-copy" data-copy="{{pickup.pickup_id}}" data-copy-message="Request ID copied" title="Copy request ID">
+									<span class="ux-short-id">{{pickup.pickup_id}}</span>
+									<i class="fa fa-clone" aria-hidden="true"></i>
+								</button>
+							</p>
+							<p class="fw-normal"><span class="text-muted mb-0">Date On<br> </span> {{pickup.created|date:"M d, Y"}}</p>
+							<p class="fw-normal"><span class="text-muted mb-0">Customer Name <br> </span>{{pickup.customer.get_full_name|title}}</p>
+							<p class="fw-normal"><span class="text-muted">Scheduled Date & Time <br> </span>{{pickup.pickup_date|date:"M d, Y"}}/{{pickup.get_time_slot_display}}</p>
+						</div>
+					</div>
+					<div class="card shadow-sm border-0 mb-3">
+						<div class="card-body">
+							<h4>Additional Notes</h4>
+							<form method="post">{% csrf_token %}
+								<input type="hidden" name="requested_id" value="{{pickup.pickup_id}}">
+								<textarea row="3" class="form-control mb-3" placeholder="Additional Notes..." name="notes">{{pickup.notes}}</textarea>
+								<div class="text-end">
+									<button type="submit" name="add_notes" class="btn-sm btn-primary-custom">Add</button>
+								</div>
+							</form>
+							{%if pickup.image%}
+							<h4>Added Image</h4>
+							<img src="{{pickup.image.url}}" class="p-1 w-100">
+							{%endif%}
+						</div>
+                    </div>
+					<div class="card shadow-sm border-0">
+						<div class="card-body">
+							<h4>Pick Up Address 	
+								{% if pickup.status != "Picked-up" and pickup.status != "Cancelled" %}
+								<a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#editAddress"
+								class="text-dark ms-2" title="Edit address" aria-label="Edit address"><i class="fa fa-pencil" aria-hidden="true"></i>
+								</a>
+								{% endif %}
+							</h4>
+							<p class="fw-normal"><span class="text-muted mb-0">Address - </span>{{pickup.address}}</p>
+							<p class="fw-normal"><span class="text-muted mb-0">City - </span>{{pickup.city}}</p>
+							<p class="fw-normal"><span class="text-muted mb-0">State - </span>{{pickup.state}}</p>
+							<p class="fw-normal"><span class="text-muted">Zipcode - </span>{{pickup.pin_code}}</p>
+							<p class="fw-normal"><span class="text-muted">Status - </span><span class="ux-status" data-status="{{pickup.status}}">{{pickup.status}}</span></p>
+							<p class="fw-normal"><span class="text-muted">Pickup Boy - </span>{{pickup.pickup_boy|default:"Not assigned yet."}}</p>
+							{% comment %} {% if pickup.status != "Picked-up" %}
+							<p class="fw-normal"><span class="text-muted">Payment - </span>{{pickup.payment|floatformat:2}}</p>
+							{% endif %} {% endcomment %}
+							<div class="row flex-nowrap">
+								<div class="col-auto"><p class="fw-normal"><span class="text-muted">Paid - </span></div>
+								<div class="col-auto">
+									<div class="form-check">
+										<input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
+										<label class="form-check-label" for="flexRadioDefault1">
+										    Cash
+										</label>
+									</div>
+								</div>
+								<div class="col-auto">
+									<div class="form-check">
+										<input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" checked>
+										<label class="form-check-label" for="flexRadioDefault2">
+										   UPI
+										</label>
+									</div>
+								</div>
+							</div>
+							<p class="fw-normal"><span class="text-muted">Transaction ID (For UPI) - </span>XXX-XXX</p>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-8">
+					<div class="row align-items-center justify-content-between">
+						<div class="col-6 d-flex align-items-center">
+							<h3 class="m-0">Items</h3> 
+							{% if pickup.status != "Picked-up" and pickup.status != "Cancelled" %}
+							<a href="javascript:void(0);" class="ms-2 text-dark" data-bs-toggle="modal" data-bs-target="#addItem" title="Add items" aria-label="Add items"><i class="fa fa-plus" aria-hidden="true"></i>
+							</a>
+							{% endif %}
+						</div>
+						{% if pickup.status == "Picked-up" %}
+						<div class="col-6 text-end">
+							<a target="_blank" href="{% url 'customer:get-invoice' pickup.pickup_id %}" class="btn btn-sm btn-primary-custom">Download Invoice</a>
+						</div>
+						{% endif %}
+					</div>
+					
+					<div style="overflow-x: auto;">
+						<table id="vieworderTable" class="vieworder-table" style="width:100%">
+					        <thead>
+					            <tr>
+					                <th>Items</th>
+									{% if pickup.status != "Picked-up" %}
+					                <th>Price</th>
+									{% else %}
+									<th>Bought Price</th>
+									{% endif %}
+					                <th>Unit</th>
+									{% if pickup.status != "Picked-up" %}
+					                {% comment %} <th>Estimated Quantity</th> {% endcomment %}
+									{% else %}
+									<th>Actual Quantity</th>
+									{% endif %}
+					                {% if pickup.status != "Picked-up" %}
+					                {% comment %} <th>Estimated Amount</th> {% endcomment %}
+									{% else %}
+									<th>Total Amount</th>
+									{% endif %}
+									<th>Action</th>
+					            </tr>
+					        </thead>
+					        <tbody>
+								{% for p in pickup_items %}
+					        	<tr>
+					        		<td>{{p.item}}</td>
+						        	<td><span id="singlePrice-{{p.item.id}}">{{p.final_price|floatformat:2|default:p.item.price|floatformat:2}}</span></td>
+						        	<td>{{p.item.unit}}</td>
+									{% comment %} {% if pickup.status !=  "Picked-up" and  pickup.status !=  "Cancelled" %} {% endcomment %}
+									{% if pickup.status ==  "Picked-up" %}
+									<td class="d-flex justify-content-center">
+									
+											<div class="num-block skin-2">
+											<div class="num-in">
+												<span class="minus dis"></span>
+												<input type="text" id='quantity-{{p.item.id}}' data-id='{{p.item.id}}' class="in-num" value="{{p.actual_quantity|add:"0"|default:p.quantity|add:"0"}}" onchange='changePrice("{{p.item.id}}")'>
+												<span class="plus"></span>
+											</div>
+											</div> 
+									</td>
+									{% comment %} {% else %}
+											<td>{{p.actual_quantity|default:p.quantity}} {{p.item.unit}}</td> {% endcomment %}
+									{% endif %}
+
+						        	{% comment %} <td>{{p.actual_quantity|default:p.quantity}} {{p.item.unit}}</td> {% endcomment %}
+									{% comment %} {% if pickup.status !=  "Picked-up" and  pickup.status !=  "Cancelled" %} {% endcomment %}
+									{% if pickup.status ==  "Picked-up" %}
+						        	<td>Rs <span id="itemPrice-{{p.item.id}}" class="itemPrice">{{p.total_amount|floatformat:2|default:p.estimated_amount|floatformat:2}}</span></td>
+									{% endif %}
+									{% comment %} <td>	<a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#editItem"
+										class="text-dark ms-2"><i class="fa fa-pencil" aria-hidden="true"></i>
+										</a></td> {% endcomment %}
+									<td>
+										{% if pickup.status != "Picked-up" and pickup.status != "Cancelled" %}
+										<a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#deleteItem"
+										onclick="document.getElementById('item_delete_id').value='{{p.id}}'"
+										class="text-dark ms-2" title="Remove item" aria-label="Remove {{p.item}}"><i class="fa fa-trash" aria-hidden="true"></i>
+										</a>
+										{% endif %}
+									</td>
+					        	</tr>
+								{% endfor %}
+								
+					        </tbody>
+					        <tfoot>
+					        	<tr class="total-amount-row">
+					        		<!-- <td></td>
+						        	<td></td>
+						        	<td></td>
+						        	<td></td>
+									<td></td> -->
+									{% comment %} {% if pickup.status !=  "Picked-up" and  pickup.status !=  "Cancelled" %} {% endcomment %}
+									{% if pickup.status ==  "Picked-up" %}
+						        	<td colspan="6" class="fw-bold text-end">Total : Rs <span id="itemTotal" class="itemTotal">{{final_amount|floatformat:2|default:expected_amount|floatformat:2}}</span></td>
+									{% endif %}
+					        	</tr>
+					        </tfoot>
+					    </table>
+					</div>
+				</div>
+			</div>
+		</section>
+	</div>
+</div>
+<!-- Main-wrapper end here -->
+<!--Update Address modal -->
+<div id="editAddress" class="modal bs-example-modal-center fade show" tabindex="-1" aria-labelledby="myModalLabel"
+    aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header custom-modal-header">
+                <h5 class="modal-title mt-0" id="myModalLabel">Edit Address</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form class="needs-validation" novalidate="" method="post">{% csrf_token %}
+					<input type="text" name="requested_id" hidden value="{{pickup.pickup_id}}">
+                    <div class="row">
+						<div class="mb-3">
+							<label for="address" class="form-label">Address</label>
+								<textarea class="form-control" rows="3" id="address" name="address" placeholder="Enter your Address" required>{{pickup.address|default:""}}</textarea>
+								<div class="invalid-feedback">
+									Please Enter Address.
+								 </div>
+						</div>
+						<div class="mb-3">
+							<label class="form-label">State</label>
+							<select class="form-select" required name="state" id="select-state" onchange="fetch_cities(this.value)">
+								<option value="">Select State</option>
+								{% for s in state_list %}
+								<option {% if pickup.state.id == s.id %}selected{% endif %} value="{{s.id}}">{{s.name}}</option>
+								{% endfor %}
+							</select>
+						</div>
+						<div class="mb-3">
+							<label class="form-label">City</label>
+							<select class="form-select" required name="city" id="select-city">
+								<option value="">Select City</option>
+								{% for c in city_list %}
+								<option {% if pickup.city.id == c.id %}selected{% endif %} value="{{c.id}}">{{c.name}}</option>
+								{% endfor %}
+							</select>
+						</div>
+
+						<div class="mb-3">
+							<label for="pin_code" class="form-label">Pin Code</label>
+							<input type="text" id="pin_code" name="pin_code" placeholder="Enter Zip Code" required 
+							class="form-control number-only" value="{{user.pin_code|default:''}}" maxlength=6 minlength=6>
+						</div>
+					
+
+
+                        <div class="d-flex justify-content-end mt-3">
+                            <button type="button" class="btn btn-sm btn-secondary-custom me-2"
+                                data-bs-dismiss="modal">Cancel</button>
+                            <button class="btn btn-sm btn-primary-custom" name="address_update" value="address_update"
+                                type="submit">Confirm</button>
+                        </div>
+						
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- new additems modal -->
+<div class="modal fade" id="addItem" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style="display: none;">
+	<div class="modal-dialog">
+	  <div class="modal-content">
+		<div class="modal-header">
+		  <h5 class="modal-title text-dark" id="exampleModalLabel">Add Item</h5>
+		  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+		</div>
+		<form method="post">{% csrf_token %}
+			<input type="text" name="pickup_id" hidden value="{{pickup.pickup_id}}">
+		<div class="modal-body modal-custom-height">
+			<div class="row h-20">
+				
+				{% for i in item_list %}
+				
+				<div class="col-lg-6 mb-3">
+					
+				  <div class="card shadow-sm same-height border-0 bg-lime-green">
+					
+					
+					  <div class="card-body">
+						  <div class="form-check float-checkbox">
+							  <input class="form-check-input" type="checkbox" value="{{i.id}}" name="checks[]" id="{{i.id}}">
+						  </div>
+						  <div class="scrap-img text-center mb-3">
+							  <img src="{{i.image.url}}" class="img-fluid">
+						  </div>
+						  <div class="scrap-content text-center">
+							  <h3>{{i.name}}</h3>
+							  <p>Rs. {{i.price}}/{{i.unit}}</p>
+						  </div>
+						  <div class="num-block skin-2 justify-content-center d-flex">
+							<div class="num-in">
+								<span class="minus"></span>
+								<input type="text" id="quantity-2" data-id="2" class="in-num" value="1" name="quantity_{{i.id}}">
+								<span class="plus"></span>
+							</div>
+						</div>
+					  </div>
+				  </div>
+			  </div>
+			  {% endfor %}
+			 
+			
+			</div>
+		</div>
+	
+		<div class="modal-footer border-0">
+		  <button type="button" class="btn btn-sm btn-secondary-custom" data-bs-dismiss="modal">Close</button>
+		  <button type="submit" value="add_item" name="add_item" class="btn btn-sm btn-primary-custom">Add Items</button>
+		</div>
+	</form>
+	  </div>
+	</div>
+  </div>
+  
+
+  {% comment %} <!--Delete modal -->
+  <div id="delete_request" class="modal bs-example-modal-center fade show" tabindex="-1" aria-labelledby="myModalLabel"
+  aria-modal="true" role="dialog">
+  <div class="modal-dialog modal-dialog-centered">
+	  <div class="modal-content">
+		  <div class="modal-header custom-modal-header">
+			  <h5 class="modal-title mt-0" id="myModalLabel">Delete this request</h5>
+			  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+		  </div>
+		  <div class="modal-body">
+			  <form class="needs-validation" novalidate="" action="{% url 'customer:order_delete' %}" method="post">{% csrf_token %}
+				  <p class="text-muted warning-text">Are you sure to delete this Request?</p>
+				  <div class="row">
+					  <input type="hidden" id="requested_id" name="requested_id" value="{{pickup.pickup_id}}">
+					  <input type="hidden" id="item_delete_id" value="{{pickup.pickup_id}}" name="item_delete_id">
+					  <div class="d-flex justify-content-end mt-3">
+						  <button type="button" class="btn btn-sm btn-secondary-custom mx-2"
+							  data-bs-dismiss="modal">Cancel</button>
+						  <button class="btn btn-sm btn-primary-custom" name="delete_item_submit" value="delete_item_submit"
+							  type="submit">Confirm</button>
+					  </div>
+				  </div>
+			  </form>
+		  </div>
+	  </div>
+  </div>
+  </div> {% endcomment %}
+
+  <!--Delete modal -->
+<div id="deleteItem" class="modal bs-example-modal-center fade show" tabindex="-1" aria-labelledby="myModalLabel"
+aria-modal="true" role="dialog">
+<div class="modal-dialog modal-dialog-centered">
+	<div class="modal-content">
+		<div class="modal-header custom-modal-header">
+			<h5 class="modal-title mt-0" id="myModalLabel">Delete Item</h5>
+			<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+		</div>
+		<div class="modal-body">
+			<form class="needs-validation" novalidate="" method="post">{% csrf_token %}
+				<p class="text-muted warning-text">Are you sure to delete this Item?</p>
+				<div class="row">
+					<input type="hidden" id="requested_id" name="requested_id" value="{{pickup.pickup_id}}">
+					<input type="hidden" id="item_delete_id" name="item_delete_id">
+					<div class="d-flex justify-content-end mt-3">
+						<button type="button" class="btn btn-sm btn-secondary-custom mx-2"
+							data-bs-dismiss="modal">Cancel</button>
+						<button class="btn btn-sm btn-primary-custom" name="delete_item_submit" value="delete_item_submit"
+							type="submit">Confirm</button>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+</div>
+
+{% endblock content %}
+
+
+
+{% block extra_scripts %}
+
+<script src="{% static 'customer/js/bootstrap.min.js' %}"></script>
+<script src="{% static 'customer/js/fontawesome.min.js' %}"></script>
+<script src="{% static 'libs/jquery/jquery.min.js' %}"></script>
+<script src="{% static 'customer/js/custom.js' %}"></script>
+<script src="{% static 'js/pages/form-validation.init.js' %}"></script>
+
+<script>
+
+    function fetch_cities(val){
+        if (val){
+            $.ajax({
+                type: "post",
+                url: "{% url 'utilities:fetch-cities' %}",
+                data: {
+                    'state_id':val,
+                    'csrfmiddlewaretoken':"{{csrf_token}}"
+                },
+                dataType: "json",
+                success: function (response) {
+                    var city = $('#select-city')
+                    city.empty()
+                    city.append('<option value="">Select City</option>')
+                    var options=""
+                    response.forEach(e => {
+                        options += `<option value="${e.id}">${e.name}</option>`
+                    });
+                    city.append(options)
+                }
+            });
+        }
+    }
+
+	function changePrice(id){
+		var quantity=$('#quantity-'+id).val();
+		var single_amount = $('#singlePrice-'+id).text();
+		//Multiply quantity and amout
+		var quantity_amount= quantity*single_amount
+		$('#itemPrice-'+id).text(quantity_amount.toFixed(2));
+
+		//Sum of all amounts to get total amount
+		var all_amounts=$('.itemPrice')
+		var grand_total=0
+		for(var i=0;i<all_amounts.length;i++){
+			var val=all_amounts.eq(i).text()
+			grand_total+=parseFloat(val)
+		}
+		$('.itemTotal').text(grand_total.toFixed(2));
+	}
+
+	
+
+</script>
+
+{% endblock extra_scripts %}

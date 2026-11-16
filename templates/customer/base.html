@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title id="page_title">{% block title %}{% endblock title %}</title>
+    <link rel="shortcut icon" href="{% static 'images/logo.png' %}" type="image/x-icon">  
+
+    {% block extra_head %}
+    
+    {% endblock extra_head %}
+    <link rel="stylesheet" href="{% static 'css/ux-common.css' %}">
+    <link rel="stylesheet" href="{% static 'customer/css/ux.css' %}">
+</head>
+<body>
+
+<!-- Header Start from here -->
+<header class="py-md-4 py-3 shadow-sm">
+	<nav class="container d-flex align-items-center justify-content-between">
+		<a href="" class="anchor-hover-style rounded-style shadow-sm" data-bs-toggle="offcanvas" data-bs-target="#menu" aria-controls="offcanvasRight">
+			<i class="fa fa-bars icon-style" aria-hidden="true"></i>
+		</a>
+		<div class="offcanvas offcanvas-start bg-dark" tabindex="-1" id="menu" aria-labelledby="offcanvasRightLabel">
+			<div class="offcanvas-header d-flex justify-content-center">
+				<div class="row w-100 align-items-center">
+					<div class="col-4">
+						
+					</div>
+					<div class="col-4 text-center">
+						<img src="{% static 'images/old-logo3.png' %}" class="menu-logo">
+					</div>
+					<div class="col-4 text-end">
+						<a href="" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
+							<img src="{% static 'images/close-btn.png' %}">
+						</a>
+					</div>
+				</div>
+			</div>
+			<div class="offcanvas-body">
+			    <div class="row mb-5">
+			    	<div class="col-12">
+			    		<ul class="nav flex-column">
+							<li class="nav-item">
+							    <a class="nav-link" aria-current="page" href="{% url 'customer:dashboard' %}">Home</a>
+							</li>
+							<li class="nav-item">
+							    <a class="nav-link" href="{% url 'customer:history' %}">History</a>
+							</li>
+							<li class="nav-item">
+							    <a class="nav-link" href="{% url 'customer:account-settings' %}">Settings</a>
+							</li>
+							<li class="nav-item">
+							    <a class="nav-link" href="{% url 'customer:notifications' %}">Notification</a>
+							</li>
+						</ul>
+			    	</div>	
+			    </div>
+			    <div class="row">
+			    	<div class="col-12 text-muted-style">
+			    		<p><i class="fa fa-location-arrow me-2" aria-hidden="true"></i> Plot No. 30, Street Number 3, Krishna Enclave, Jhampur, SAS Nagar Mohali, Punjab - 160014</p>
+						<p><i class="fa fa-phone-square me-2" aria-hidden="true"></i> +917508777004, +917508777005</p>
+						<p><i class="fa fa-envelope me-2" aria-hidden="true"></i> Info@raddifinder.com</p>
+			    	</div>
+			    </div>
+			</div>
+		</div>
+		<div class="logo-center-style">
+			<a href="https://raddifinder.com/">
+				<img src="{% static 'images/logo.png' %}" class="menu-logo" style="max-width:90px;">
+			</a>
+		</div>
+		<div class="d-flex align-items-center justify-content-between">
+			{% if request.user.is_authenticated %}
+			<a href="" class="profile-size ms-2" data-bs-toggle="offcanvas" data-bs-target="#profile" aria-controls="offcanvasRight">
+				<img src="{% if request.user.image %}{{request.user.image.url}}{% else %}{% static 'images/profile.png' %}{% endif %}" class="rounded-circle img-thumbnail img-fluid" alt="...">
+			</a>
+			<div class="offcanvas offcanvas-end bg-dark" tabindex="-1" id="profile" aria-labelledby="offcanvasRightLabel">
+				<div class="offcanvas-header d-flex justify-content-center">
+					<div class="row w-100 align-items-center justify-content-between">
+						<div class="col-4">
+							<a href="" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
+								<img src="{% static 'images/close-btn.png' %}">
+							</a>
+						</div>
+						<div class="col-4 text-center">
+							<h5 id="offcanvasRightLabel" class="mb-0">Home</h5>
+						</div>
+						<div class="col-4"></div>
+					</div>
+				</div>
+				<div class="offcanvas-body">
+				    <div class="row justify-content-center align-items-center mb-3">
+				    	<div class="col-12">
+				    		<div class="card custom-card shadow border-0">
+				    			<svg class="svg-one" xmlns="http://www.w3.org/2000/svg" width="61.32" height="50.152"><path data-name="Path 50" d="M61.32 0S30.31 5.69 29.38 28.24C28.43 50.78 0 50.15 0 50.15V10A10 10 0 0110 0z" fill="#5e5ce6"/></svg>
+				    			<div class="card-body">
+				    				<div class="row g-0">
+									    <div class="col-4">
+									      <img src="{% if request.user.image %}{{request.user.image.url}}{% else %}{% static 'images/setting.png' %}{% endif %}" class="img-fluid rounded-start" alt="...">
+									    </div>
+									    <div class="col-8">
+									      <div class="card-body">
+									        <h5 class="card-title text-light">{{request.user.get_full_name}}</h5>
+									        <p class="card-text mb-0"><small class="text-muted text-muted-style">+91 {{request.user.formatted_phone_number}}</small></p>
+
+									      </div>
+									    </div>
+									</div>
+				    			</div>
+				    			<svg class="svg-two" xmlns="http://www.w3.org/2000/svg" width="48.224" height="58.905"><path data-name="Path 51" d="M48.224.515v48.39a10 10 0 01-10 10h-26.87s-11.96-1.4-11.33-16.2 18.26-8.5 23.61-27.71S48.224.515 48.224.515z" fill="#0a84ff"/></svg>
+				    		</div>
+				    	</div>
+				    </div>
+				    <div class="row align-items-center">
+				    	<div class="col py-3">
+				    		<p class="text-muted-style mb-0">Total Sales</p>
+				    		<h5 class="text-light">Rs. {{amount__sum|floatformat:2|default:0}}</h5>
+				    	</div>
+				    </div>
+				    <div class="row">
+				    	<div class="col-12 border-style py-4">
+				    		<p class="text-muted-style">Setting</p>
+				    		<ul class="nav flex-column">
+								<li class="nav-item">
+								    <a class="nav-link" aria-current="page" href="{% url 'customer:account-settings' %}"><i class="fa fa-user me-2" aria-hidden="true"></i> Account Settings</a>
+								</li>
+								{% comment %} <li class="nav-item">
+								    <a class="nav-link" aria-current="page" href="{% url 'customer:change-password' %}"><i class="fa fa-key me-2" aria-hidden="true"></i>Change Password</a>
+								</li> {% endcomment %}
+								<li class="nav-item">
+								    <a class="nav-link" aria-current="page" href="{% url 'customer:history' %}"><i class="fa fa-history me-2" aria-hidden="true"></i> History</a>
+								</li>
+								<li class="nav-item">
+								    <a class="nav-link notify-badge" aria-current="page" title="Notifications" href="{% url 'customer:notifications' %}"><i class="fa fa-bell me-2" aria-hidden="true"></i> Notification
+										{% if request.user and notif_count %}
+										<span class="custom-badge">{{notif_count}}</span>
+										{% endif %}</a>
+								</li>
+							</ul>
+				    	</div>
+				    	<div class="col-12 py-4">
+				    		<ul class="nav flex-column">
+								<li class="nav-item">
+								    <a class="nav-link" href="{% url 'accounts:logout' %}" data-confirm="You will be signed out on this device." data-confirm-title="Log out?" data-confirm-ok="Log out"><i class="fa fa-sign-out me-2" aria-hidden="true"></i> Logout</a>
+								</li>
+							</ul>
+				    	</div>
+				    </div>
+				</div>
+			</div>
+			{% else %}
+			<a href="{% url 'customer:phone-number' %}" class="anchor-hover-style rounded-style shadow-sm" title="Login">
+				<i class="fa fa-user icon-style" aria-hidden="true"></i>
+			</a>
+			{% endif %}
+		</div>
+	</nav>
+</header>
+<!-- Header end here -->
+
+<!-- Alert message start here -->
+{% if messages %}
+{% for i in messages %}
+<div class="alert alert-{% if i.tags == "success" %}success{% elif i.tags == "error" %}danger{% elif i.tags == "info" %}info{% elif i.tags == "warning" %}warning{% endif %} alert-style" role="alert">
+	{{i}}
+</div>
+{% endfor %}
+<script src="{% static 'libs/jquery/jquery.min.js' %}"></script>
+<script> 
+	$(document).ready(function(){
+		setTimeout(() => {
+			$(".alert-style").fadeTo(500,0.7,function(){
+				$('.alert-style').slideUp(400,function(){
+					// do nothing
+				})
+			})
+		}, 3000);
+	})
+</script>
+{% endif %}
+<!-- Alert message end here -->
+
+<!-- Alert message created with js -->
+
+<!-- Alert message created with js end -->
+
+<main id="main-content" tabindex="-1">
+{% block content %}
+
+{% endblock content %}
+</main>
+
+<div class="whatsapp_icon">
+	<a href="https://wa.me/7508777005" target="_blank" rel="noopener" aria-label="Chat with us on WhatsApp" title="Chat with us on WhatsApp">
+		<svg xmlns="http://www.w3.org/2000/svg" width="75" height="75" viewBox="0 0 39 39"><path fill="#00E676" d="M10.7 32.8l.6.3c2.5 1.5 5.3 2.2 8.1 2.2 8.8 0 16-7.2 16-16 0-4.2-1.7-8.3-4.7-11.3s-7-4.7-11.3-4.7c-8.8 0-16 7.2-15.9 16.1 0 3 .9 5.9 2.4 8.4l.4.6-1.6 5.9 6-1.5z"></path><path fill="#FFF" d="M32.4 6.4C29 2.9 24.3 1 19.5 1 9.3 1 1.1 9.3 1.2 19.4c0 3.2.9 6.3 2.4 9.1L1 38l9.7-2.5c2.7 1.5 5.7 2.2 8.7 2.2 10.1 0 18.3-8.3 18.3-18.4 0-4.9-1.9-9.5-5.3-12.9zM19.5 34.6c-2.7 0-5.4-.7-7.7-2.1l-.6-.3-5.8 1.5L6.9 28l-.4-.6c-4.4-7.1-2.3-16.5 4.9-20.9s16.5-2.3 20.9 4.9 2.3 16.5-4.9 20.9c-2.3 1.5-5.1 2.3-7.9 2.3zm8.8-11.1l-1.1-.5s-1.6-.7-2.6-1.2c-.1 0-.2-.1-.3-.1-.3 0-.5.1-.7.2 0 0-.1.1-1.5 1.7-.1.2-.3.3-.5.3h-.1c-.1 0-.3-.1-.4-.2l-.5-.2c-1.1-.5-2.1-1.1-2.9-1.9-.2-.2-.5-.4-.7-.6-.7-.7-1.4-1.5-1.9-2.4l-.1-.2c-.1-.1-.1-.2-.2-.4 0-.2 0-.4.1-.5 0 0 .4-.5.7-.8.2-.2.3-.5.5-.7.2-.3.3-.7.2-1-.1-.5-1.3-3.2-1.6-3.8-.2-.3-.4-.4-.7-.5h-1.1c-.2 0-.4.1-.6.1l-.1.1c-.2.1-.4.3-.6.4-.2.2-.3.4-.5.6-.7.9-1.1 2-1.1 3.1 0 .8.2 1.6.5 2.3l.1.3c.9 1.9 2.1 3.6 3.7 5.1l.4.4c.3.3.6.5.8.8 2.1 1.8 4.5 3.1 7.2 3.8.3.1.7.1 1 .2h1c.5 0 1.1-.2 1.5-.4.3-.2.5-.2.7-.4l.2-.2c.2-.2.4-.3.6-.5s.4-.4.5-.6c.2-.4.3-.9.4-1.4v-.7s-.1-.1-.3-.2z"></path></svg>
+	</a>
+</div>
+<!--Start of Tawk.to Script-->
+<script type="text/javascript">
+	var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+	(function(){
+	var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+	s1.async=true;
+	s1.src='https://embed.tawk.to/6419518431ebfa0fe7f3c21e/1gs1ecri2';
+	s1.charset='UTF-8';
+	s1.setAttribute('crossorigin','*');
+	s0.parentNode.insertBefore(s1,s0);
+	})();
+</script>
+<!--End of Tawk.to Script-->
+<!-- footer Start from here -->
+{% comment %} <footer class="shadow-lg">
+	<div class="container d-flex align-items-center justify-content-between py-md-2 py-0">
+		<div>
+			<a href="{% url 'customer:dashboard' %}" class="navbar-a p-4" title="Home">
+				<i class="fa fa-home fa-2x" aria-hidden="true"></i>
+			</a>
+		</div> 
+		<div>
+			<a href="{% url 'customer:select-items' %}" class="navbar-a p-4" title="Select Items">
+				<i class="fa fa-calendar-o fa-2x" aria-hidden="true"></i>
+			</a>
+		</div>
+		<div>
+			<a href="{% url 'customer:history' %}" class="navbar-a p-4" title="History">
+				<i class="fa fa-history fa-2x" aria-hidden="true"></i>
+			</a>
+		</div>
+		<div>
+			<a href="{% url 'customer:account-settings' %}" class="navbar-a p-4" title="Account Settings">
+				<i class="fa fa-cog fa-2x" aria-hidden="true"></i>
+			</a>
+		</div> 
+		 <div>
+			<a href="{% url 'customer:notifications' %}" class="notify-badge navbar-a p-4" title="Notifications">
+				<i class="fa fa-bell fa-2x" aria-hidden="true"></i>
+				{% if request.user %}
+				<span class="custom-badge">{{notif_count|default:0}}</span>
+				{% endif %}
+			</a>
+		</div> 
+	</div>
+</footer> 
+<!-- footer end here --> {% endcomment %}
+
+{% block extra_scripts %}
+
+{% endblock extra_scripts %}
+<script src="{% static 'js/ux.js' %}"></script>
+{% include "partials/session_sync.html" %}
+</body>
+</html>

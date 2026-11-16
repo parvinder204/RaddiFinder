@@ -1,0 +1,815 @@
+{% extends 'site_admin/admin_base.html' %}
+{% load static %}
+{% block title %}View Request{% endblock title %}
+{% block content %}
+
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+            <h4 class="mb-sm-0 font-size-18">View Pickup Request</h4>
+            <div class="page-title-right">
+                <ol class="breadcrumb m-0">
+                    <li class="breadcrumb-item"><a href="{% url 'site_admin:dashboard' %}">Home</a>
+                    </li>
+                    <li class="breadcrumb-item active">View pickup request</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="mb-3 row">
+                    <label for="example-text-input" class="col-md-2 col-form-label">ID</label>
+                    <div class="col-md-4">
+                        <input type="text" class="form-control" placeholder="12053" value="{{object.pickup_id}}"
+                            readonly>
+                    </div>
+                    <label for="program6" class="col-md-2 col-form-label">Date</label>
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <input disabled type="text" class="form-control"
+                                value="{{object.pickup_date|date:'d b, Y'}}">
+                            <span class="input-group-text"><i class="mdi mdi-calendar"></i></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <label for="example-text-input" class="col-md-2 col-form-label">Customer Name</label>
+                    <div class="col-md-4">
+                        <input type="text" class="form-control" placeholder="Palvi Sharma"
+                            value="{{object.customer.get_full_name}}" readonly>
+                    </div>
+                    <label for="example-text-input" class="col-md-2 col-form-label">Time Slot</label>
+                    <div class="col-md-4">
+                        <input type="text" class="form-control" placeholder="" value="{{object.time_slot}}" readonly>
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <label for="example-text-input" class="col-md-2 col-form-label">Phone No.</label>
+                    <div class="col-md-4">
+                        <input type="tel" class="form-control" placeholder="1234567890"
+                            value="{{object.customer.phone}}" readonly>
+                    </div>
+                    <label for="example-text-input" class="col-md-2 col-form-label">Email Id.</label>
+                    <div class="col-md-4">
+                        <input type="email" class="form-control" placeholder="" value="{{object.customer.email}}"
+                            readonly>
+                    </div>
+                </div>
+                <a ord_id="{{pickup.pickup_id}}" data-bs-toggle="modal" data-bs-target="#delete_request" class="btn btn-danger btn-sm m-1">Delete request</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <form id="address-form" class="card-body" method="post"
+                action="{% url 'site_admin:update-request-address' %}">
+                {% csrf_token %}
+                <div class="mb-3 row">
+                    <label for="example-text-input" class="col-md-2 col-form-label">Address</label>
+                    <div class="col-md-10">
+                        <textarea {% if object.status == "Picked-up" %}disabled{% endif %} type="text" name="address" class="form-control address-component prompt-target"
+                            data-type="address" id="address" placeholder="Address">{{object.address}}</textarea>
+                        <p id="address-prompt" class="text-danger" style="display:none;font-size: 12px;">Address cannot
+                            be empty</p>
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <label for="example-text-input" class="col-md-2 col-form-label">State</label>
+                    <div class="col-md-10">
+                        <select {% if object.status == "Picked-up" %}disabled{% endif %} name="state" id="state" class="form-select address-component prompt-target"
+                            data-type="state">
+                            <option value="">Select</option>
+                            {% for s in state_list %}
+                            <option {% if s.id == object.state.id %} selected{% endif %} value="{{s.id}}">{{s.name}}
+                            </option>
+                            {% endfor %}
+                        </select>
+                        <p id="state-prompt" class="text-danger pull-left" style="display:none;font-size: 12px;">Select
+                            State</p>
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <label for="example-text-input" class="col-md-2 col-form-label">City</label>
+                    <div class="col-md-10">
+                        <select {% if object.status == "Picked-up" %}disabled{% endif %} name="city" id="city" class="form-select address-component prompt-target"
+                            data-type="city">
+                            <option value="">Select</option>
+                            {% for c in city_list %}
+                            <option {% if c.id == object.city.id %} selected{% endif %} value="{{c.id}}">{{c.name}}
+                            </option>
+                            {% endfor %}
+                        </select>
+                        <p id="city-prompt" class="text-danger pull-left" style="display:none;font-size: 12px;">Select
+                            State</p>
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <label for="example-text-input" class="col-md-2 col-form-label">Pincode</label>
+                    <div class="col-md-10">
+                        <input {% if object.status == "Picked-up" %}disabled{% endif %} type="text" name="pin_code"
+                            class="form-control number-only address-component prompt-target" data-type="pincode"
+                            maxlength=6 minlength=6 id="pincode" placeholder="Pin Code" value="{{object.pin_code}}">
+                        <p id="pincode-prompt" class="text-danger pull-left" style="display:none;font-size: 12px;">Enter
+                            6 digit Pincode</p>
+                    </div>
+                </div>
+                <input type="hidden" name="pickup_id" value="{{object.pickup_id}}">
+                <div class="text-end"><button type="button" id="update-address" class="btn login-btn">Update</button>
+                </div>
+
+            </form>
+        </div>
+
+        <div class="card">
+            <form id="address-form" class="card-body"
+                action="{% url 'site_admin:update-request-address' %}">
+                <div class="mb-3 row">
+                    <label for="example-text-input" class="col-md-2 col-form-label">Customer Notes</label>
+                    <div class="col-md-10">
+                        <textarea class="form-control" disabled rows="6">{{object.notes}}</textarea>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title mb-4">Items</h4>
+                <div class="text-end mb-3">
+                    <button class="btn login-btn" data-bs-toggle="modal" data-bs-target="#addItem">Edit
+                        Selection</button>
+                </div>
+                <div class="table-responsive">
+                    <table class="table align-middle table-nowrap mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="align-middle">Item</th>
+                                <th class="align-middle">Price</th>
+                                {% if object.status == "Approved" or object.status == "Picked-up" %}
+                                <th class="align-middle">Bought Price</th>
+                                {% endif %}
+                                <th class="align-middle">Unit</th>
+                                <th class="align-middle">Estimated quantity</th>
+                                {% if object.status == "Approved" or object.status == "Picked-up" %}
+                                <th class="align-middle">Actual Quantity</th>
+                                <th class="align-middle">Total</th>
+                                {% endif %}
+                                {% if object.status == "Approved" %}
+                                <th class="align-middle">Action</th>
+                                {% endif %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for i in pickup_items %}
+                            <tr id="item-row-{{i.item.id}}" class="items-placeholder" data-item-id="{{i.item.id}}">
+                                <td>{{i.item.name}}</td>
+                                <td>INR-{{i.item.price}}</td>
+                                {% if object.status == "Approved" or object.status == "Picked-up" %}
+                                <td>
+                                    INR-<input type="text" {% if object.status == "Picked-up" %}disabled{% endif %} class="editable-input number-only" decimal=""
+                                        id="price-{{i.item.id}}" value="{{i.item.price}}" style="width: 75px;">
+                                </td>
+                                {% endif %}
+                                <td id="unit-{{i.item.id}}">{{i.item.unit}}</td>
+                                <td>{{i.quantity}}</td>
+                                {% if object.status == "Approved" or object.status == "Picked-up" %}
+                                <td>
+                                    <input type="text" class="editable-input number-only" decimal="" {% if object.status == "Picked-up" %}disabled{% endif %}
+                                        id="quantity-{{i.item.id}}" value="{{i.quantity}}" style="width: 75px;">
+                                    {{i.item.unit}}
+                                </td>
+                                <td>
+                                    <span id="total-{{i.item.id}}"
+                                        class="total-amount">{{i.estimated_amount|floatformat:2}}</span>
+                                </td>
+                                {% endif %}
+                                {% if object.status == "Approved" %}
+                                <td>
+                                    <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#deleteitem"
+                                        data-item-id="{{i.item.id}}" data-pickup-item-id="{{i.id}}"
+                                        class="badge badge-pill badge-soft-danger font-size-16 delete-item"><i
+                                            class="bx bx-trash"></i></a>
+                                </td>
+                                {% endif %}
+                            </tr>
+                            {% endfor %}
+                            <tr id="last-row">
+                                {% if object.status == "Approved" or object.status == "Picked-up" %}
+                                <td colspan="6"><b>Grand Total</b></td>
+                                <td><b><span id="grand-total">{{final_amount|floatformat:2}}</span></b></td>
+                                {% endif %}
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="card">
+            <div class="card-body">
+                <!-- Show form only if status is Requested, else show readonly divs -->
+                {% if object.status == "Requested" or object.status == "Approved" %}
+                <form class="needs-validation" novalidate="" onsubmit="return checkRescheduleForm(this);" data-confirm="Update this request to &quot;{value}&quot;? The customer will be notified of the change." data-confirm-title="Update request status?" data-confirm-ok="Update" data-confirm-field="status" data-confirm-values="Approved|Picked-up|Cancelled|Rescheduled" data-confirm-danger-values="Cancelled" data-confirm-danger-ok="Cancel Request"
+                    action="{% url 'site_admin:view-request' object.pickup_id %}" method="post">
+                    {% csrf_token %}
+                    <div class="mb-3 row">
+                        <label class="col-md-2 col-form-label">Status</label>
+                        <div class="col-md-10">
+                            <select class="form-select" name="status" onchange="checkStatus(this.value)" required>
+                                <option value="">Select</option>
+                                <option {% if object.status == "Approved" %}selected{% endif %} value="Approved">
+                                    Approve</option>
+                                {% if object.status == "Approved" %}
+                                <option {% if object.status == "Picked-up" %}selected{% endif %} value="Picked-up">Pickup
+                                    & Pay</option>
+                                {% endif %}
+                                <option {% if object.status == "Cancelled" %}selected{% endif %} value="Cancelled">Cancel
+                                </option>
+                                <option {% if object.status == "Rescheduled" %}selected{% endif %} value="Rescheduled">
+                                    Reschedule</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-md-2 col-form-label">Notes</label>
+                        <div class="col-md-10">
+                            <textarea class="form-control" required id=""
+                                name="notes">{{object.additional_data.admin_notes}}</textarea>
+                        </div>
+                    </div>
+                    <div class="mb-3 row" id="Pickup-boy-div">
+                        <label class="col-md-2 col-form-label">Assign Pickup Boy</label>
+                        <div class="col-md-10">
+                            <select class="form-control select2" name="pickup-boy" id="select-pickup-boy">
+                                <option value="">Select Pickup Boy</option>
+                                {% for p in pickup_boy_list %}
+                                <option {% if p == object.pickup_boy %}selected{% endif %} value="{{p.id}}">{{p}}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Show if Rescheduling -->
+                    <div class="mb-3 row" id="Rescheduled-div">
+                        <label class="col-md-2 col-form-label">Reschedule date</label>
+                        <div class="col-md-4">
+                            <div class="input-group" id="datepicker1">
+                                <input type="text" id="reschedule-date" class="form-control"
+                                    onchange="checkRescheduleDate()" placeholder="dd M, yyyy"
+                                    data-date-format="dd M, yyyy" data-date-container='#datepicker1'
+                                    data-provide="datepicker" name="reschedule-date" data-date-autoclose="true">
+                                <span class="input-group-text input-reschedule-style"><i
+                                        class="mdi mdi-calendar"></i></span>
+                            </div>
+
+                            <div class="text-danger font-size-12 mt-2" id="rescheduledate_validation">
+
+                            </div>
+                        </div>
+                        <label class="col-md-2 col-form-label">Time slot</label>
+                        <div class="col-md-4">
+                            <select name="time-slot" id="reschedule-time" class="form-control select2">
+                                <option value="">Select</option>
+                                <option value="9-10">9 am-10 am</option>
+                                <option value="10-11">10 am-11 am</option>
+                                <option value="11-12">11 am-12 pm</option>
+                                <option value="12-1">12 pm-1 pm</option>
+                                <option value="1-2">1 pm-2 pm</option>
+                                <option value="2-3">2 pm-3 pm</option>
+                                <option value="3-4">3 pm-4 pm</option>
+                                <option value="4-5">4 pm-5 pm</option>
+                                <option value="5-6">5 pm-6 pm</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-3 row" id="payment-div">
+                        <label class="col-md-2 col-form-label">Amount to be paid</label>
+                        <div class="col-md-4">
+                            <input type="text" id="payment-input" name="payment" class="form-control number-only"
+                                decimal>
+                        </div>
+                    </div>
+
+                    <!-- Pickup Id -->
+                    <input type="hidden" name="pickup_id" value="{{object.pickup_id}}">
+                    {% if object.status == "Approved" %}
+                    <input type="hidden" name="items_data" id="items-data">
+                    {% endif %}
+                    <div class="row">
+                        <div class="add-product custom-cancel-btn">
+                            <a href="{% url 'site_admin:manage-requests' %}" class="login-btn custom-cancel">Cancel</a>
+                            <button class="login-btn">Save</button>
+                        </div>
+                    </div>
+                </form>
+                {% else %}
+
+                <!-- read-only div -->
+                <div class="mb-3 row">
+                    <label class="col-md-2 col-form-label">Status</label>
+                    <div class="col-md-10">
+                        <input class="form-control" disabled value="{{object.status}}">
+                    </div>
+                </div>
+
+                <!-- Show pickup boy if picked up -->
+                {% if object.status == "Picked-up" %}
+                <div class="mb-3 row">
+                    <label class="col-md-2 col-form-label">Notes</label>
+                    <div class="col-md-10">
+                        <textarea class="form-control" disabled>{{object.additional_data.admin_notes}}</textarea>
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <label class="col-md-2 col-form-label">Assigned Pickup Boy</label>
+                    <div class="col-md-10">
+                        <select class="form-control select2" name="pickup-boy" disabled>
+                            <option selected>{{object.pickup_boy}}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <label class="col-md-2 col-form-label">Paid Amount</label>
+                    <div class="col-md-4">
+                        <input type="text" disabled class="form-control " value="{{object.payment}}" >
+                    </div>
+                </div>
+                
+
+
+                <!-- show cancellation reason only if request has been cancelled -->
+                {% elif object.status == "Cancelled" %}
+                <div class="mb-3 row">
+                    <label class="col-md-2 col-form-label">Notes</label>
+                    <div class="col-md-10">
+                        <textarea class="form-control" disabled>{{object.additional_data.admin_notes}}</textarea>
+                    </div>
+                </div>
+
+                <!-- Show reschedule date and time if rescheduled -->
+                {% elif object.status == "Rescheduled" %}
+                <div class="mb-3 row" id="Rescheduled-div">
+                    <label class="col-md-2 col-form-label">Reschedule date</label>
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <input type="text" class="form-control" placeholder="dd M, yyyy" disabled
+                                value="{{object.pickup.pickup_date|date:'d b, Y'}}">
+                            <span class="input-group-text input-reschedule-style"><i
+                                    class="mdi mdi-calendar"></i></span>
+                        </div>
+                    </div>
+                    <label class="col-md-2 col-form-label">Time slot</label>
+                    <div class="col-md-4">
+                        <input type="text" disabled value="{{object.pickup.time_slot}}">
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Show download invoice button if picked up -->
+                {% if object.status == "Picked-up" %}
+                <div class="row">
+                    <div class="add-product custom-cancel-btn">
+                        <a target="_blank" href="{% url 'customer:get-invoice' object.pickup_id %}" class="login-btn custom-cancel">Download Invoice</a>
+                    </div>
+                </div>
+                {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal for selecting items -->
+<div class="modal fade" id="addItem" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-dark" id="exampleModalLabel">Add Item</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body modal-custom-height">
+                <div class="row h-20">
+                    {% for i in item_list %}
+                    <div class="col-lg-4 mb-3">
+                        <div class="card shadow-sm same-height border-0 item-bg test-card">
+                            <label for="check-{{i.id}}">
+                                <div class="card-body">
+                                    <div class="form-check float-checkbox">
+                                        <input class="form-check-input item-check" type="checkbox" value="{{i.id}}"
+                                            data-id="{{ i.id }}" id="check-{{i.id}}" onclick="ItemClick(this.value)">
+                                    </div>
+                                    <div class="scrap-img text-center mb-3">
+                                        <img src="{{i.image.url}}" class="img-fluid">
+                                    </div>
+                                    <div class="scrap-content text-center">
+                                        <h3 id="item-name-{{i.id}}">{{i.name}}</h3>
+                                        <p>Rs. {{i.price}}/<span id="item-unit-{{i.id}}">{{i.unit}}</span></p>
+                                        <input type="hidden" id="item-price-{{i.id}}" value="{{i.price}}">
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="modal-footer border-0">
+                <!-- <button type="button" class="btn btn-sm btn-secondary-custom" data-bs-dismiss="modal">Close</button>
+				<button type="button" class="btn btn-sm btn-primary-custom">Add Items</button> -->
+            </div>
+        </div>
+    </div>
+</div>
+
+  <!--Delete modal -->
+  <div id="delete_request" class="modal bs-example-modal-center fade show" tabindex="-1" aria-labelledby="myModalLabel"
+  aria-modal="true" role="dialog">
+  <div class="modal-dialog modal-dialog-centered">
+	  <div class="modal-content">
+		  <div class="modal-header custom-modal-header">
+			  <h5 class="modal-title mt-0" id="myModalLabel">Delete this request</h5>
+			  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+		  </div>
+		  <div class="modal-body">
+			  <form class="needs-validation" novalidate="" action="{% url 'site_admin:order_delete' %}" method="post">{% csrf_token %}
+				  <p class="text-muted warning-text">Are you sure to delete this Request?</p>
+				  <div class="row">
+					  <input type="hidden" id="requested_id" name="requested_id" value="{{object.pickup_id}}">
+					  <input type="hidden" id="item_delete_id" value="{{object.pickup_id}}" name="item_delete_id">
+					  <div class="d-flex justify-content-end mt-3">
+						  <button type="button" class="btn btn-sm btn-secondary-custom mx-2"
+							  data-bs-dismiss="modal">Cancel</button>
+						  <button class="btn btn-sm btn-primary-custom" name="delete_item_submit" value="delete_item_submit"
+							  type="submit">Confirm</button>
+					  </div>
+				  </div>
+			  </form>
+		  </div>
+	  </div>
+  </div>
+  </div>
+
+<!-- Prompt for deleting item -->
+<div id="deleteitem" class="modal bs-example-modal-center fade show" tabindex="-1" aria-labelledby="myModalLabel"
+    aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header custom-modal-header">
+                <h5 class="modal-title mt-0" id="myModalLabel">Delete Item</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <p class="text-muted warning-text">Are you sure you want to delete this item?</p>
+                    <div class="row">
+                        <div class="d-flex justify-content-end mt-3">
+                            <button type="button" class="btn login-btn waves-effect me-2"
+                                data-bs-dismiss="modal">No</button>
+                            <button class="btn login-btn" data-bs-dismiss="modal" type="button" id="confirm-delete-item">Yes</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <input type="hidden" id="item-id-container">
+            <input type="hidden" id="pickup-id-container">
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        $("#Rescheduled-div").hide()
+        $("#payment-div").hide()
+        $("#update-address").hide()
+
+        // color
+        let color_list = ["lime-green", "maya-blue", "gold", "red-orange"]
+        let card_list = $(".item-bg")
+
+        for (let i = 0; i < card_list.length; i++) {
+            var random_class = `bg-${color_list[Math.floor(Math.random() * color_list.length)]}`
+            card_list.eq(i).addClass(random_class)
+        }
+
+        // hide prompts
+        $(".prompt-target").change(function () {
+            $(this).next().hide()
+        })
+    })
+
+    function checkStatus(param) {
+        if (param === "Approved" || param === "Picked-up") {
+            $("#select-pickup-boy").prop('required', true)
+            $("#Pickup-boy-div").show()
+
+            $("#reschedule-date").prop('required', false)
+            $("#reschedule-time").prop('required', false)
+            $("#Rescheduled-div").hide()
+        } else if (param === "Cancelled") {
+            $("#select-pickup-boy").prop('required', false)
+            $("#Pickup-boy-div").hide()
+
+            $("#reschedule-date").prop('required', false)
+            $("#reschedule-time").prop('required', false)
+            $("#Rescheduled-div").hide()
+        } else if (param === "Rescheduled") {
+            $("#select-pickup-boy").prop('required', false)
+            // $("#Pickup-boy-div").hide()
+
+            $("#reschedule-date").prop('required', true)
+            $("#reschedule-time").prop('required', true)
+            $("#Rescheduled-div").show()
+        }
+        if (param === "Picked-up") {
+            $("#payment-div").show()
+            $("#payment-input").prop('required', true)
+        } else {
+            $("#payment-div").hide()
+            $("#payment-input").prop('required', false)
+        }
+    }
+</script>
+
+<!-- Script to update address -->
+{% if object.status == "Approved" or object.status == "Requested" %}
+
+<script>
+    const address_component = {
+        address: "{{object.address}}",
+        state: "{{object.state.id}}",
+        city: "{{object.city.id}}",
+        pincode: "{{object.pin_code}}"
+    }
+
+    let comps = $('.address-component')
+
+    // check if address has changed
+    function address_changed() {
+        for (var i = 0; i < comps.length; i++) {
+            var type = comps.eq(i).attr('data-type') // get type of component
+            var val = comps.eq(i).val() // get value
+            if (val !== address_component[`${type}`]) {
+                return true
+            }
+        }
+        return false
+    }
+
+    $('.address-component').change(function () {
+        console.log("address_changed()", address_changed());
+        if (address_changed()) {
+            $("#update-address").show()
+        } else {
+            $("#update-address").hide()
+        }
+    })
+
+    $("#update-address").click(function () {
+        var address_bool = $('#address').val().length > 0
+        var state_bool = $('#state').val().length > 0
+        var city_bool = $('#city').val().length > 0
+        var pin_code_bool = $("#pincode").val().length === 6
+
+        if (address_bool && state_bool && city_bool && pin_code_bool) {
+            // $("#address-form").submit()
+            $.ajax({
+                type: "post",
+                url: "{% url 'site_admin:update-request-address' %}",
+                data: {
+                    'csrfmiddlewaretoken': "{{csrf_token}}",
+                    'pickup_id': "{{object.pickup_id}}",
+                    'address': $('#address').val(),
+                    'state': $('#state').val(),
+                    'city': $('#city').val(),
+                    'pin_code': $("#pincode").val()
+                },
+                dataType: "json",
+                success: function (response) {
+                    if (response.status) {
+                        show_message("success", response.notes, 2500)
+                    } else {
+                        show_message("error", response.notes, 2500)
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown){
+                    console.error(jqXHR);
+                    show_message("error",`${textStatus}`,2500)
+                }
+            });
+        } else {
+            if (!address_bool) {
+                console.log("!address_bool");
+                $("#address-prompt").show()
+            }
+            if (!state_bool) {
+                console.log("!state_bool");
+                $("#state-prompt").show()
+            }
+            if (!city_bool) {
+                console.log("!city_bool");
+                $("#city-prompt").show()
+            }
+            if (!pin_code_bool) {
+                console.log("!pin_code_bool");
+                $("#pincode-prompt").show()
+            }
+
+        }
+    })
+</script>
+
+{% endif %}
+
+
+{% if object.status == "Approved" %}
+
+<!-- Script to save items data in local storage when input is edited or new items added or removed. Also saves data in hidden input -->
+<script>
+    function edit_item_list() {
+        var items_list = []
+        var items = $(".items-placeholder")
+        var grand_total = 0
+        for (var i = 0; i < items.length; i++) {
+            var item_id = items.eq(i).attr('data-item-id')
+
+            // save to localstorage. create object
+            var item_obj = {
+                item_id: item_id,
+                actual_quantity: $(`#quantity-${item_id}`).val(),
+                actual_price: $(`#price-${item_id}`).val()
+            }
+            items_list.push(item_obj)
+
+            // show total
+            var total = (parseFloat(item_obj.actual_quantity) * parseFloat(item_obj.actual_price)).toFixed(2)
+            $(`#total-${item_id}`).text(total)
+            grand_total += parseFloat(total)
+            $("#grand-total").text(grand_total.toFixed(2))
+            $("#payment-input").val(grand_total.toFixed(2))
+        }
+        var item_data = JSON.stringify(items_list)
+        window.localStorage.setItem('item_list', item_data)
+        $('#items-data').val(item_data) // data to be posted
+    }
+</script>
+
+<!-- Utils functions -->
+<script>
+    function getIndex(item_list, item_id) {
+        var index = null;
+        for (var i = 0; i < item_list.length; i++) {
+            if (item_list[i].item_id == item_id) {
+                index = i
+                break;
+            }
+        }
+        return index
+    }
+
+    function makerow(item_id) {
+        var item_name = $(`#item-name-${item_id}`).text()
+        var item_price = $(`#item-price-${item_id}`).val()
+        var item_unit = $(`#item-unit-${item_id}`).text()
+        var item_quantity = 1.00
+        var item_unit = $(`#unit-${item_id}`)
+
+        return `
+        <tr class="items-placeholder" id="item-row-${item_id}" data-item-id="${item_id}">
+            <td>${item_name}</td>
+            <td>INR-${item_price}</td>
+            
+            <td>
+                INR-<input type="text" class="editable-input number-only" decimal="" id="price-${item_id}" value="${item_price}" style="width: 75px;">
+            </td>
+            
+            <td>Kg</td>
+            <td>1.00</td>
+            
+            <td>
+                <input type="text" class="editable-input number-only" decimal="" id="quantity-${item_id}" value="1.00" style="width: 75px;"> Kg
+            </td>
+            <td>
+                <span id="total-${item_id}" class="total-amount">${item_price}</span>
+            </td>
+            <td>
+                <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#deleteitem" data-item-id=${item_id} data-pickup-item-id
+                class="badge badge-pill badge-soft-danger font-size-16 delete-item"><i class="bx bx-trash"></i></a>
+            </td>
+        </tr>
+        `
+    }
+</script>
+
+<!-- Click on an item -->
+<script>
+    function ItemClick(id) {
+        var item_list = JSON.parse(window.localStorage.getItem('item_list'))
+        if ($(`#check-${id}`).is(":checked")) {
+            var row = makerow(id)
+            $(row).insertBefore("#last-row")
+        } else {
+            $(`#item-row-${id}`).remove()
+        }
+        edit_item_list()
+    }
+</script>
+
+<!-- Script to check item boxes -->
+<script>
+    function check_items_boxes() {
+        var item_list = JSON.parse(window.localStorage.getItem('item_list'))
+        console.log(item_list);
+        for (var i = 0; i < item_list.length; i++) {
+            $(`#check-${item_list[i].item_id}`).prop('checked', true)
+            $(`#check-${item_list[i].item_id}`).prop('disabled', true)
+        }
+    }
+</script>
+
+<!-- Script run on document ready -->
+<script>
+    $(document).ready(function () {
+        edit_item_list()
+        check_items_boxes()
+    })
+</script>
+
+<!-- script to run on price/quantity edit -->
+<script>
+    $(document).on('change', '.editable-input', function () {
+        edit_item_list()
+    })
+</script>
+
+
+<!-- Script for deleting items -->
+<script>
+    // function for removing item. will be called multiple places
+    function remove_item(item_id){
+        // uncheck item in item popup
+        $(`#check-${item_id}`).prop('disabled',false)
+        $(`#check-${item_id}`).prop('checked',false)
+        
+        // Remove table row
+        $(`#item-row-${item_id}`).remove()
+        
+        // call edit_item_list to edit localstorage
+        edit_item_list()
+    }
+
+    // click trash icon
+    $(document).on('click', '.delete-item', function () {
+        var item_id = $(this).attr('data-item-id')
+        var pickup_id = $(this).attr('data-pickup-item-id')
+        $("#item-id-container").val(item_id)
+        $("#pickup-id-container").val(pickup_id)
+    })
+    
+    // confirm delete
+    $("#confirm-delete-item").click(function () {
+        var item_id =$("#item-id-container").val()
+        var pickup_id =$("#pickup-id-container").val()
+        console.log(item_id);
+        console.log(pickup_id);
+
+        if(pickup_id){
+            $.ajax({
+                type: "post",
+                url: "{% url 'site_admin:delete-pickup-item' %}",
+                data: {
+                    "csrfmiddlewaretoken":"{{csrf_token}}",
+                    "pickup_id":pickup_id
+                },
+                dataType: "json",
+                success: function (response) {
+                    if(response.status){
+                        remove_item(item_id)
+                        show_message("success",response.notes,2500)
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown){
+                    console.error(jqXHR);
+                    show_message("error",`${textStatus}`,2500)
+                }
+            });
+            
+        }else if(item_id){
+            remove_item(item_id)
+        }
+    })
+</script>
+
+
+
+{% endif %}
+
+
+{% endblock content %}

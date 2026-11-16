@@ -1,0 +1,144 @@
+{% extends 'site_admin/admin_base.html' %}
+{% load static %}
+{% block content %}
+
+<!-- start page title -->
+<div class="row">
+	<div class="col-12">
+		<div class="page-title-box d-sm-flex align-items-center justify-content-between">
+			<h4 class="mb-sm-0 font-size-18">Add Product</h4>
+			<div class="page-title-right">
+				<ol class="breadcrumb m-0">
+					<li class="breadcrumb-item"><a href="{% url 'site_admin:dashboard' %}">Home</a></li>
+					<li class="breadcrumb-item active">Add Product</li>
+				</ol>
+			</div>
+		</div>
+	</div>
+</div>
+<form method="post" enctype="multipart/form-data" class="needs-validation" novalidate=""
+	onsubmit="return checkForm(this);">{% csrf_token %}
+	<div class="row">
+		<div class="col-12">
+			<div class="card">
+				<div class="card-body">
+					<h4 class="card-title mb-4">Add Product</h4>
+					<div class="row d-flex justify-content-center custom-profile-style mb-4">
+						<div class="col-md-4 d-flex justify-content-center">
+							<div class="small-12 medium-2 large-2 columns">
+								<div class="circle">
+									<img class="profile-pic"
+										src="https://t3.ftcdn.net/jpg/03/46/83/96/360_F_346839683_6nAPzbhpSkIpb8pmAwufkC7c5eD7wYws.jpg">
+								</div>
+								<div class="p-image">
+									<i class="mdi mdi-account-edit upload-button"
+										onclick="document.getElementById('image_error').innerHTML = ''"></i>
+									{{ form.image }}
+									<!-- <input class="file-upload" type="file" accept="image/*"/> -->
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<p class="text text-danger d-flex justify-content-center font-size-11" id="image_error"></p>
+
+
+					<div class="mb-3 row">
+						<label for="example-text-input" class="col-md-2 col-form-label">Product Name</label>
+						<div class="col-md-10">
+
+							{{ form.name }}
+							<!-- <input type="text" class="form-control" id="validationCustom04" placeholder="" name="name"> -->
+							<div class="invalid-feedback">
+								Please Enter Product Name.
+							</div>
+						</div>
+					</div>
+					<div class="mb-3 row">
+						<label class="col-md-2 col-form-label">Unit</label>
+						<div class="col-md-10">
+							{{ form.unit }}
+							<!-- <select class="form-select" name="unit">
+										<option value="kg">kg</option>
+										<option value="number">number</option>
+										<option value="gram">gram</option>
+										</select> -->
+						</div>
+					</div>
+					<div class="mb-3 row">
+						<label for="example-text-input" class="col-md-2 col-form-label">Price</label>
+						<div class="col-md-10">
+							{{ form.price }}
+							<!-- <input type="text" class="form-control" id="validationCustom04" name="price" placeholder="INR-20"> -->
+							<div class="invalid-feedback">
+								Please Enter Price.
+							</div>
+						</div>
+					</div>
+					<div class="mb-3 row">
+						<label for="example-text-input" class="col-md-2 col-form-label">Description</label>
+						<div class="col-md-10">
+							{{ form.description }}
+
+							<!-- <textarea class="style-description form-control" id="validationCustom04" name="description"></textarea> -->
+							<div class="invalid-feedback">
+								Please Enter Description.
+							</div>
+						</div>
+					</div>
+
+					<div class="row">
+						<div class="add-product custom-cancel-btn">
+							<button data-href="{% url 'site_admin:manage-products' %}" class="login-btn custom-cancel anchor">Cancel</button>
+							<button type="submit" class="login-btn custom-submit">Save</button>
+						</div>
+					</div>
+
+				</div>
+			</div>
+
+		</div>
+	</div>
+
+</form>
+
+
+<script>
+	$(document).ready(function () {
+		$("#manageproduct").DataTable(),
+			$("#datatable-buttons")
+				.DataTable({ lengthChange: !1, buttons: ["copy", "excel", "pdf", "colvis"] })
+				.buttons()
+				.container()
+				.appendTo("#datatable-buttons_wrapper .col-md-6:eq(0)"),
+			$(".dataTables_length select").addClass("form-select form-select-sm");
+	});
+
+
+
+	$(document).ready(function () {
+		var readURL = function (input) {
+			if (input.files && input.files[0]) {
+				var reader = new FileReader();
+
+				reader.onload = function (e) {
+					$('.profile-pic').attr('src', e.target.result);
+				}
+
+				reader.readAsDataURL(input.files[0]);
+			}
+		}
+
+		$(".file-upload").on('change', function () {
+			readURL(this);
+		});
+
+		$(".upload-button").on('click', function () {
+			$(".file-upload").click();
+		});
+	});
+
+</script>
+
+
+{% endblock content %}

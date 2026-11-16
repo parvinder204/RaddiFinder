@@ -1,0 +1,135 @@
+{% extends 'customer/base.html' %}
+{% load static %}
+{% block title %}Account Settings{% endblock title %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'customer/css/bootstrap.min.css' %}">
+<link rel="stylesheet" href="{% static 'customer/css/style.css' %}">
+<link rel="stylesheet" href="{% static 'customer/font-awesome-4.7.0/css/font-awesome.min.css' %}">
+{% endblock extra_head %}
+
+{% block content %}
+
+<!-- Floating button bottom-right side start here-->
+<a href="{% url 'customer:select-items' %}" class="btn btn-primary-custom floating-btn shadow">
+	<i class="fa fa-calendar-o" aria-hidden="true"></i>
+</a>
+<!-- Floating button bottom-right side end here-->
+
+<!--Main-wrapper Start from here -->
+<div class="main-wrapper py-4">
+	<div class="container">
+		<section class="setting-section">
+			<div class="card schedule-form shadow-sm border-0">
+				<svg class="svg-one" xmlns="http://www.w3.org/2000/svg" width="61.32" height="50.152"><path data-name="Path 50" d="M61.32 0S30.31 5.69 29.38 28.24C28.43 50.78 0 50.15 0 50.15V10A10 10 0 0110 0z" fill="#5e5ce6"></path></svg>
+				<div class="row justify-content-center">
+					<div class="col-md-6">
+						<div class="card-body">
+							<form class="form" method="post" action="{% url 'customer:account-settings' %}" enctype="multipart/form-data">
+								{% csrf_token %}
+								<div class="row justify-content-center">
+									<div class="col-12 d-flex justify-content-center align-items-center">
+										<div class="avatar-upload">
+											<div class="avatar-edit">
+												<input type='file' id="imageUpload" accept=".png, .jpg, .jpeg" name="image"/>
+												<label for="imageUpload"><i class="fa fa-pencil" aria-hidden="true"></i></label>
+											</div>
+											<div class="avatar-preview">
+												<div id="imagePreview" style="background-image: url({% if user.image %}{{user.image.url}}{% else %}{% static 'images/default-profile.jpg' %}{% endif %});">
+												</div>
+											</div>
+										</div>
+									</div>
+									<div class="col-12 mb-3 text-start">
+										<label class="form-label">First Name <sup class="text-danger">*</sup></label><br>
+										<input type="text" name="first_name" class="form-control" placeholder="Enter First Name" required value={% if user.first_name %} "{{user.first_name}}" {% endif %}>
+									</div>
+									<div class="col-12 mb-3 text-start">
+										<label class="form-label">last Name <sup class="text-danger">*</sup></label><br>
+										<input type="text" name="last_name" class="form-control" placeholder="Enter Last Name" required value="{{user.last_name|default:''}}">
+									</div>
+									<div class="col-12 mb-3 text-start">
+										<label class="form-label">Email <sup class="text-danger">*</sup></label><br>
+										<input type="Email" name="email" class="form-control" placeholder="Enter Email" required value="{{user.email|default:''}}">
+									</div>
+									<div class="col-12 mb-3 text-start">
+										<label class="form-label">Phone Number</label><br>
+										<input type="text" readonly name="phone" class="form-control" value="+91 {{user.formatted_phone_number|default:''}}">
+									</div>
+									<div class="col-12 mb-3 text-start">
+										<label class="form-label">Address <sup class="text-danger">*</sup></label><br>
+										<textarea class="form-control" rows="3" name="address" placeholder="Enter your Address" required>{{user.address|default:""}}</textarea>
+									</div>
+									<div class="col-12 mb-3 text-start">
+										<label class="form-label">State <sup class="text-danger">*</sup></label><br>
+										<select class="form-select" required name="state" id="select-state" onchange="fetch_cities(this.value)">
+											<option value="">Select State</option>
+											{% for s in state_list %}
+											<option {% if user.state.id == s.id %}selected{% endif %} value="{{s.id}}">{{s.name}}</option>
+											{% endfor %}
+										</select>
+									</div>
+									<div class="col-12 mb-3 text-start">
+										<label class="form-label">City <sup class="text-danger">*</sup></label><br>
+										<select class="form-select" required name="city" id="select-city">
+											<option value="">Select City</option>
+											{% for c in city_list %}
+											<option {% if user.city.id == c.id %}selected{% endif %} value="{{c.id}}">{{c.name}}</option>
+											{% endfor %}
+										</select>
+									</div>
+									<div class="col-12 mb-3 text-start">
+										<label class="form-label">Pin Code <sup class="text-danger">*</sup></label><br>
+										<input type="text"  name="pin_code" placeholder="Enter Zip Code" required class="form-control number-only" value="{{user.pin_code|default:''}}" maxlength=6 minlength=6>
+									</div>
+									<div class="col-12 mb-3 text-end">
+										<button type="submit" class="btn btn-primary-custom">Save Changes</button>
+									</div>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+				<svg class="svg-two" xmlns="http://www.w3.org/2000/svg" width="48.224" height="58.905"><path data-name="Path 51" d="M48.224.515v48.39a10 10 0 01-10 10h-26.87s-11.96-1.4-11.33-16.2 18.26-8.5 23.61-27.71S48.224.515 48.224.515z" fill="#0a84ff"></path></svg>
+			</div>
+		</section>
+	</div>
+</div>
+<!-- Main-wrapper end here -->
+{% endblock content %}
+
+
+{% block extra_scripts %}
+<script src="{% static 'libs/jquery/jquery.min.js' %}"></script>
+<script src="{% static 'customer/js/bootstrap.min.js' %}"></script>
+<script src="{% static 'customer/js/fontawesome.min.js' %}"></script>
+<script src="{% static 'customer/js/custom.js' %}"></script>
+<script src="{% static 'js/pages/form-validation.init.js' %}"></script>
+
+
+<script>
+    function fetch_cities(val){
+        if (val){
+            $.ajax({
+                type: "post",
+                url: "{% url 'utilities:fetch-cities' %}",
+                data: {
+                    'state_id':val,
+                    'csrfmiddlewaretoken':"{{csrf_token}}"
+                },
+                dataType: "json",
+                success: function (response) {
+                    var city = $('#select-city')
+                    city.empty()
+                    city.append('<option value="">Select City</option>')
+                    var options=""
+                    response.forEach(e => {
+                        options += `<option value="${e.id}">${e.name}</option>`
+                    });
+                    city.append(options)
+                }
+            });
+        }
+    }
+</script>
+{% endblock extra_scripts %}

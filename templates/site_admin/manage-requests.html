@@ -1,0 +1,135 @@
+{% extends 'site_admin/admin_base.html' %}
+{% load static %}
+{% block title %}All Requests{% endblock title %}
+
+{% block content %}
+<!-- start page title -->
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+            <h4 class="mb-sm-0 font-size-18">Manage Order</h4>
+            <div class="page-title-right">
+                <ol class="breadcrumb m-0">
+                    <li class="breadcrumb-item"><a href="{% url 'site_admin:dashboard' %}">Home</a>
+                    </li>
+                    <li class="breadcrumb-item active">Manage Order</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+
+
+                <table id="manageorder" class="dataTableSort table table-bordered dt-responsive  nowrap w-100">
+                    <thead>
+                        <tr>
+                            <th id="desc_order_by" class="align-middle">Creation Date</th>
+                            <th class="align-middle">Order ID</th>
+                            <th class="align-middle">Pickup Date</th>
+                            <th class="align-middle">Customer Name</th>
+                            <th class="align-middle">Status</th>
+                            <th class="align-middle">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for p in pickup_list %}
+                        <tr>
+                            <td>{{p.created|date:"d-m-Y"}}</td>
+                            <td>#{{p.pickup_id}}</td>
+                            <td>{{p.pickup_date|date:"d-m-Y"}}</td>
+                            <td>{{p.customer.get_full_name}}</td>
+                            <td>{% if p.status == "Requested" %}
+                                <span class="badge badge-pill badge-soft-warning font-size-11">Request
+                                    Raised</span>
+                                {% elif p.status == "Approved" %}
+                                <span class="badge badge-pill badge-soft-success font-size-11">Request
+                                    Approved</span>
+                                {% elif p.status == "Cancelled" %}
+                                <span class="badge badge-pill badge-soft-danger font-size-11">Request
+                                    Cancelled</span>
+                                {% elif p.status == "Picked-up" %}
+                                <span class="badge badge-pill badge-soft-success font-size-11">Picked-up & Paid</span>
+                                {% elif p.status == "Rescheduled" %}
+                                <span class="badge badge-pill badge-soft-primary font-size-11">Request
+                                    Rescheduled</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <!-- Button trigger modal -->
+                                <a href="{% url 'site_admin:view-request' p.pickup_id %}" target="_blank"><button type="button"
+                                        class="btn login-btn btn-sm btn-rounded waves-effect waves-light">
+                                        View Details
+                                </button></a>
+                                <a ord_id="{{p.pickup_id}}" class="btn btn-sm btn-primary-custom c_del"><i class="fa fa-trash" aria-hidden="true"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+    </div> <!-- end col -->
+</div>
+<!--Delete modal -->
+<div id="deleteItem" class="modal bs-example-modal-center fade show" tabindex="-1" aria-labelledby="myModalLabel"
+	aria-modal="true" role="dialog">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content">
+			<div class="modal-header custom-modal-header">
+				<h5 class="modal-title mt-0" id="myModalLabel">Delete Item</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<form class="needs-validation" novalidate="" action="{% url 'site_admin:order_delete' %}" method="post">{% csrf_token %}
+					<p class="text-muted warning-text">Are you sure to delete this <span class="fw-bold" id="uu_update"></span></p>
+					<div class="row">
+						{% comment %} <input type="hidden" id="requested_id" name="requested_id" value="{{pickup_list.pickup_id}}"> {% endcomment %}
+						<input type="text" id="item_delete_id" hidden  name="item_delete_id">
+						<div class="d-flex justify-content-end mt-3">
+							<button type="button" class="btn btn-sm btn-secondary-custom mx-2"
+								data-bs-dismiss="modal">Cancel</button>
+							<button class="btn btn-sm btn-primary-custom" name="delete_item_submit"
+								value="delete_item_submit" type="submit">Confirm</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Datatable init js -->
+<script>
+    $(document).ready(function () {
+        $("#manageorder").DataTable(),
+            $("#datatable-buttons")
+                .DataTable({ lengthChange: !1, buttons: ["copy", "excel", "pdf", "colvis"] })
+                .buttons()
+                .container()
+                .appendTo("#datatable-buttons_wrapper .col-md-6:eq(0)"),
+            $(".dataTables_length select").addClass("form-select form-select-sm");
+
+        //,order: [[1, 'desc']]
+        $('#desc_order_by').click()
+
+    });
+</script>
+<script>
+	$(document).ready(function () {
+	    $('.c_del').click(function () {
+			var ord_id = $(this).attr("ord_id"); 
+			console.log(ord_id,'this is order id ')
+			$('#deleteItem').modal('show');
+			$('#item_delete_id').val(ord_id);
+			$('#uu_update').html(`<span>${ord_id}</span>`);
+
+		});
+	});	
+</script>
+{% endblock content %}

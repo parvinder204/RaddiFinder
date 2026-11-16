@@ -1,0 +1,107 @@
+{% extends 'customer/base.html' %}
+{% load static %}
+{% block title %}Enter Your Details{% endblock title %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'customer/css/bootstrap.min.css' %}">
+<link rel="stylesheet" href="{% static 'customer/css/style.css' %}">
+<link rel="stylesheet" href="{% static 'customer/font-awesome-4.7.0/css/font-awesome.min.css' %}">
+{% endblock extra_head %}
+
+{% block content %}
+<!--Main-wrapper Start from here -->
+<div class="main-wrapper py-4">
+	<div class="container">
+		<section class="schedule-pickup-section">
+			<div class="card schedule-form shadow-sm border-0">
+				<svg class="svg-one" xmlns="http://www.w3.org/2000/svg" width="61.32" height="50.152"><path data-name="Path 50" d="M61.32 0S30.31 5.69 29.38 28.24C28.43 50.78 0 50.15 0 50.15V10A10 10 0 0110 0z" fill="#5e5ce6"/></svg>
+				<div class="card-body ">
+					<h2 class="card-title text-center text-dark mb-4" >
+						Set Your Personal Details
+					</h2>
+					<div>
+						<div class="row justify-content-center">
+                            <div class="col-md-6 mb-3">
+                                <form action="{% url 'customer:details' %}" method="post">
+                                    {% csrf_token %}
+                                    <div class="form-group mb-3">
+                                        <h4 class="text-dark mb-0">First Name <sup class="text-danger">*<sup></h4>
+                                        <input maxlength="200" type="text" name="first_name" required class="form-control" placeholder="Enter First Name">
+                                    </div>
+                                    <div class="form-group mb-3">
+                                        <h4 class="text-dark mb-0">Last Name</h4>
+                                        <input maxlength="200" type="text" name="last_name" class="form-control" placeholder="Enter Last Name">
+                                    </div>
+                                    <div class="form-group mb-4">
+                                        <h4 class="text-dark mb-0">Email</h4>
+                                        <input maxlength="254" type="email" name="email" class="form-control" placeholder="Enter Email">
+                                    </div>
+                                    <div class="form-group mb-3">
+                                        <h4 class="text-dark mb-2">Your Address <sup class="text-danger">*<sup></sup></h4>
+                                        <textarea name="address" placeholder="Enter your address" required class="form-control"></textarea>
+                                    </div>
+                                    <div class="form-group mb-3">
+                                        <select class="form-select" name="state" id="select-state" required onchange="fetch_cities(this.value)">
+                                            <option value="">Select State</option>
+                                            {% for s in state_list %}
+                                                <option value="{{s.id}}">{{s.name}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="form-group mb-3">
+                                        <select class="form-select" name="city" id="select-city" required>
+                                            <option value="">Select City</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group mb-4" data-name="pincode">
+                                        <input maxlength=6 type="Text" name="pin-code" required class="form-control number-only" placeholder="Enter Zipcode">
+                                    </div>
+                                    <div class="text-end">
+                                        <button type="submit" class="btn btn-primary-custom  nextBtn mt-3 pull-right" type="button">Next</button>
+                                    </div>
+                                </form>
+                            </div>
+	            		</div>
+					</div>
+				</div>
+				<svg class="svg-two" xmlns="http://www.w3.org/2000/svg" width="48.224" height="58.905"><path data-name="Path 51" d="M48.224.515v48.39a10 10 0 01-10 10h-26.87s-11.96-1.4-11.33-16.2 18.26-8.5 23.61-27.71S48.224.515 48.224.515z" fill="#0a84ff"/></svg>
+			</div>
+		</section>
+	</div>
+</div>
+<!-- Main-wrapper end here -->
+{% endblock content %}
+
+{% block extra_scripts %}
+<script src="{% static 'libs/jquery/jquery.min.js' %}"></script>
+<script src="{% static 'customer/js/bootstrap.min.js' %}"></script>
+<script src="{% static 'customer/js/fontawesome.min.js' %}"></script>
+<script src="{% static 'customer/js/custom.js' %}"></script>
+<script src="{% static 'js/pages/form-validation.init.js' %}"></script>
+
+<script>
+    function fetch_cities(val){
+        if (val){
+            $.ajax({
+                type: "post",
+                url: "{% url 'utilities:fetch-cities' %}",
+                data: {
+                    'state_id':val,
+                    'csrfmiddlewaretoken':"{{csrf_token}}"
+                },
+                dataType: "json",
+                success: function (response) {
+                    var city = $('#select-city')
+                    city.empty()
+                    city.append('<option value="">Select City</option>')
+                    var options=""
+                    response.forEach(e => {
+                        options += `<option value="${e.id}">${e.name}</option>`
+                    });
+                    city.append(options)
+                }
+            });
+        }
+    }
+</script>
+{% endblock extra_scripts %}

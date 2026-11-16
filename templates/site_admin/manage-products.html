@@ -1,0 +1,227 @@
+{% extends 'site_admin/admin_base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+            <h4 class="mb-sm-0 font-size-18">Manage Product</h4>
+            <div class="page-title-right">
+                <ol class="breadcrumb m-0">
+                    <li class="breadcrumb-item"><a
+                        href="{% url 'site_admin:dashboard' %}">Home</a>
+                    </li>
+                    <li class="breadcrumb-item active">Manage Product</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <div class="add-product">
+            <a href="{% url 'site_admin:add-product' %}" class="login-btn">Add product</a>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <table id="manageproduct" class="table table-bordered dt-responsive  nowrap w-100">
+                    <thead>
+                        <tr>
+                            <th class="align-middle">ID</th>
+                            <th class="align-middle">Product Image</th>
+                            <th class="align-middle">Name</th>
+                            <th class="align-middle">Unit</th>
+                            <th class="align-middle">Price</th>
+                            <th class="align-middle">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for i in item_list %}
+                        <tr>
+                            <td>{{i.id|slice:":8"}}</td>
+                            <td>
+                                <image src='{{i.image.url}}' alt class='avatar-sm'>
+                            </td>
+                            <td>{{i.name}}</td>
+                            <td>{{i.unit}}</td>
+                            <td>{{i.price}}</td>
+                            {% comment %} data-bs-toggle="modal" data-bs-target="#editproduct" {% endcomment %}
+                            <td><a href="javascript:void(0);" class="badge badge-pill badge-soft-success font-size-11">
+                                <i class="bx bx-pencil" onclick="passId('{{i.id}}')"></i></a>
+                                <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#deletenotify"
+                                    onclick="document.getElementById('delete_id').value='{{i.id}}'"
+                                    class="badge badge-pill badge-soft-danger font-size-11"><i
+                                        class="bx bx-trash"></i></a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <!-- end col -->
+</div>
+</div>
+<!-- container-fluid -->
+</div>
+
+<!-- end main content-->
+<!--Delete modal -->
+<div id="deletenotify" class="modal bs-example-modal-center fade show" tabindex="-1" aria-labelledby="myModalLabel"
+    aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header custom-modal-header">
+                <h5 class="modal-title mt-0" id="myModalLabel">Delete Product</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form class="needs-validation" novalidate="" method="post">{% csrf_token %}
+                    <p class="text-muted warning-text">Are you sure to delete this Product?</p>
+                    <div class="row">
+                        <input type="hidden" id="delete_id" name="delete_id">
+                        <div class="d-flex justify-content-end mt-3">
+                            <button type="button" class="btn login-btn waves-effect me-2"
+                                data-bs-dismiss="modal">Cancel</button>
+                            <button class="btn login-btn" name="delete_submit" value="delete_submit"
+                                type="submit">Confirm</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Edit Product modal -->
+<script>
+    function passId(id) {
+        document.getElementById('id').value = id;
+        {% for i in item_list %}
+
+        if (id == '{{i.id}}') {
+            $( ".name" ).val('{{i.name}}');
+            $( ".unit" ).val('{{i.unit}}');
+            $( ".price" ).val('{{i.price}}');
+            $( ".description" ).val('{{i.description}}');
+            document.getElementById("image").src = '{{i.image.url}}';
+           
+        }
+        $('#editproduct').modal('show'); 
+        {% endfor %}
+    }
+</script>
+<div id="editproduct" class="modal bs-example-modal-center fade show" tabindex="-1" aria-labelledby="myModalLabel"
+    aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header custom-modal-header">
+                <h5 class="modal-title mt-0" id="myModalLabel">Edit Product</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form class="needs-validation" novalidate="" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="id" id="id">
+                    <div class="row d-flex justify-content-center custom-profile-style mb-4">
+                        <div class="col-md-4 d-flex justify-content-center">
+                            <div class="small-12 medium-2 large-2 columns">
+                                <div class="circle">
+                                    <img class="profile-pic" id="image"
+                                        src="https://t3.ftcdn.net/jpg/03/46/83/96/360_F_346839683_6nAPzbhpSkIpb8pmAwufkC7c5eD7wYws.jpg">
+                                </div>
+                                <div class="p-image">
+                                    <i class="mdi mdi-account-edit upload-button"
+                                        onclick="document.getElementById('image_error').innerHTML = ''"></i>
+                                    <input class="file-upload" type="file" accept="image/*" name="image" id="id_image">
+
+                            
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Name</label>
+                        <input type="text" class="form-control name" id="validationCustom04" name="name" placeholder="Newspaper"
+                            required="">
+                            <div class="invalid-feedback">
+                                Please Enter Name.
+                             </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="unit" class="form-label">Unit</label>
+                        <select class="form-select unit" name="unit" id="unit">
+                            <option value="Kg">kg</option>
+                            <option value="Number">Number</option>
+                            {% comment %} <option name="Gram">Gram</option> {% endcomment %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="price" class="form-label">Price</label>
+                        <input type="text" class="form-control price" id="validationCustom04" name="price" placeholder="INR-20"
+                            required="">
+                            <div class="invalid-feedback">
+                                Please Enter Price.
+                             </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="price" class="form-label">Description</label>
+                        <textarea class="style-description form-control description" name="description" id="validationCustom04"
+                            required=""></textarea>
+                            <div class="invalid-feedback">
+                                Please Enter Description.
+                             </div>
+                    </div>
+                    <div class="row">
+                        <div class="d-flex justify-content-end mt-3">
+                            <button type="button" class="btn login-btn waves-effect me-2"
+                                data-bs-dismiss="modal">Cancel</button>
+                            <button class="btn login-btn" name="update_submit" value="update_submit"
+                                type="submit">Update</button>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+
+
+        <script>
+            
+   {% comment %} <script src="{% static 'js/halfmoon.js' %}"></script> {% endcomment %}
+
+            $(document).ready(function () {
+                $("#manageproduct").DataTable(),
+                    $("#datatable-buttons")
+                        .DataTable({ lengthChange: !1, buttons: ["copy", "excel", "pdf", "colvis"] })
+                        .buttons()
+                        .container()
+                        .appendTo("#datatable-buttons_wrapper .col-md-6:eq(0)"),
+                    $(".dataTables_length select").addClass("form-select form-select-sm");
+            });
+
+            $(document).ready(function () {
+                var readURL = function (input) {
+                    if (input.files && input.files[0]) {
+                        var reader = new FileReader();
+
+                        reader.onload = function (e) {
+                            $('.profile-pic').attr('src', e.target.result);
+                        }
+
+                        reader.readAsDataURL(input.files[0]);
+                    }
+                }
+
+                $(".file-upload").on('change', function () {
+                    readURL(this);
+                });
+
+                $(".upload-button").on('click', function () {
+                    $(".file-upload").click();
+                });
+            });
+
+        </script>
+        {% endblock content %}

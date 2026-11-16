@@ -1,0 +1,74 @@
+{% extends 'customer/base.html' %}
+{% load static %}
+{% block title %}Notifications{% endblock title %}
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'customer/css/bootstrap.min.css' %}">
+<link rel="stylesheet" href="{% static 'customer/css/style.css' %}">
+<link rel="stylesheet" href="{% static 'customer/font-awesome-4.7.0/css/font-awesome.min.css' %}">
+{% endblock extra_head %}
+
+{% block content %}
+
+<!-- Floating button bottom-right side start here-->
+<a href="{% url 'customer:select-items' %}" class="btn btn-primary-custom floating-btn shadow">
+	<i class="fa fa-calendar-o" aria-hidden="true"></i>
+</a>
+<!-- Floating button bottom-right side end here-->
+
+<!--Main-wrapper Start from here -->
+<div class="main-wrapper py-4">
+	<div class="container">
+		<section class="notification-section">
+			<div class="ux-page-header">
+				<h2 class="ux-page-header__title">Notifications</h2>
+			</div>
+			<div class="row flex-nowrap align-items-center">
+				<div class="col-12">
+                    {% for n in notif_list %}
+					<div class="card shadow mb-3 border-0 {% if not n.read %}bg-lime-green{% endif %} ">
+						<div class="card-body">
+							<div class="row align-items-center">
+								<div class="col-12">
+									<div class="row align-items-center">
+										<div class="col-auto">
+											<img src="{% if n.read %}{% static 'images/noti-read.png' %}{% else %}{% static 'images/noti-unread.png' %}{% endif %}" class="notification-img">
+										</div>
+										<div class="col">
+											<p class="card-text">
+												<span class="fw-bold">
+													{{n.notification.subject}}:
+												</span>
+												{{n.notification.content}} <b style="font-size: 16px;">|</b> <span style="font-size:12px">{{n.notification.created|timesince}} ago</span>
+											</p>
+										</div>
+									</div>
+								</div>
+								{% comment %} <div class="col-2 text-center">
+									<a class="btn btn-primary-custom"><i class="fa fa-trash" aria-hidden="true"></i></a>
+								</div> {% endcomment %}
+							</div>
+						</div>
+					</div>
+                    {% empty %}
+					<div class="ux-empty">
+						<div class="ux-empty__icon"><i class="fa fa-bell-o" aria-hidden="true"></i></div>
+						<h3 class="ux-empty__title">You are all caught up</h3>
+						<p class="ux-empty__text">Updates about your pickup requests will appear here.</p>
+						<a href="{% url 'customer:select-items' %}" class="btn btn-primary-custom">Schedule a Pickup</a>
+					</div>
+                    {% endfor %}
+				</div>
+			</div>
+		</section>
+	</div>
+</div>
+<!-- Main-wrapper end here -->
+{% endblock content %}
+
+{% block extra_scripts %}
+<script src="{% static 'libs/jquery/jquery.min.js' %}"></script>
+<script src="{% static 'customer/js/bootstrap.min.js' %}"></script>
+<script src="{% static 'customer/js/fontawesome.min.js' %}"></script>
+<script src="{% static 'customer/js/custom.js' %}"></script>
+
+{% endblock extra_scripts %}

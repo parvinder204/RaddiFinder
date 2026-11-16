@@ -1,0 +1,3 @@
+{% load static %}
+{{ session_sync_config|json_script:"session-sync-config" }}
+<script src="{% static 'js/session-sync.js' %}"></script>

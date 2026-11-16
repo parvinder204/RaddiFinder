@@ -1,0 +1,641 @@
+{% extends 'site_admin/admin_base.html' %}
+{% load static %}
+{% block title %}Admin Dashboard{% endblock title %}
+{% block content %}
+
+
+<!-- start page title -->
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+            <h4 class="mb-sm-0 font-size-18">Home</h4>
+            <div class="page-title-right">
+                <ol class="breadcrumb m-0">
+                    <li class="breadcrumb-item"><a href="javascript: void(0);">Home</a></li>
+                    <li class="breadcrumb-item active">Home</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- end page title -->
+<div class="row">
+    <div class="col-xl-4">
+        <div class="card overflow-hidden">
+            <div class="bg-primary bg-soft">
+                <div class="row">
+                    <div class="col-7">
+                        <div class="text-primary p-3">
+                            <h5 class="text-primary">Welcome Back !</h5>
+                        </div>
+                    </div>
+                    <div class="col-5 align-self-end">
+                        <img src="{% static 'images/profile-img.png' %}" alt="" class="img-fluid">
+                    </div>
+                </div>
+            </div>
+            <div class="card-body pt-0">
+                <div class="row">
+                    <div class="col-sm-5">
+                        <div class="avatar-md profile-user-wid mb-4">
+                            <img src="{% static 'images/profile.jpg' %}" alt="" class="img-thumbnail rounded-circle">
+                        </div>
+                    </div>
+                    <div class="col-sm-7">
+                        <div class="pt-3">
+                            <div class="row">
+                                <div class="col-12">
+                                    <h5 class="font-size-15 text-truncate mb-1">Raddi Finder</h5>
+                                    <p class="text-muted mb-0">Info@raddifinder.com</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title mb-4">Monthly Earning</h4>
+                <div class="row">
+                    <div class="col-12">
+                        <div id="pie-chart"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-8">
+        <div class="row">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h4 class="card-title mb-4">Program Detail</h4>
+                </div>
+                <div class="row justify-content-between align-items-center mb-4">
+                    <div class="col-md-7">
+                        <ul class="nav nav-pills mb-md-0 mb-3 flex-sm-nowrap flex-wrap">
+                            <li class="nav-item">
+                                <a class="nav-link active text-nowrap" href="#today" data-bs-toggle="tab">Today</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-nowrap" href="#week" data-bs-toggle="tab">Week</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-nowrap" href="#month" data-bs-toggle="tab">Month</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="tab-content text-muted">
+                    <div class="tab-pane active" id="today" role="tabpanel">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="card mini-stats-wid">
+                                    <div class="card-body">
+                                        <div class="media">
+                                            <div class="media-body">
+                                                <p class="text-muted fw-medium">Pickup Requests</p>
+                                                <h4 class="mb-0">{{today.orders}}</h4>
+                                            </div>
+                                            <div
+                                                class="mini-stat-icon avatar-sm rounded-circle bg-primary align-self-center">
+                                                <span class="avatar-title">
+                                                    <i class="bx bx-copy-alt font-size-24"></i>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card mini-stats-wid">
+                                    <div class="card-body">
+                                        <div class="media">
+                                            <div class="media-body">
+                                                <p class="text-muted fw-medium">Pending Requests</p>
+                                                <h4 class="mb-0">{{today.pending}}</h4>
+                                            </div>
+                                            <div
+                                                class="avatar-sm rounded-circle bg-primary align-self-center mini-stat-icon">
+                                                <span class="avatar-title rounded-circle">
+                                                    <i class="bx bxs-hourglass font-size-24"></i>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card mini-stats-wid">
+                                    <div class="card-body">
+                                        <div class="media">
+                                            <div class="media-body">
+                                                <p class="text-muted fw-medium">Received Requests</p>
+                                                <h4 class="mb-0">{{today.received}}</h4>
+                                            </div>
+                                            <div
+                                                class="avatar-sm rounded-circle bg-primary align-self-center mini-stat-icon">
+                                                <span class="avatar-title rounded-circle">
+                                                    <i class="bx bx-purchase-tag-alt font-size-24"></i>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="card mini-stats-wid">
+                                    <div class="card-body">
+                                        <div class="media">
+                                            <div class="media-body">
+                                                <p class="text-muted fw-medium">Cancelled Requests</p>
+                                                <h4 class="mb-0">{{today.cancelled}}</h4>
+                                            </div>
+                                            <div
+                                                class="mini-stat-icon avatar-sm rounded-circle bg-primary align-self-center">
+                                                <span class="avatar-title">
+                                                    <i class="bx bx-copy-alt font-size-24"></i>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card mini-stats-wid">
+                                    <div class="card-body">
+                                        <div class="media">
+                                            <div class="media-body">
+                                                <p class="text-muted fw-medium">Today's Amount</p>
+                                                <h4 class="mb-0">₹ {{today.today_received_amount}}</h4>
+                                            </div>
+                                            <div
+                                                class="avatar-sm rounded-circle bg-primary align-self-center mini-stat-icon">
+                                                <span class="avatar-title rounded-circle">
+                                                    <i class="bx bxs-hourglass font-size-24"></i>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card mini-stats-wid">
+                                    <div class="card-body">
+                                        <div class="media">
+                                            <div class="media-body">
+                                                <p class="text-muted fw-medium">Total Amount</p>
+                                                <h4 class="mb-0">₹ {{today.today_total_amount}}</h4>
+                                            </div>
+                                            <div
+                                                class="avatar-sm rounded-circle bg-primary align-self-center mini-stat-icon">
+                                                <span class="avatar-title rounded-circle">
+                                                    <i class="bx bx-purchase-tag-alt font-size-24"></i>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane " id="week" role="tabpanel">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="card mini-stats-wid">
+                                    <div class="card-body">
+                                        <div class="media">
+                                            <div class="media-body">
+                                                <p class="text-muted fw-medium">Pickup Requests</p>
+                                                <h4 class="mb-0">{{week.orders}}</h4>
+                                            </div>
+                                            <div
+                                                class="mini-stat-icon avatar-sm rounded-circle bg-primary align-self-center">
+                                                <span class="avatar-title">
+                                                    <i class="bx bx-copy-alt font-size-24"></i>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card mini-stats-wid">
+                                    <div class="card-body">
+                                        <div class="media">
+                                            <div class="media-body">
+                                                <p class="text-muted fw-medium">Pending Requests</p>
+                                                <h4 class="mb-0">{{week.pending}}</h4>
+                                            </div>
+                                            <div
+                                                class="avatar-sm rounded-circle bg-primary align-self-center mini-stat-icon">
+                                                <span class="avatar-title rounded-circle">
+                                                    <i class="bx bxs-hourglass font-size-24"></i>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card mini-stats-wid">
+                                    <div class="card-body">
+                                        <div class="media">
+                                            <div class="media-body">
+                                                <p class="text-muted fw-medium">Received Requests</p>
+                                                <h4 class="mb-0">{{week.received}}</h4>
+                                            </div>
+                                            <div
+                                                class="avatar-sm rounded-circle bg-primary align-self-center mini-stat-icon">
+                                                <span class="avatar-title rounded-circle">
+                                                    <i class="bx bx-purchase-tag-alt font-size-24"></i>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="card mini-stats-wid">
+                                    <div class="card-body">
+                                        <div class="media">
+                                            <div class="media-body">
+                                                <p class="text-muted fw-medium">Cancelled Requests</p>
+                                                <h4 class="mb-0">{{week.cancelled}}</h4>
+                                            </div>
+                                            <div
+                                                class="mini-stat-icon avatar-sm rounded-circle bg-primary align-self-center">
+                                                <span class="avatar-title">
+                                                    <i class="bx bx-copy-alt font-size-24"></i>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card mini-stats-wid">
+                                    <div class="card-body">
+                                        <div class="media">
+                                            <div class="media-body">
+                                                <p class="text-muted fw-medium">Week's Amount</p>
+                                                <h4 class="mb-0">₹ {{week.week_received_amount}}</h4>
+                                            </div>
+                                            <div
+                                                class="avatar-sm rounded-circle bg-primary align-self-center mini-stat-icon">
+                                                <span class="avatar-title rounded-circle">
+                                                    <i class="bx bxs-hourglass font-size-24"></i>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card mini-stats-wid">
+                                    <div class="card-body">
+                                        <div class="media">
+                                            <div class="media-body">
+                                                <p class="text-muted fw-medium">Total Amount</p>
+                                                <h4 class="mb-0">₹ {{week.week_total_amount}}</h4>
+                                            </div>
+                                            <div
+                                                class="avatar-sm rounded-circle bg-primary align-self-center mini-stat-icon">
+                                                <span class="avatar-title rounded-circle">
+                                                    <i class="bx bx-purchase-tag-alt font-size-24"></i>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane " id="month" role="tabpanel">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="card mini-stats-wid">
+                                    <div class="card-body">
+                                        <div class="media">
+                                            <div class="media-body">
+                                                <p class="text-muted fw-medium">Pickup Requests</p>
+                                                <h4 class="mb-0">{{month.orders}}</h4>
+                                            </div>
+                                            <div
+                                                class="mini-stat-icon avatar-sm rounded-circle bg-primary align-self-center">
+                                                <span class="avatar-title">
+                                                    <i class="bx bx-copy-alt font-size-24"></i>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card mini-stats-wid">
+                                    <div class="card-body">
+                                        <div class="media">
+                                            <div class="media-body">
+                                                <p class="text-muted fw-medium">Pending Requests</p>
+                                                <h4 class="mb-0">{{month.pending}}</h4>
+                                            </div>
+                                            <div class="avatar-sm rounded-circle  align-self-center mini-stat-icon">
+                                                <span class="avatar-title rounded-circle">
+                                                    <i class="bx bxs-hourglass font-size-24"></i>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card mini-stats-wid">
+                                    <div class="card-body">
+                                        <div class="media">
+                                            <div class="media-body">
+                                                <p class="text-muted fw-medium">Received Requests</p>
+                                                <h4 class="mb-0">{{month.received}}</h4>
+                                            </div>
+                                            <div
+                                                class="avatar-sm rounded-circle bg-primary align-self-center mini-stat-icon">
+                                                <span class="avatar-title rounded-circle">
+                                                    <i class="bx bx-purchase-tag-alt font-size-24"></i>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="card mini-stats-wid">
+                                    <div class="card-body">
+                                        <div class="media">
+                                            <div class="media-body">
+                                                <p class="text-muted fw-medium">Cancelled Requests</p>
+                                                <h4 class="mb-0">{{month.cancelled}}</h4>
+                                            </div>
+                                            <div
+                                                class="mini-stat-icon avatar-sm rounded-circle bg-primary align-self-center">
+                                                <span class="avatar-title">
+                                                    <i class="bx bx-copy-alt font-size-24"></i>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card mini-stats-wid">
+                                    <div class="card-body">
+                                        <div class="media">
+                                            <div class="media-body">
+                                                <p class="text-muted fw-medium">Month's Amount</p>
+                                                <h4 class="mb-0">₹ {{month.month_received_amount}}</h4>
+                                            </div>
+                                            <div
+                                                class="avatar-sm rounded-circle bg-primary align-self-center mini-stat-icon">
+                                                <span class="avatar-title rounded-circle">
+                                                    <i class="bx bxs-hourglass font-size-24"></i>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card mini-stats-wid">
+                                    <div class="card-body">
+                                        <div class="media">
+                                            <div class="media-body">
+                                                <p class="text-muted fw-medium">Total Amount</p>
+                                                <h4 class="mb-0">₹ {{month.month_total_amount}}</h4>
+                                            </div>
+                                            <div
+                                                class="avatar-sm rounded-circle bg-primary align-self-center mini-stat-icon">
+                                                <span class="avatar-title rounded-circle">
+                                                    <i class="bx bx-purchase-tag-alt font-size-24"></i>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title mb-4">Items Popularity</h4>
+                <div id="column_chart"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- end row -->
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title mb-4">Manage Requests</h4>
+                <div class="table-responsive">
+                    <table class="table align-middle table-nowrap mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="align-middle">Request ID</th>
+                                <th class="align-middle">Date</th>
+                                <th class="align-middle">Customer Name</th>
+                                <th class="align-middle">Status</th>
+                                <th class="align-middle">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for l in latest_requests %}
+                            <tr>
+                                <td><a href="javascript: void(0);" class="text-body fw-bold">#{{l.pickup_id}}</a> </td>
+                                <td>{{l.pickup_date}}</td>
+                                <td>{{l.customer.get_full_name}}</td>
+                                <td>
+                                    {% if l.status == "Requested" %}
+                                    <span class="badge badge-pill badge-soft-warning font-size-11">Request
+                                        Raised</span>
+                                    {% elif l.status == "Approved" %}
+                                    <span class="badge badge-pill badge-soft-success font-size-11">Request
+                                        Approved</span>
+                                    {% elif l.status == "Cancelled" %}
+                                    <span class="badge badge-pill badge-soft-danger font-size-11">Request
+                                        Cancelled</span>
+                                    {% elif l.status == "Picked-up" %}
+                                    <span class="badge badge-pill badge-soft-success font-size-11">Picked-up & Paid</span>
+                                    {% elif l.status == "Rescheduled" %}
+                                    <span class="badge badge-pill badge-soft-primary font-size-11">Request
+                                        Rescheduled</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <!-- Button trigger modal -->
+                                    <a href="{% url 'site_admin:view-request' l.pickup_id %}" target="_blank"><button type="button"
+                                        class="btn login-btn btn-sm btn-rounded waves-effect waves-light">
+                                        View Details
+                                    </button></a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <!-- end table-responsive -->
+            </div>
+        </div>
+    </div>
+</div>
+<!-- end row -->
+<!-- End Page-content -->
+<!-- Transaction Modal -->
+<div class="modal fade transaction-detailModal" tabindex="-1" role="dialog"
+    aria-labelledby="transaction-detailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="transaction-detailModalLabel">Request Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-2">Product id: <span class="text-primary">#SK2540</span></p>
+                <p class="mb-4">Billing Name: <span class="text-primary">Neal Matthews</span></p>
+                <div class="table-responsive">
+                    <table class="table align-middle table-nowrap">
+                        <thead>
+                            <tr>
+                                <th scope="col">Product</th>
+                                <th scope="col">Product Name</th>
+                                <th scope="col">Price</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th scope="row">
+                                    <div>
+                                        <img src="{% static 'images/product/img-7.png' %}" alt="" class="avatar-sm">
+                                    </div>
+                                </th>
+                                <td>
+                                    <div>
+                                        <h5 class="text-truncate font-size-14">Wireless Headphone (Black)</h5>
+                                        <p class="text-muted mb-0">$ 225 x 1</p>
+                                    </div>
+                                </td>
+                                <td>$ 255</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">
+                                    <div>
+                                        <img src="{% static 'images/product/img-4.png' %}" alt="" class="avatar-sm">
+                                    </div>
+                                </th>
+                                <td>
+                                    <div>
+                                        <h5 class="text-truncate font-size-14">Phone patterned cases</h5>
+                                        <p class="text-muted mb-0">$ 145 x 1</p>
+                                    </div>
+                                </td>
+                                <td>$ 145</td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <h6 class="m-0 text-right">Sub Total:</h6>
+                                </td>
+                                <td>
+                                    $ 400
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <h6 class="m-0 text-right">Shipping:</h6>
+                                </td>
+                                <td>
+                                    Free
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <h6 class="m-0 text-right">Total:</h6>
+                                </td>
+                                <td>
+                                    $ 400
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bar Chart -->
+<script>
+    $(document).ready(function () {
+        var options = {
+            chart: {
+                type: 'bar'
+            },
+            plotOptions: {
+                bar: {
+                    horizontal: false
+                }
+            },
+            series: [{
+                data: [{
+                    x: '{{demand_items.0.name}}',
+                    y: parseInt("{{demand_items.0.count}}")
+                }, {
+                    x: '{{demand_items.1.name}}',
+                    y: parseInt("{{demand_items.1.count}}")
+                }, {
+                    x: '{{demand_items.2.name}}',
+                    y: parseInt("{{demand_items.2.count}}")
+                }, {
+                    x: '{{demand_items.3.name}}',
+                    y: parseInt("{{demand_items.3.count}}")
+                }, {
+                    x: '{{demand_items.4.name}}',
+                    y: parseInt("{{demand_items.4.count}}")
+                }]
+            }]
+        }
+
+        var chart = new ApexCharts(document.querySelector("#column_chart"), options);
+        chart.render();
+    })
+</script>
+
+<!-- Pie Chart -->
+<script>
+    var series={{series}}
+    var labels='{{labels|safe}}';
+    labels=JSON.parse(labels);
+    $(document).ready(function () {
+        options = {
+            chart: { height: 320, type: "pie" },
+            series: series,
+            labels: labels,
+            colors: ["#34c38f", "#556ee6", "#f46a6a", "#50a5f1", "#f1b44c"],
+            legend: { show: !0, position: "bottom", horizontalAlign: "center", verticalAlign: "middle", floating: !1, fontSize: "14px", offsetX: 0 },
+            responsive: [{ breakpoint: 600, options: { chart: { height: 240 }, legend: { show: !1 } } }],
+        };
+        (chart = new ApexCharts(document.querySelector("#pie-chart"), options)).render();
+    })
+</script>
+
+{% endblock content %}

@@ -1,0 +1,85 @@
+{% extends 'customer/base.html' %} {% load static %} {% block title %}Forgot Password{% endblock title %} {% block extra_head %}
+<link rel="stylesheet" href="{% static 'customer/css/bootstrap.min.css' %}">
+<link rel="stylesheet" href="{% static 'customer/css/style.css' %}">
+<link rel="stylesheet" href="{% static 'customer/font-awesome-4.7.0/css/font-awesome.min.css' %}"> {% endblock extra_head %} {% block content %}
+
+<!--Main-wrapper Start from here -->
+<div class="main-wrapper py-4">
+    <div class="container">
+        <section class="schedule-pickup-section">
+            <div class="card schedule-form shadow-sm border-0">
+                <svg class="svg-one" xmlns="http://www.w3.org/2000/svg" width="61.32" height="50.152">
+                    <path data-name="Path 50"
+                        d="M61.32 0S30.31 5.69 29.38 28.24C28.43 50.78 0 50.15 0 50.15V10A10 10 0 0110 0z"
+                        fill="#5e5ce6" />
+                </svg>
+                <div class="card-body ">
+                    <form class="custom-validation" method="POST" action="">
+                        {% csrf_token %}
+                        <h2 class="card-title text-center text-dark mb-4">
+                            Enter New Password
+                        </h2>
+                        <div class="row justify-content-center">
+                            <div class="col-md-6 my-3">
+                                <div class="custom-input-icon">
+                                    <input maxlength=200 minlength=8 type="Password" name="password1" required class="form-control password-input" id="password" placeholder="Enter Password">
+                                    <a href="javascript:void(0)" class="text-muted showpass" data-id="password"><i class="fa fa-eye" aria-hidden="true"></i></a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h2 class="card-title text-center text-dark mb-4">
+                            Re-Enter New Password
+                        </h2>
+                        <div class="row justify-content-center">
+                            <div class="col-md-6 my-3">
+                                <div class="custom-input-icon">
+                                    <input maxlength=200 minlength=8 type="Password" required name="password2" class="form-control password-input" id="password-new" data-parsley-equalto="#password" placeholder="Re-Enter Password">
+                                    <a href="javascript:void(0)" class="text-muted showpass" data-id="password-new"><i class="fa fa-eye" aria-hidden="true"></i></a>
+                                </div>
+                                <br>
+                                <div class="text-end">
+                                    <button id="submit-password" type="submit" class="btn btn-primary">Next</button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+                <svg class="svg-two" xmlns="http://www.w3.org/2000/svg" width="48.224" height="58.905">
+                    <path data-name="Path 51"
+                        d="M48.224.515v48.39a10 10 0 01-10 10h-26.87s-11.96-1.4-11.33-16.2 18.26-8.5 23.61-27.71S48.224.515 48.224.515z"
+                        fill="#0a84ff" />
+                </svg>
+            </div>
+        </section>
+    </div>
+</div>
+<!-- Main-wrapper end here -->
+{% endblock content %} {% block extra_scripts %}
+<script src="{% static 'libs/jquery/jquery.min.js' %}"></script>
+<script src="{% static 'customer/js/bootstrap.min.js' %}"></script>
+<script src="{% static 'customer/js/fontawesome.min.js' %}"></script>
+<script src="{% static 'customer/js/custom.js' %}"></script>
+<script src="{% static 'js/pages/form-validation.init.js' %}"></script>
+<script src="{% static 'libs/parsleyjs/parsley.min.js' %}"></script>
+
+<!-- Password same validation -->
+{% comment %}
+<!-- <script>
+    $(".password-input").keypress(function() {
+        var p1 = $('#password').val()
+        var p2 = $("#password-new").val()
+        if (p2.length === 0) {
+            // do nothing
+        } else if (p2.length > 0) {
+            if (p1 === p2) {
+                $('.password-input').addClass("text-danger")
+                $('#submit-password').prop('disabled', true)
+            } else {
+                $('.password-input').removeClass("text-danger")
+                $('#submit-password').prop('disabled', false)
+            }
+        }
+    })
+</script> {% endcomment %} {% endblock extra_scripts %} -->

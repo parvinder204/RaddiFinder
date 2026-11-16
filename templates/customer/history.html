@@ -1,0 +1,95 @@
+{% extends 'customer/base.html' %}
+{% load static %}
+{% block title %}History{% endblock title %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'customer/css/bootstrap.min.css' %}">
+<link rel="stylesheet" href="{% static 'customer/font-awesome-4.7.0/css/font-awesome.min.css' %}">
+<link rel="stylesheet" href="{% static 'customer/css/style.css' %}">
+{% endblock extra_head %}
+
+{% block content %}
+
+<!-- Floating button bottom-right side start here-->
+<a href="{% url 'customer:select-items' %}" class="btn btn-primary-custom floating-btn shadow">
+	<i class="fa fa-calendar-o" aria-hidden="true"></i>
+</a>
+<!-- Floating button bottom-right side end here-->
+
+<!--Main-wrapper Start from here -->
+<div class="main-wrapper py-4">
+	<div class="container">
+		<section class="history-section">
+			<div class="ux-page-header">
+				<div>
+					<h2 class="ux-page-header__title">Request History</h2>
+					<p class="ux-page-header__meta">{{ pickup_list|length }} request{{ pickup_list|length|pluralize }} so far</p>
+				</div>
+				<a href="{% url 'customer:select-items' %}" class="btn btn-sm btn-primary-custom"><i class="fa fa-plus me-1" aria-hidden="true"></i> New Request</a>
+			</div>
+			{% if not pickup_list %}
+			<div class="ux-empty">
+				<div class="ux-empty__icon"><i class="fa fa-calendar-o" aria-hidden="true"></i></div>
+				<h3 class="ux-empty__title">No requests yet</h3>
+				<p class="ux-empty__text">Schedule your first scrap pickup and it will show up here.</p>
+				<a href="{% url 'customer:select-items' %}" class="btn btn-primary-custom">Schedule a Pickup</a>
+			</div>
+			{% else %}
+			<table id="historyTable" class="history-table" style="width:100%">
+		        <thead>
+		            <tr>
+		                <th>Creation Date</th>
+						<th>Request ID</th>
+		                <th>Pickup Date</th>
+						<th>Status</th>
+		                {% comment %} <th>Total Amount</th> {% endcomment %}
+		                <th>Action</th>
+		            </tr>
+		        </thead>
+		        <tbody>
+					{% if pickup_list %}
+						{% for i in pickup_list %}
+						<tr>
+							<td data-label="Creation Date">{{i.created|date:"d M,Y"}}</td>
+							<td data-label="Request ID">
+								<button type="button" class="ux-copy" data-copy="{{i.pickup_id}}" data-copy-message="Request ID copied" title="Copy request ID {{i.pickup_id}}">
+									<span class="ux-short-id">{{i.pickup_id|slice:":8"}}</span>
+									<i class="fa fa-clone" aria-hidden="true"></i>
+								</button>
+							</td>
+							<td data-label="Pickup Date">{{i.pickup_date|date:"d M,Y"}}</td>
+							<td data-label="Status"><span class="ux-status" data-status="{{i.status}}">{{i.status}}</span></td>
+							{% comment %} <td>{{i.total_amount|floatformat:9|default:i.estimated_amount|floatformat:9}}</td> {% endcomment %}
+							<td data-label="Action">
+								<a href="{% url 'customer:view-order' i.pickup_id %}" class="btn btn-sm btn-primary-custom" title="View Details" aria-label="View details of request {{i.pickup_id|slice:":8"}}">
+									<i class="fa fa-eye" aria-hidden="true"></i>
+								</a>
+								
+							</td>
+						</tr>
+						{% endfor %}
+					{% endif %}
+		        </tbody>
+		    </table>
+			{% endif %}
+		</section>
+	</div>
+</div>
+<!-- Main-wrapper end here -->
+
+
+
+{% endblock content %}
+
+
+{% block extra_scripts %}
+
+<script src="{% static 'customer/js/bootstrap.min.js' %}"></script>
+<script src="{% static 'customer/js/fontawesome.min.js' %}"></script>
+<script src="{% static 'libs/jquery/jquery.min.js' %}"></script>
+
+<script src="{% static 'customer/js/custom.js' %}"></script>
+
+
+{% endblock extra_scripts %}
+

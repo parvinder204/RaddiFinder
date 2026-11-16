@@ -1,0 +1,432 @@
+{% extends 'customer/base.html' %}
+{% load static %}
+
+{% block title %}Confirm Request{% endblock title %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'customer/css/bootstrap.min.css' %}">
+<link rel="stylesheet" href="{% static 'customer/css/style.css' %}">
+<link rel="stylesheet" href="{% static 'customer/font-awesome-4.7.0/css/font-awesome.min.css' %}">
+{% endblock extra_head %}
+
+{% block content %}
+
+
+<!--Main-wrapper Start from here -->
+<div class="main-wrapper py-4">
+	<div class="container">
+		<section class="schedule-pickup-section">
+			<div class="card schedule-form shadow-sm border-0">
+				<svg class="svg-one" xmlns="http://www.w3.org/2000/svg" width="61.32" height="50.152">
+					<path data-name="Path 50"
+						d="M61.32 0S30.31 5.69 29.38 28.24C28.43 50.78 0 50.15 0 50.15V10A10 10 0 0110 0z"
+						fill="#5e5ce6" />
+				</svg>
+				<div class="card-body text-center">
+					<h2 class="card-title text-dark">Confirm Your Request</h2>
+					<p class="card-text text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do
+						eiusmod
+						tempor <br> incididunt ut labore et dolore magna aliqua.</p>
+					<div class="row">
+						<div class="col-12">
+							<div class="stepwizard">
+								<div class="stepwizard-row setup-panel">
+									<div class="stepwizard-step">
+										<a href="#step-1" id="step-btn-1" type="button" class="btn btn-primary-custom  btn-circle">1</a>
+										<p class="text-dark fw-normal">Step 1</p>
+									</div>
+									<div class="stepwizard-step">
+										<a href="#step-2" id="step-btn-2" type="button" class="btn btn-default btn-circle"
+											disabled="disabled">2</a>
+										<p class="text-dark fw-normal">Step 2</p>
+									</div>
+									<div class="stepwizard-step">
+										<a href="#step-3" id="step-btn-3" type="button" class="btn btn-default btn-circle"
+											disabled="disabled">3</a>
+										<p class="text-dark fw-normal">Step 3</p>
+									</div>
+								</div>
+							</div>
+							<form role="form" class="custom-validation" id="confirm-form" method="post" action="{% url 'customer:confirm-request' %}" enctype="multipart/form-data">
+								{% csrf_token %}
+								<div class="row setup-content" id="step-1">
+							        <div class="col-xs-12">
+							            <div class="col-md-12">
+											<h3 class="text-dark mb-3">Items Details</h3>
+							                <div class="row justify-content-center">
+							                	<div class="col-md-10 mb-3">
+							                		<div class="row">
+							                			<div style="overflow-x: auto;">
+							                				<table class="itemsdetail-table">
+								                				<thead>
+								                					<tr>
+								                						<th>Name</th>
+									                					<th>Price</th>
+									                					<th>Quantity</th>
+									                					<th>Amount</th>
+								                					</tr>
+								                				</thead>
+								                				<tbody id="item-table">
+								                					<tr id="empty-row">
+								                						<td colspan="5">Select Items first</td>
+								                					</tr>					                					
+								                				</tbody>
+								                			</table>
+							                			</div>
+														<!-- <div class="text-end mt-2">
+															<button class="btn btn-primary-custom btn-sm"
+																data-bs-toggle="modal" data-bs-target="#addItem">Edit Selection</button>
+														</div> -->
+														<div class="text-end mt-2">
+															<label for="image-select" class="btn btn-primary-custom btn-sm">Add Image</label><input type="file" id="image-select" name="image_data" style="display:none;">
+																<button class="btn btn-primary-custom btn-sm" data-bs-toggle="modal" data-bs-target="#addItem">Edit Selections</button>
+														</div>
+							                		</div>
+													<button class="btn btn-primary-custom  nextBtn mt-3 pull-right" 
+														type="button">Next</button>
+							                	</div>
+							                </div>
+							            </div>
+							        </div>
+							    </div>
+								<div class="row setup-content" id="step-2">
+									<div class="col-xs-12">
+										<div class="col-md-12">
+											<h3 class="text-dark my-3"> Enter Location</h3>
+											<div class="row justify-content-center">
+												<div class="col-md-6 mb-3">
+													<div class="row">
+														<div class="col-12 ">
+															<div class="form-group text-start mb-3">
+																<h4 class="text-dark mb-0 text-start">Address <sup class="text-danger">*</sup></h4>
+																<textarea rows="4" required class="form-control prompt-target" id="address-text" name="address"
+																	placeholder="Enter Address">{{user.address|default:''}}</textarea>
+																<p id="address-prompt" class="text-danger" style="display:none;font-size: 12px;">Enter Address</p>
+															</div>
+															<div class="form-group mb-3">
+																<h4 class="text-dark mb-0 text-start">State <sup class="text-danger">*</sup></h4>
+																<select class="form-select prompt-target" required id="select-state" name="state" onchange="fetch_cities(this.value)">
+																	<option value="">Select State</option>
+																	{% for s in state_list %}
+																	<option {% if s.id == user.state.id %}selected{% endif %} value="{{s.id}}">{{s.name}}</option>
+																	{% endfor %}
+																</select>
+																<p id="state-prompt" class="text-danger pull-left" style="display:none;font-size: 12px;">Select State</p>
+															</div>
+															<div class="form-group mb-3">
+																<h4 class="text-dark mb-0 text-start">City <sup class="text-danger">*</sup></h4>
+																<select class="form-select prompt-target"  required name="city" id="select-city">
+																	<option value="">Select City</option>
+																	{% for c in city_list %}
+																	<option {% if c.id == user.city.id %}selected{% endif %} value="{{c.id}}">{{c.name}}</option>
+																	{% endfor %}
+																</select>
+																<p id="city-prompt" class="text-danger pull-left" style="display:none;font-size: 12px;">Select City</p>
+															</div>
+															<div class="form-group mb-4">
+																<h4 class="text-dark mb-0 text-start">Pin Code <sup class="text-danger">*</sup></h4>
+																<input maxlength="6" minlength="6" type="Text" value="{{user.pin_code}}" required="required"
+																	class="form-control number-only prompt-target" id="pin-code" name="pin-code"
+																	placeholder="Enter State Zipcode">
+																<p id="pincode-prompt" class="text-danger pull-left" style="display:none;font-size: 12px;">Enter 6 digit Pincode</p>
+															</div>
+														</div>
+													</div>
+													<a class="btn btn-primary-custom  nextBtn mt-3 pull-right"
+														type="button">Next</a>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="row setup-content" id="step-3">
+									<div class="col-xs-12">
+										<div class="col-md-12">
+											<h3 class="text-dark my-3"> Pickup Date & Time Slot</h3>
+											<div class="row justify-content-center">
+												<div class="col-md-6 mb-3">
+													<div class="row">
+														<div class="col-12 mb-3">
+															<div class="form-group mb-3">
+																<input type="date" class="form-control prompt-target" required id="date-select" name="date">
+																<p id="date-prompt" class="text-danger pull-left" style="display:none;font-size: 12px;">Select a valid date. Date must be tomorrow or later.</p>
+															</div>
+															<div class="form-group mb-3">
+																<select id="reschedule-time" required class="form-control prompt-target" name="time-slot">
+																	<option value="">Select</option>
+																	<option value="9-10">9 am-10 am</option>
+																	<option value="10-11">10 am-11 am</option>
+																	<option value="11-12">11 am-12 pm</option>
+																	<option value="12-1">12 pm-1 pm</option>
+																	<option value="1-2">1 pm-2 pm</option>
+																	<option value="2-3">2 pm-3 pm</option>
+																	<option value="3-4">3 pm-4 pm</option>
+																	<option value="4-5">4 pm-5 pm</option>
+																	<option value="5-6">5 pm-6 pm</option>
+																</select>
+																<p id="time-prompt" class="text-danger pull-left" style="display:none;font-size: 12px;">Select a time slot</p>
+															</div>
+															<div class="form-group mb-3">
+																<textarea class="form-control" rows="3" id="notes" name="notes"
+																	placeholder="Additional Notes"></textarea>
+															</div>
+														</div>
+													</div>
+													<button id="confirm-button" class="btn btn-primary-custom mt-3 pull-right defunct-anchor" data-confirm="Your pickup request will be sent to our team and you will be notified once it is approved." data-confirm-title="Place pickup request?" data-confirm-ok="Place Request"
+														type="button">Confirm Request</button>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<input type="hidden" name="data-list" id="data-list">
+								<input type="hidden" name="image_data" id="image-data">
+							</form>
+						</div>
+					</div>
+				</div>
+				<svg class="svg-two" xmlns="http://www.w3.org/2000/svg" width="48.224" height="58.905">
+					<path data-name="Path 51"
+						d="M48.224.515v48.39a10 10 0 01-10 10h-26.87s-11.96-1.4-11.33-16.2 18.26-8.5 23.61-27.71S48.224.515 48.224.515z"
+						fill="#0a84ff" />
+				</svg>
+			</div>
+		</section>
+	</div>
+</div>
+<!-- Main-wrapper end here -->
+
+
+<!-- Add Items Modal start here -->
+<div class="modal fade" id="addItem" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title text-dark" id="exampleModalLabel">Add Item</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body modal-custom-height">
+				<div class="row h-20">
+					{% for i in item_list %}
+					<div class="col-lg-6 mb-3">
+						<div class="card shadow-sm same-height border-0 item-bg">
+							<label for="check-{{i.id}}">
+								<div class="card-body">
+									<div class="form-check float-checkbox">
+										<input class="form-check-input item-check" type="checkbox" value="{{i.id}}"
+											data-id="{{ i.id }}" id="check-{{i.id}}" onclick="ItemClick(this.value)">
+									</div>
+									<div class="scrap-img text-center mb-3">
+										<img src="{{i.image.url}}" class="img-fluid">
+									</div>
+									<div class="scrap-content text-center">
+										<h3 id="item-name-{{i.id}}">{{i.name}}</h3>
+										<p>Rs. {{i.price}}/<span id="item-unit-{{i.id}}">{{i.unit}}</span></p>
+										<input type="hidden" id="item-price-{{i.id}}" value="{{i.price}}">
+									</div>
+								</div>
+							</label>
+						</div>
+					</div>
+					{% endfor %}
+				</div>
+			</div>
+			<div class="modal-footer border-0">
+				<!-- <button type="button" class="btn btn-sm btn-secondary-custom" data-bs-dismiss="modal">Close</button>
+				<button type="button" class="btn btn-sm btn-primary-custom">Add Items</button> -->
+			</div>
+		</div>
+	</div>
+</div>
+<!-- Add Items Modal end here -->
+
+<div class="alert alert-danger alert-style" id="item-alert" role="alert" style="display: none;">
+	Select an item to sell first.
+</div>
+
+
+{% endblock content %}
+
+
+{% block extra_scripts %}
+<script src="{% static 'libs/jquery/jquery.min.js' %}"></script>
+<script src="{% static 'customer/js/bootstrap.min.js' %}"></script>
+<script src="{% static 'customer/js/fontawesome.min.js' %}"></script>
+<script src="{% static 'customer/js/custom.js' %}"></script>
+<script src="{% static 'customer/js/select-items.js' %}"></script>
+
+<script>
+	$(document).ready(function () {
+		let color_list = ["lime-green", "maya-blue", "gold", "red-orange"]
+		let card_list = $(".item-bg")
+
+		for (let i = 0; i < card_list.length; i++) {
+			var random_class = `bg-${color_list[Math.floor(Math.random() * color_list.length)]}`
+			card_list.eq(i).addClass(random_class)
+		}
+
+		window.history.pushState(null, null, window.location.href);
+		window.onpopstate = function () {
+			window.history.go(1);
+		};
+
+	})
+</script>
+
+<script>
+	$(document).ready(function () {
+		var item_list = JSON.parse(window.localStorage.getItem('item_list'));
+
+		// Code to populate checkboxes and rows
+		item_list.forEach(e => {
+			$(`#check-${e.id}`).prop('checked', true)
+			// Add in table
+			$('#item-table').append(makeRow(e.id, item_list))
+		});
+
+		// hide empty-row
+		$('#empty-row').hide()
+	})
+</script>
+
+<script>
+	function fetch_cities(val) {
+		if (val) {
+			$.ajax({
+				type: "post",
+				url: "{% url 'utilities:fetch-cities' %}",
+				data: {
+					'state_id': val,
+					'csrfmiddlewaretoken': "{{csrf_token}}"
+				},
+				dataType: "json",
+				success: function (response) {
+					var city = $('#select-city')
+					city.empty()
+					city.append('<option value="">Select City</option>')
+					var options = ""
+					response.forEach(e => {
+						options += `<option value="${e.id}">${e.name}</option>`
+					});
+					city.append(options)
+				}
+			});
+		}
+	}
+</script>
+
+<!-- Script to hide prompts after changing something -->
+<script>
+	$(document).ready(function(){
+		$(".prompt-target").change(function(){
+			$(this).next().hide()
+		})
+	})
+</script>
+
+<!-- check for confirm button -->
+<script>
+	function check_button() {
+		// Check for item count
+		var item_bool = false
+		try {
+			item_bool = JSON.parse(window.localStorage.getItem('item_list')).length > 0
+		} catch (error) {
+			item_bool = false
+		}
+		console.log("item_bool",item_bool);
+
+		// check for locations
+		var address_bool = $('#address-text').val().length > 0
+		var state_bool = $('#select-state').val().length > 0
+		var city_bool = $('#select-city').val().length > 0
+		var pin_bool = $('#pin-code').val().length > 0 && $("#pin-code").val().length === 6
+
+		console.log("address_bool",address_bool);
+		console.log("state_bool",state_bool);
+		console.log("city_bool",city_bool);
+		console.log("pin_bool",pin_bool);
+
+		// check for date
+		var val = $("#date-select").val()
+		var date = new Date(val)
+		var today = new Date()
+		var date_bool = $('#date-select').val().length > 0 && date > today
+		console.log("date_bool",date_bool);
+
+		// check for time
+		var time_bool = $('#reschedule-time').val().length > 0
+		console.log("time_bool",time_bool);
+		if (!item_bool) {
+			$("#item-alert").show()
+			$("#item-alert").delay(3000).fadeOut()
+			$("#step-btn-1").trigger('click')
+			console.log("!item_bool");
+			return false
+		}else if (!address_bool || !state_bool || !city_bool || !pin_bool) {
+			if(!address_bool){
+				$("#address-prompt").show()
+				console.log("!address_bool");
+			}
+			if(!state_bool){
+				$("#state-prompt").show()
+				console.log("!state_bool");
+			}
+			if(!city_bool){
+				$("#city-prompt").show()
+				console.log("!city_bool");
+			}
+			if(!pin_bool){
+				$("#pincode-prompt").show()
+				console.log("!pin_bool");
+			}
+			$("#step-btn-2").trigger('click')
+			console.log('$("#step-btn-2").trigger("click")');
+			return false
+		}else if(!date_bool || !time_bool){
+			if(!date_bool){
+				console.log("!date_bool");
+				$("#date-prompt").show()
+			}
+			if(!time_bool){
+				$("#time-prompt").show()
+				console.log("!time_bool");
+			}
+			$("#step-btn-3").trigger('click')
+			console.log(`$("#step-btn-3").trigger('click')`);
+			return false
+		}
+		return true
+	}
+</script>
+
+<!-- Script to edit/add image -->
+<script>
+	$("#image-select").change(function(){
+		var reader = new FileReader()
+		var file = $(this)[0].files[0]
+		console.log("file",file);
+		reader.addEventListener('load',function(){
+			var image_data = reader.result
+			$("#image-data").val(image_data)
+		},false)
+		reader.readAsDataURL(file)
+	})
+</script>
+
+<!-- script to post data -->
+<script>
+	$("#confirm-button").click(function (e) {
+		e.preventDefault();
+		var item_list = window.localStorage.getItem('item_list')
+		$('#data-list').val(item_list)
+		var confirm_bool = check_button()
+		if(confirm_bool){
+			window.localStorage.removeItem('item_list')
+			var form = $('#confirm-form')
+			form.submit()
+		}
+	})
+</script>
+
+{% endblock extra_scripts %}

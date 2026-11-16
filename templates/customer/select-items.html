@@ -1,0 +1,714 @@
+{% extends 'customer/base.html' %} {% load static %} {% block title %}Select items to sell{% endblock title %} {% block extra_head %}
+<link rel="stylesheet" href="{% static 'customer/css/bootstrap.min.css' %}">
+<link rel="stylesheet" href="{% static 'customer/css/style.css' %}">
+<link rel="stylesheet" href="{% static 'customer/font-awesome-4.7.0/css/font-awesome.min.css' %}"> {% endblock extra_head %} {% block content %}
+
+<!-- Breadcrumbs start here -->
+<div class="breadcrumbs">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0 pt-4 justify-content-end">
+                <li class="breadcrumb-item"><a href="{% url 'customer:dashboard' %}">Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Select Items</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+<!-- Breadcrumbs end here -->
+
+
+<!--Main-wrapper Start from here -->
+<div class="main-wrapper py-4">
+    <div class="container">
+        <section class="schedule-pickup-section">
+            <div class="card schedule-form shadow-sm border-0">
+                <svg class="svg-one" xmlns="http://www.w3.org/2000/svg" width="61.32" height="50.152"><path data-name="Path 50" d="M61.32 0S30.31 5.69 29.38 28.24C28.43 50.78 0 50.15 0 50.15V10A10 10 0 0110 0z" fill="#5e5ce6"/></svg>
+                <div class="card-body text-center">
+                    <div class="t_des" id="step-1_des" t_title="Select Items">
+                        <h2 class="card-title text-dark">Select Items</h2>
+                        <p class="card-text text-muted">Select items that you would like to sell.</p>
+                    </div>
+                    <div class="t_des" id="step-2_des" t_title="Review Items" style="display: none;">
+                        <h2 class="card-title text-dark">Review Items</h2>
+                        <p class="card-text text-muted">Please review the items, before continuing.</p>
+                    </div>
+                    <div class="t_des" id="step-3_des" t_title="Select Address" style="display: none;">
+                        <h2 class="card-title text-dark">Select Address</h2>
+                        <p class="card-text text-muted">Select the address from where do we need to pickup the scrap.</p>
+                    </div>
+                    <div class="t_des" id="step-4_des" t_title="Confirm Pickup" style="display: none;">
+                        <h2 class="card-title text-dark">Confirm Pickup</h2>
+                        <p class="card-text text-muted">When do you wish for us to pickup the scrap.</p>
+                    </div>
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="stepwizard">
+                                <div class="stepwizard-row setup-panel">
+                                    <div class="stepwizard-step">
+                                        <a href="#step-1" type="button"  id="step-btn-1" class="btn btn-primary-custom  btn-circle">1</a>
+                                        <p class="text-dark fw-normal">Select Items</p>
+                                    </div>
+                                    <div class="stepwizard-step">
+                                        <a href="#step-2" type="button"  id="step-btn-2" class="btn btn-default uatc disabled  btn-circle" disabled="disabled">2</a>
+                                        <p class="text-dark fw-normal">Review Items</p>
+                                    </div>
+                                    {% if request.user.is_authenticated %}
+                                    <div class="stepwizard-step">
+                                        <a href="#step-3" type="button" id="step-btn-3" class="btn btn-default uatc disabled  btn-circle" disabled="disabled">3</a>
+                                        <p class="text-dark fw-normal">Select Address</p>
+                                    </div>
+                                    <div class="stepwizard-step">
+                                        <a href="#step-4" type="button" id="step-btn-4" class="btn btn-default uatc2 disabled btn-circle" disabled="disabled">4</a>
+                                        <p class="text-dark fw-normal">Confirm Pickup</p>
+                                    </div>
+                                    {% else %}
+                                    <div class="stepwizard-step">
+                                        <a type="button" class="btn btn-default disabled  btn-circle">3</a>
+                                        <p class="text-dark fw-normal">Select Address</p>
+                                    </div>
+                                    <div class="stepwizard-step">
+                                        <a type="button" id="step-btn-4" class="btn btn-default disabled  btn-circle">4</a>
+                                        <p class="text-dark fw-normal">Confirm Pickup</p>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div role="form">
+                                <form role="form" class="custom-validation main_form" id="confirm-form" method="POST" action="{% url 'customer:select-items' %}" enctype="multipart/form-data">
+                                    {%csrf_token%}
+                                    <div class="row setup-content" id="step-1">
+                                        <div class="col-xs-12">
+                                            <div class="col-md-12">
+                                                <h3 class="text-dark mb-3"> Select Items</h3>
+                                                <p id="sel_itm_prompt" class="text-danger" style="display:none;font-size: 20px;">You must select at least one item to proceed further.</p>
+                                                <div class="row">
+                                                    {% for i in item_list %}
+                                                    <div class="col-lg-3 col-md-4  col-6 mb-3">
+                                                        <div class="card shadow-sm same-height border-0 item-bg">
+                                                            <label for="check-{{i.id}}">
+                                                                <div class="card-body">
+                                                                    <div class="form-check float-checkbox">
+                                                                        <input class="p_items form-check-input item-check" type="checkbox" value="{{i.id}}" data-id="{{ i.id }}" id="check-{{i.id}}" onclick="ItemClick(this.value)">
+                                                                    </div>
+                                                                    <div class="scrap-img text-center mb-3">
+                                                                        <img src="{{i.image.url}}" class="img-fluid">
+                                                                    </div>
+                                                                    <div class="scrap-content text-center">
+                                                                        <h3 id="item-name-{{i.id}}">{{i.name}}</h3>
+                                                                        <p>Rs. {{i.price}}/<span id="item-unit-{{i.id}}">{{i.unit}}</span></p>
+                                                                        <input type="hidden" id="item-price-{{i.id}}" value="{{i.price}}">
+                                                                    </div>
+                                                                </div>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                    {% endfor %}
+                                                </div>
+                                                <button class="btn btn-primary-custom nextBtn mt-3 pull-right" lock="true" type="button" id="push_it">Next</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row setup-content" id="step-2" back_data="1" style="display: none;">
+                                        <div class="col-xs-12">
+                                            <div class="col-md-12">
+                                                <h3 class="text-dark mb-3">Items Details</h3>
+                                                <div class="row justify-content-center">
+                                                    <div class="col-md-10 mb-3">
+                                                        <div class="row">
+                                                            <div style="overflow-x: auto;">
+                                                                <table class="itemsdetail-table">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th>Name</th>
+                                                                            <th>Price</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody id="item-table">
+                                                                        <tr id="empty-row">
+                                                                            <td colspan="5">Select Items first</td>
+                                                                        </tr>
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                        <button class="btn btn-primary-custom mt-3 pull-right" id="check_login">Next</button>
+                                                        <button type="button" class="back_button btn btn-primary-custom mx-2 mt-3 pull-right">Back</button>
+                                                        <a class="nextBtn" id="on_step_3" type="button"></a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row setup-content" id="step-3" back_data="2" style="display: none;">
+                                        <div class="col-xs-12">
+                                            <div class="col-md-12">
+                                                <h3 class="text-dark my-3"> Enter Location</h3>
+                                                <div class="row justify-content-center">
+                                                    <div class="col-md-6 mb-3">
+                                                        <div class="row">
+                                                            <div class="col-12 ">
+                                                                <div class="form-group text-start mb-3">
+                                                                    <h4 class="text-dark mb-0 text-start">Address <sup class="text-danger">*</sup></h4>
+                                                                    <textarea rows="4" class="form-control prompt-target" required="required" id="address-text" name="address" placeholder="Enter Address">{{user.address|default:''}}</textarea>
+                                                                    <p id="address-prompt" class="text-danger" style="display:none;font-size: 12px;">Enter Address</p>
+                                                                </div>
+                                                                <div class="form-group mb-3">
+                                                                    <h4 class="text-dark mb-0 text-start">State <sup class="text-danger">*</sup></h4>
+                                                                    <select class="form-select prompt-target" required="required" id="select-state" name="state" onchange="fetch_cities(this.value)">
+                                                                        <option value="">Select State</option>
+                                                                        {% for s in state_list %}
+                                                                        <option {% if s.id == user.state.id %}selected{% endif %} value="{{s.id}}">{{s.name}}</option>
+                                                                        {% endfor %}
+                                                                    </select>
+                                                                    <p id="state-prompt" class="text-danger pull-left"  style="display:none;font-size: 12px;">Select State</p>
+                                                                </div>
+                                                                <div class="form-group mb-3">
+                                                                    <h4 class="text-dark mb-0 text-start">City <sup class="text-danger">*</sup></h4>
+                                                                    <select class="form-select prompt-target" required="required" name="city" id="select-city">
+                                                                        <option value="">Select City</option>
+                                                                        {% for c in city_list %}
+                                                                            <option {% if user.city.id == c.id %}selected{% endif %}  avail={%if c.available%}true{%else%}false{%endif%} value="{{c.id}}">{{c.name}}</option>
+                                                                        {% endfor %}
+                                                                    </select>
+                                                                    <p id="city-prompt" class="text-danger pull-left" style="display:none;font-size: 12px;">Select City</p>
+                                                                    <p id="city-avl-prompt" class="m-2 text-danger pull-left" style="font-size: 12px;"></p>
+                                                                </div>
+                                                                <div class="form-group mb-4">
+                                                                    <h4 class="text-dark mb-0 text-start">Pin Code <sup class="text-danger">*</sup></h4>
+                                                                    <input maxlength="6" minlength="6" type="Text" value="{%if user.pin_code%}{{user.pin_code}}{%endif%}" required="required"  class="form-control number-only prompt-target" id="pin-code" name="pin-code" placeholder="Enter State Zipcode">
+                                                                    <p id="pincode-prompt" class="text-danger pull-left" style="display:none;font-size: 12px;">Enter 6 digit Pincode</p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <button class="btn btn-primary-custom nextBtn mt-3 pull-right " id="chk_add" type="button">Next</button>
+                                                        <button type="button" class="back_button btn btn-primary-custom mx-2 mt-3 pull-right">Back</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row setup-content" id="step-4" back_data="3" style="display: none;">
+                                        <div class="col-xs-12">
+                                            <div class="col-md-12">
+                                                <h3 class="text-dark my-3"> Pickup Date & Time Slot</h3>
+                                                <div class="row justify-content-center">
+                                                    <div class="col-md-6 mb-3">
+                                                        <div class="row">
+                                                            <div class="col-12 mb-3">
+                                                                <div class="form-group mb-3">
+                                                                    <input type="date" class="form-control prompt-target" required="required" id="date-select" name="date">
+                                                                    <p id="date-prompt" class="text-danger pull-left" style="display:none;font-size: 12px;">Select a valid date. Date must be tomorrow or later.</p>
+                                                                </div>
+                                                                <div class="form-group mb-3">
+                                                                    <select id="reschedule-time" required class="form-control prompt-target" name="time-slot" disabled>
+                                                                        <option id="opt_0"value="">Select</option>
+                                                                        <option id="opt_9" value="9-10" class="opt_catch" disabled=true>9 am-10 am</option>
+                                                                        <option id="opt_10" value="10-11" class="opt_catch" disabled=true>10 am-11 am</option>
+                                                                        <option id="opt_11" value="11-12" class="opt_catch" disabled=true>11 am-12 pm</option>
+                                                                        <option id="opt_12" value="12-1" class="opt_catch" disabled=true>12 pm-1 pm</option>
+                                                                        <option id="opt_13" value="1-2" class="opt_catch" disabled=true>1 pm-2 pm</option>
+                                                                        <option id="opt_14" value="2-3" class="opt_catch" disabled=true>2 pm-3 pm</option>
+                                                                        <option id="opt_15" value="3-4" class="opt_catch" disabled=true>3 pm-4 pm</option>
+                                                                        <option id="opt_16" value="4-5" class="opt_catch" disabled=true>4 pm-5 pm</option>
+                                                                        <option id="opt_17" value="5-6" class="opt_catch" disabled=true>5 pm-6 pm</option> 
+                                                                    </select>
+                                                                    <p id="time-prompt" class="text-danger pull-left" style="display:none;font-size: 12px;">Select a time slot</p>
+                                                                    <p id="opt_catch_error" class="text-danger pull-left" style="display:none;font-size: 12px;">No slots available for today, please try for future dates.</p>
+                                                                </div>
+                                                                <div class="form-group mb-3">
+                                                                    <textarea class="form-control" rows="3" id="notes" name="notes" placeholder="Additional Notes"></textarea>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="text-end mt-2 scrap-content" id="add_image">
+                                                            <label for="image-select" class="btn btn-primary-custom btn-sm">Add Image (optional)</label>
+                                                        </div>
+                                                        <input type="file" id="image-select" name="image_data" style="display:none;"> 
+                                                        <button id="confirm-button" class="btn btn-primary-custom mt-3 pull-right defunct-anchor" type="button" data-confirm="Your pickup request will be sent to our team and you will be notified once it is approved." data-confirm-title="Place pickup request?" data-confirm-ok="Place Request">Confirm Request</button>
+                                                        <button type="button" class="back_button btn btn-primary-custom mx-2 mt-3 pull-right">Back</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <input type="hidden" name="data-list" id="data-list">
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <svg class="svg-two" xmlns="http://www.w3.org/2000/svg" width="48.224" height="58.905"><path data-name="Path 51" d="M48.224.515v48.39a10 10 0 01-10 10h-26.87s-11.96-1.4-11.33-16.2 18.26-8.5 23.61-27.71S48.224.515 48.224.515z" fill="#0a84ff"/></svg>
+            </div>
+        </section>
+    </div>
+</div>
+<!-- Main-wrapper end here -->
+
+
+<!-- login Modal start here -->
+<div class="modal fade" id="login_modal" tabindex="-1" aria-labelledby="exampleModalLabel">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="card-body text-center pb-0">
+
+                <!-- Step 1: Enter Phone -->
+                <div class="row justify-content-center" id="input1">
+                    <h2 class="card-title text-center text-dark mb-4">Login</h2>
+                    <div class="col-md-6 my-3">
+                        <div class="form-group text-start">
+                            <input maxlength=10 minlength=10 id="phone_otp" name="phone" type="text"
+                                value="{{request.session.phone}}" required="required"
+                                class="form-control number-only length-limit" width="100"
+                                placeholder="Enter Phone Number">
+                        </div>
+                        <small class="text-danger" id="phone_error"></small>
+                        <div class="text-end">
+                            <!-- Change Number button: hidden until OTP is sent -->
+                            <button type="button" id="change_number" class=" btn btn-primary-custom btn btn-secondary mt-3 me-2" style="display:none;"> Edit Number</button>
+                            <button type="button" name="otp_sent" value="otp_sent" id="clickme"
+                                class="btn btn-primary-custom mt-3 pull-right">Sent OTP</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Enter OTP -->
+                <div class="card-body" id="input2" style="display: none;">
+                    <h2 class="card-title text-center text-dark mb-4">Enter OTP</h2>
+                    <h4 id="valid_till" class="card-title text-center text-dark mb-4">
+                        An OTP has been sent to +91 <span>{{request.session.phone}}, valid till {{request.session.otp.valid_till}}.</span>
+                    </h4>
+                    <h4>Please verify the OTP sent to your WhatsApp number. <a href="https://wa.me/7508777004"
+                                    class="d-inline-block whatsapp_icon_label mx-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 39 39"
+                                        class="not-position">
+                                        <path fill="#00E676"
+                                            d="M10.7 32.8l.6.3c2.5 1.5 5.3 2.2 8.1 2.2 8.8 0 16-7.2 16-16 0-4.2-1.7-8.3-4.7-11.3s-7-4.7-11.3-4.7c-8.8 0-16 7.2-15.9 16.1 0 3 .9 5.9 2.4 8.4l.4.6-1.6 5.9 6-1.5z">
+                                        </path>
+                                        <path fill="#FFF"
+                                            d="M32.4 6.4C29 2.9 24.3 1 19.5 1 9.3 1 1.1 9.3 1.2 19.4c0 3.2.9 6.3 2.4 9.1L1 38l9.7-2.5c2.7 1.5 5.7 2.2 8.7 2.2 10.1 0 18.3-8.3 18.3-18.4 0-4.9-1.9-9.5-5.3-12.9zM19.5 34.6c-2.7 0-5.4-.7-7.7-2.1l-.6-.3-5.8 1.5L6.9 28l-.4-.6c-4.4-7.1-2.3-16.5 4.9-20.9s16.5-2.3 20.9 4.9 2.3 16.5-4.9 20.9c-2.3 1.5-5.1 2.3-7.9 2.3zm8.8-11.1l-1.1-.5s-1.6-.7-2.6-1.2c-.1 0-.2-.1-.3-.1-.3 0-.5.1-.7.2 0 0-.1.1-1.5 1.7-.1.2-.3.3-.5.3h-.1c-.1 0-.3-.1-.4-.2l-.5-.2c-1.1-.5-2.1-1.1-2.9-1.9-.2-.2-.5-.4-.7-.6-.7-.7-1.4-1.5-1.9-2.4l-.1-.2c-.1-.1-.1-.2-.2-.4 0-.2 0-.4.1-.5 0 0 .4-.5.7-.8.2-.2.3-.5.5-.7.2-.3.3-.7.2-1-.1-.5-1.3-3.2-1.6-3.8-.2-.3-.4-.4-.7-.5h-1.1c-.2 0-.4.1-.6.1l-.1.1c-.2.1-.4.3-.6.4-.2.2-.3.4-.5.6-.7.9-1.1 2-1.1 3.1 0 .8.2 1.6.5 2.3l.1.3c.9 1.9 2.1 3.6 3.7 5.1l.4.4c.3.3.6.5.8.8 2.1 1.8 4.5 3.1 7.2 3.8.3.1.7.1 1 .2h1c.5 0 1.1-.2 1.5-.4.3-.2.5-.2.7-.4l.2-.2c.2-.2.4-.3.6-.5s.4-.4.5-.6c.2-.4.3-.9.4-1.4v-.7s-.1-.1-.3-.2z">
+                                        </path>
+                                    </svg>
+                                </a></h4>
+                    <div class="row justify-content-center">
+                        <div class="col-md-6 my-3">
+                            <div class="form-group text-start" id="reg_show" style="display: none;">
+                                <input type="text" minlength="2" id="ifname" name="ifname" class="form-control mb-2" placeholder="Enter first name" required>
+                                <small class="text-danger" id="fname-indicator"></small>
+                                <input type="text" minlength="2" id="ilname" name="ilname" class="form-control mb-2" placeholder="Enter last name" required>
+                                <small class="text-danger" id="lname-indicator"></small>
+                            </div>
+                            <div class="form-group text-start">
+                                <input maxlength=5 minlength=5 type="text" id="check-otp" name="otp_next"
+                                    class="form-control number-only length-limit" data-length=5 placeholder="Enter OTP">
+                            </div>
+                            <small class="text-danger" id="otp_error"></small>
+                            <div id="notification"></div>
+                            <div class="text-end">
+                                <button class="btn btn-primary-custom mt-3 me-3" id="resend_otp">Resend OTP</button>
+                                <button type="button" id="btn-verify"
+                                    class="btn btn-primary-custom nextBtn mt-3 pull-right">Next</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <label> Facing Problems? Call us at +917508777004, +917508777005
+                    <a href="https://wa.me/7508777004" class="whatsapp_icon_label mx-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 39 39"><path fill="#00E676" d="M10.7 32.8l.6.3c2.5 1.5 5.3 2.2 8.1 2.2 8.8 0 16-7.2 16-16 0-4.2-1.7-8.3-4.7-11.3s-7-4.7-11.3-4.7c-8.8 0-16 7.2-15.9 16.1 0 3 .9 5.9 2.4 8.4l.4.6-1.6 5.9 6-1.5z"></path><path fill="#FFF" d="M32.4 6.4C29 2.9 24.3 1 19.5 1 9.3 1 1.1 9.3 1.2 19.4c0 3.2.9 6.3 2.4 9.1L1 38l9.7-2.5c2.7 1.5 5.7 2.2 8.7 2.2 10.1 0 18.3-8.3 18.3-18.4 0-4.9-1.9-9.5-5.3-12.9zM19.5 34.6c-2.7 0-5.4-.7-7.7-2.1l-.6-.3-5.8 1.5L6.9 28l-.4-.6c-4.4-7.1-2.3-16.5 4.9-20.9s16.5-2.3 20.9 4.9 2.3 16.5-4.9 20.9c-2.3 1.5-5.1 2.3-7.9 2.3zm8.8-11.1l-1.1-.5s-1.6-.7-2.6-1.2c-.1 0-.2-.1-.3-.1-.3 0-.5.1-.7.2 0 0-.1.1-1.5 1.7-.1.2-.3.3-.5.3h-.1c-.1 0-.3-.1-.4-.2l-.5-.2c-1.1-.5-2.1-1.1-2.9-1.9-.2-.2-.5-.4-.7-.6-.7-.7-1.4-1.5-1.9-2.4l-.1-.2c-.1-.1-.1-.2-.2-.4 0-.2 0-.4.1-.5 0 0 .4-.5.7-.8.2-.2.3-.5.5-.7.2-.3.3-.7.2-1-.1-.5-1.3-3.2-1.6-3.8-.2-.3-.4-.4-.7-.5h-1.1c-.2 0-.4.1-.6.1l-.1.1c-.2.1-.4.3-.6.4-.2.2-.3.4-.5.6-.7.9-1.1 2-1.1 3.1 0 .8.2 1.6.5 2.3l.1.3c.9 1.9 2.1 3.6 3.7 5.1l.4.4c.3.3.6.5.8.8 2.1 1.8 4.5 3.1 7.2 3.8.3.1.7.1 1 .2h1c.5 0 1.1-.2 1.5-.4.3-.2.5-.2.7-.4l.2-.2c.2-.2.4-.3.6-.5s.4-.4.5-.6c.2-.4.3-.9.4-1.4v-.7s-.1-.1-.3-.2z"></path></svg>
+                    </a>
+                </label>
+            </div>
+            <div class="modal-footer border-0"></div>
+            <form method="POST" action="{% url 'customer:select-items' %}" id="iform">
+                {%csrf_token%}
+                <input type="hidden" id="link_list" name="product_id">
+                <input type="hidden" name="step_out">
+            </form>
+        </div>
+    </div>
+</div>
+<!-- login Modal end here -->
+
+{% endblock content %} {% block extra_scripts %}
+<script src="{% static 'libs/jquery/jquery.min.js' %}"></script>
+<script src="{% static 'customer/js/bootstrap.min.js' %}"></script>
+<script src="{% static 'customer/js/fontawesome.min.js' %}"></script>
+<script src="{% static 'customer/js/custom.js' %}"></script>
+<script src="{% static 'libs/jquery-validation/jquery.validate.min.js' %}"></script>
+<script src="{% static 'customer/js/select-items.js' %}"></script>
+
+<!-- Script for background colour -->
+<script>
+    $(document).ready(function() {
+        let color_list = ["lime-green", "maya-blue", "gold", "red-orange"]
+        let card_list = $(".item-bg")
+
+        for (let i = 0; i < card_list.length; i++) {
+            var random_class = `bg-${color_list[Math.floor(Math.random()*color_list.length)]}`
+            card_list.eq(i).addClass(random_class)
+        }
+
+        window.localStorage.removeItem('item_list')
+        $(".item-check").prop('checked', false)
+
+        {%if sel_items%}
+            $('.uatc').removeClass('disabled')
+            $('#push_it').attr('lock', 'false')
+            apple = [{%for io in sel_items%}"{{io}}",{%endfor%}]
+            for (io = 0; io < apple.length; io++) {
+                $("#check-" + String(apple[io])).prop('checked', true)
+                ItemClick(apple[io])
+            }
+            {% if step_out %}
+                $('#step-btn-3').click()
+            {%else%}
+                $('#step-btn-2').click()
+            {%endif%}
+        {%endif%}
+    })
+</script>
+
+<!-- OTP / Login modal scripts -->
+<script>
+    $(document).ready(function() {
+
+        $('#chk_add').click(function() {
+            if ($("#step-3").find(".has-error").length == 0) {
+                $('#step-btn-4').removeClass('disabled')
+                $('#step-btn-4').click()
+            } else {
+                $('#step-btn-4').addClass('disabled')
+            }
+        });
+
+        // ── Send OTP ──────────────────────────────────────────────
+        $('#clickme').click(function() {
+            if ($('#phone_otp').val().length == 10) {
+                $.ajax({
+                    method: "POST",
+                    url: "{% url 'customer:popup-login' %}",
+                    data: {
+                        'phone': $('#phone_otp').val(),
+                        'action': 'otp_sent',
+                        'csrfmiddlewaretoken': '{{csrf_token}}',
+                    },
+                    success: function(data) {
+                        if (data.status == "sent") {
+                            if (data.show) {
+                                $('#reg_show').show();
+                            }
+                            // Disable phone input, show Change Number button
+                            $('#phone_otp').attr('disabled', true);
+                            $('#clickme').hide();
+                            $('#change_number').show();
+
+                            $('#input2').show();
+                            $('#phone_error').html('');
+                            $('#otp_error').html('');
+                            $('#valid_till').html(`An OTP has been sent to +91${$('#phone_otp').val()}, valid till ${data.valid_till}.`);
+                        }
+                    }
+                });
+            } else {
+                $('#phone_error').html("Invalid phone number.");
+                $('#otp_error').html('');
+            }
+        });
+
+        // ── Change Number (inside modal) ──────────────────────────
+        // Saves selected products from localStorage before resetting,
+        // then restores them after so no product data is lost.
+        $('#change_number').click(function() {
+            // Snapshot currently selected items so they survive the reset
+            var savedItems = window.localStorage.getItem('item_list');
+
+            // Re-enable phone input
+            $('#phone_otp').attr('disabled', false).val('').focus();
+
+            // Hide OTP section, show phone section
+            $('#input2').hide();
+
+            // Swap buttons
+            $('#change_number').hide();
+            $('#clickme').show();
+
+            // Clear all errors and fields
+            $('#phone_error').html('');
+            $('#otp_error').html('');
+            $('#check-otp').val('');
+
+            // Reset registration fields
+            $('#reg_show').hide();
+            $('#ifname').val('');
+            $('#ilname').val('');
+            $('#fname-indicator').html('');
+            $('#lname-indicator').html('');
+
+            // Restore selected items (localStorage untouched, just being safe)
+            if (savedItems) {
+                window.localStorage.setItem('item_list', savedItems);
+            }
+        });
+
+        // ── Reset modal state fully when closed ───────────────────
+        $('#login_modal').on('hidden.bs.modal', function() {
+            $('#phone_otp').attr('disabled', false).val('');
+            $('#input2').hide();
+            $('#change_number').hide();
+            $('#clickme').show();
+            $('#phone_error').html('');
+            $('#otp_error').html('');
+            $('#check-otp').val('');
+            $('#reg_show').hide();
+            $('#ifname').val('');
+            $('#ilname').val('');
+            $('#fname-indicator').html('');
+            $('#lname-indicator').html('');
+        });
+
+        // ── Resend OTP ────────────────────────────────────────────
+        $('#resend_otp').click(function() {
+            $.ajax({
+                method: "POST",
+                url: "{% url 'customer:create-otp' %}",
+                data: {
+                    'phone': $('#phone_otp').val(),
+                    'csrfmiddlewaretoken': '{{csrf_token}}',
+                },
+                success: function(data) {
+                    if (data.status == "sent") {
+                        $('#otp_error').html('');
+                        $('#check-otp').attr('disabled', false);
+                        $('#btn-verify').attr('disabled', false);
+                        $('#valid_till').html(`An OTP has been sent to +91${$('#phone_otp').val()}, valid till ${data.valid_till}.`);
+                    }
+                }
+            });
+        });
+
+        // ── Back button ───────────────────────────────────────────
+        $('.back_button').click(function() {
+            a = $(".setup-content")
+            for (i = 0; i < a.length; i++) {
+                x = $(a[i])
+                if (!x.is(':hidden')) {
+                    i = x.attr('back_data')
+                    $('#step-btn-' + i).click()
+                }
+            }
+        });
+    });
+
+    // ── Verify OTP ────────────────────────────────────────────────
+    $(document).ready(function() {
+        $('#btn-verify').click(function() {
+            if ($("#reg_show").is(":visible")) {
+                var fname = $('#ifname').val().trim();
+                var lname = $('#ilname').val().trim();
+                if (!fname) {
+                    $('#fname-indicator').html("Enter Your first name").fadeIn().delay(2000).fadeOut();
+                    return;
+                }
+                if (!lname) {
+                    $('#lname-indicator').html("Enter Your last name").fadeIn().delay(2000).fadeOut();
+                    return;
+                }
+            }
+            $.ajax({
+                method: "POST",
+                url: "{% url 'customer:popup-login' %}",
+                data: {
+                    'phone': $('#phone_otp').val(),
+                    'fname': $('#ifname').val(),
+                    'lname': $('#ilname').val(),
+                    'action': 'otp_verify',
+                    'otp': $('#check-otp').val(),
+                    csrfmiddlewaretoken: '{{csrf_token}}',
+                },
+                success: function(data) {
+                    if (data.status == "login_done") {
+                        $('#login_modal').modal('hide');
+
+                        // Login rotates the CSRF token; refresh it in every form on the page
+                        if (data.csrf_token) {
+                            $('input[name=csrfmiddlewaretoken]').val(data.csrf_token);
+                        }
+
+                        // Collect checked products and submit
+                        a = $('input[type=checkbox]:checked.p_items')
+                        itemp = []
+                        for (i = 0; i < a.length; i++) { itemp.push(a[i].value) }
+                        $("#link_list").val(itemp)
+                        $("#iform").submit()
+                    } else {
+                        $('#otp_error').html(data.status);
+                    }
+                }
+            });
+        });
+    });
+</script>
+
+<!-- Script to edit/add image -->
+<script>
+    $("#image-select").change(function() {
+        var reader = new FileReader()
+        var file = $(this)[0].files[0]
+        reader.addEventListener('load', function() {
+            var image_data = reader.result
+            $("#image-data").val(image_data)
+        }, false)
+        reader.readAsDataURL(file)
+        $('#add_image').html('<p>Image added.</p>')
+    })
+</script>
+
+<!-- check for confirm button -->
+<script>
+    const arrow_time = (now) => `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
+    function abc(i=0) {
+        $('#opt_catch_error').hide()
+        $('#time-prompt').hide()
+        $('.opt_catch').attr('disabled', true)
+        $('#reschedule-time').attr('disabled', false)
+        $('#reschedule-time').val(undefined).trigger('change');
+
+        now   = new Date();
+        today = arrow_time(now);
+        enow  = new Date($("#date-select").val())
+        edate = arrow_time(enow);
+
+        if (new Date(today) > new Date(edate)) {
+            $('#time-prompt').show()
+            $('#reschedule-time').attr('disabled', true)
+            return false
+        }
+        if (today == edate) {
+            if (i == 0) { now.setHours(now.getHours() + 3); i = now.getHours() }
+        } else {
+            i = 9
+        }
+        if (i > 17) {
+            $('#opt_catch_error').show()
+            $('#reschedule-time').attr('disabled', true)
+            return false
+        }
+        while (i <= 17) {
+            $('#opt_' + String(i)).attr('disabled', false)
+            i += 1
+        }
+        return true
+    }
+    $("#date-select").change(function() { abc(); });
+
+    function check_button() {
+        var item_bool = false
+        try { item_bool = JSON.parse(window.localStorage.getItem('item_list')).length > 0 }
+        catch (error) { item_bool = false }
+
+        var address_bool = $('#address-text').val().length > 0
+        var state_bool   = $('#select-state').val().length > 0
+        var city_bool    = $('#select-city').val().length > 0
+        var pin_bool     = $('#pin-code').val().length > 0 && $("#pin-code").val().length === 6
+
+        var val       = $("#date-select").val()
+        var date      = new Date(arrow_time(new Date(val)))
+        var today     = new Date(arrow_time(new Date()))
+        var date_bool = $('#date-select').val().length > 0 && date >= today
+        var time_bool = $('#reschedule-time').val().length > 0
+
+        if (!item_bool) {
+            $("#item-alert").show()
+            $("#item-alert").delay(3000).fadeOut()
+            return false
+        } else if (!address_bool || !state_bool || !city_bool || !pin_bool) {
+            if (!address_bool) { $("#address-prompt").show() } else { $("#address-prompt").hide() }
+            if (!state_bool)   { $("#state-prompt").show()   } else { $("#state-prompt").hide()   }
+            if (!city_bool)    { $("#city-prompt").show()    } else { $("#city-prompt").hide()    }
+            if (!pin_bool)     { $("#pincode-prompt").show() } else { $("#pincode-prompt").hide() }
+            $("#step-btn-3").trigger('click')
+            return false
+        } else if (!date_bool || !time_bool) {
+            if (!date_bool)          { $("#date-prompt").show() } else { $("#date-prompt").hide() }
+            if (!time_bool && abc()) { $("#time-prompt").show() } else { $("#time-prompt").hide() }
+            $("#step-btn-4").trigger('click')
+            return false
+        }
+        return true
+    }
+</script>
+
+<script>
+    function fetch_cities(val) {
+        if (val) {
+            $.ajax({
+                type: "post",
+                url: "{% url 'utilities:fetch-cities' %}",
+                data: { 'state_id': val, 'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').first().val() },
+                dataType: "json",
+                success: function(response) {
+                    var city = $('#select-city')
+                    city.empty()
+                    city.append('<option value="">Select City</option>')
+                    var options = ""
+                    response.forEach(e => {
+                        if (e.available)
+                            { options += `<option value="${e.id}" avail=${e.available}>${e.name}</option>` }
+                        else
+                            { options += `<option value="${e.id}" class="text-danger" avail=${e.available}>${e.name}</option>` }
+                    });
+                    city.append(options)
+                    $('#city-avl-prompt').html('')
+                }
+            });
+        }
+    }
+    $(document).ready(function() {
+        $('#select-city').change(function() {
+            $('#city-avl-prompt').html('')
+            if (this.value) {
+                avail = $('#select-city option:selected').attr('avail')
+                if (avail == 'false') {
+                    $('#select-city option:first').prop('selected', true);
+                    $('#city-avl-prompt').html("Currently we are operated in <b>{{avl_cities}}</b>. We will start our service in your city very soon.")
+                }
+            }
+        });
+        {%if city_list%}
+            $("#select-city").trigger('change');
+            $('#city-avl-prompt').html('')
+        {%endif%}
+    });
+</script>
+
+<script>
+    is_login = {%if request.user.is_authenticated%}true{%else%}false{%endif%}
+    $('#check_login').click(function() {
+        if (is_login) {
+            $('#step-btn-3').click()
+        } else {
+            $('#login_modal').modal('show')
+        }
+    })
+</script>
+
+<!-- script to post data -->
+<script>
+    $("#confirm-button").click(function(e) {
+        e.preventDefault();
+        var item_list = window.localStorage.getItem('item_list')
+        $('#data-list').val(item_list)
+        var confirm_bool = check_button()
+        if (confirm_bool) {
+            window.localStorage.removeItem('item_list')
+            var form = $('#confirm-form')
+            form.submit()
+        }
+    })
+</script>
+
+{% endblock extra_scripts %}
