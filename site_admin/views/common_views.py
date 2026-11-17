@@ -13,10 +13,14 @@ from django.views.generic import TemplateView
 from accounts.restriction import RestrictUserMixin
 from common_models.models import Item, Pickup, PickupItems
 from notifications.models import Recipients
+from site_admin.pagination import list_context, paginate
 
 PENDING_STATUSES = ("Requested", "Approved")
 PERIOD_DAYS = {"today": 0, "week": 7, "month": 30}
 MONEY = DecimalField(max_digits=14, decimal_places=2)
+ESTIMATED_AMOUNT = F("quantity") * F("item__price")
+ACTUAL_AMOUNT = F("actual_quantity") * F("final_price")
+REALISED_AMOUNT = Coalesce(ACTUAL_AMOUNT, ESTIMATED_AMOUNT, output_field=MONEY)
 
 
 def _js_safe_json(data):
@@ -44,12 +48,10 @@ def _period_stats(period, today):
         received=Count("pickup_id", filter=Q(status="Picked-up")),
         cancelled=Count("pickup_id", filter=Q(status="Cancelled")),
     )
-    estimated = F("quantity") * F("item__price")
-    actual = F("actual_quantity") * F("final_price")
     amounts = PickupItems.objects.filter(pickup__in=orders).aggregate(
-        total=Sum(estimated, output_field=MONEY),
+        total=Sum(ESTIMATED_AMOUNT, output_field=MONEY),
         received=Sum(
-            Coalesce(actual, estimated, output_field=MONEY),
+            REALISED_AMOUNT,
             filter=Q(pickup__status="Picked-up"),
             output_field=MONEY,
         ),
@@ -59,6 +61,16 @@ def _period_stats(period, today):
         f"{period}_received_amount": amounts["received"] or Decimal(0),
         f"{period}_total_amount": amounts["total"] or Decimal(0),
     }
+
+
+def top_items_by_value(limit=5):
+    rows = (
+        PickupItems.objects.filter(pickup__status="Picked-up")
+        .values("item_id", "item__name")
+        .annotate(total=Sum(REALISED_AMOUNT, output_field=MONEY))
+        .order_by("-total", "item__name")[:limit]
+    )
+    return [{"name": row["item__name"], "total": row["total"]} for row in rows]
 
 
 class DashboardView(RestrictUserMixin, TemplateView):
@@ -78,27 +90,30 @@ class DashboardView(RestrictUserMixin, TemplateView):
         demand_items = Item.objects.annotate(instances=Count("pickupitems")).order_by("-instances")[:5]
         context["demand_items"] = [{"name": item.name, "count": item.instances} for item in demand_items]
 
-        top_items = (
-            Item.objects.filter(pickupitems__pickup__status="Picked-up")
-            .annotate(
-                grand_price=Sum(F("price") * F("pickupitems__quantity"), output_field=MONEY)
-            )
-            .order_by("-grand_price")[:5]
-        )
-        context["series"] = [float(item.grand_price) for item in top_items]
-        context["labels"] = _js_safe_json([item.name for item in top_items])
+        top_items = top_items_by_value()
+        context["series"] = [float(row["total"]) for row in top_items]
+        context["labels"] = _js_safe_json([row["name"] for row in top_items])
         return context
 
 
 class NotificationView(RestrictUserMixin, View):
     role_name = "Admin"
     login_url = reverse_lazy("site_admin:login")
-    limit = 100
 
     def get(self, request):
-        recipients = Recipients.objects.filter(recipient=request.user)
-        notifications = list(
-            recipients.select_related("notification").order_by("-notification__created")[: self.limit]
+        recipients = (
+            Recipients.objects.filter(recipient=request.user)
+            .select_related("notification")
+            .order_by("-notification__created", "pk")
         )
-        recipients.filter(read=False).update(read=True)
-        return render(request, "site_admin/notifications.html", {"notif_list": notifications})
+        result = paginate(
+            request,
+            recipients,
+            search_fields=("notification__subject", "notification__content"),
+        )
+        notifications = list(result.page.object_list)
+        unread = [row.pk for row in notifications if not row.read]
+        if unread:
+            Recipients.objects.filter(pk__in=unread).update(read=True)
+        context = {"notif_list": notifications, **list_context(result)}
+        return render(request, "site_admin/notifications.html", context)

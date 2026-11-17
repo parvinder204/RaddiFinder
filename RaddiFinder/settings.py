@@ -3,6 +3,7 @@ from pathlib import Path
 
 import environ
 import sentry_sdk
+from django.core.exceptions import ImproperlyConfigured
 from sentry_sdk.integrations.django import DjangoIntegration
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -12,6 +13,15 @@ environ.Env.read_env(BASE_DIR / ".env")
 
 SECRET_KEY = env("SECRET_KEY")
 DEBUG = env.bool("DEBUG", default=False)
+
+INSECURE_SECRET_KEYS = {"", "change-me", "changeme", "secret"}
+MIN_SECRET_KEY_LENGTH = 32
+if not DEBUG and (
+    SECRET_KEY.strip().lower() in INSECURE_SECRET_KEYS or len(SECRET_KEY) < MIN_SECRET_KEY_LENGTH
+):
+    raise ImproperlyConfigured(
+        f"SECRET_KEY must be a unique value of at least {MIN_SECRET_KEY_LENGTH} characters when DEBUG is off."
+    )
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["localhost", "127.0.0.1"])
 CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=[])
 FDOMAIN = env("FDOMAIN", default="").rstrip("/")
@@ -109,7 +119,12 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticated",
     ],
-    "DEFAULT_SCHEMA_CLASS": "rest_framework.schemas.openapi.AutoSchema",
+}
+
+SWAGGER_SETTINGS = {
+    "SECURITY_DEFINITIONS": {
+        "Bearer": {"type": "apiKey", "name": "Authorization", "in": "header"},
+    },
 }
 
 LANGUAGE_CODE = "en-us"
@@ -162,6 +177,7 @@ if env.bool("TRUST_PROXY_SSL_HEADER", default=False):
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 BACKGROUND_WORKERS = env.int("BACKGROUND_WORKERS", default=4)
+PICKUP_MIN_LEAD_DAYS = env.int("PICKUP_MIN_LEAD_DAYS", default=1)
 
 EMAIL_BACKEND = env(
     "EMAIL_BACKEND",

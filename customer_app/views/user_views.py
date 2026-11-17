@@ -15,10 +15,12 @@ from accounts.restriction import RestrictUserMixin
 from accounts.roles import ADMIN_ROLES
 from accounts.throttling import otp_send_limited, otp_verify_limited
 from accounts.utils import (
+    EMAIL_IN_USE_MESSAGE,
     ProfileValidationError,
     clean_email,
     clean_name,
     clean_pin_code,
+    ensure_email_available,
     safe_redirect_url,
 )
 from accounts.services import (
@@ -320,6 +322,7 @@ class CustomerDetailsPage(RestrictUserMixin, ListView):
             first_name = clean_name(request.POST.get("first_name"), "First name")
             last_name = clean_name(request.POST.get("last_name"), "Last name")
             email = clean_email(request.POST.get("email"))
+            ensure_email_available(email, request.user)
             pin_code = clean_pin_code(request.POST.get("pin-code"))
         except ProfileValidationError as exc:
             messages.error(request, str(exc))
@@ -341,7 +344,7 @@ class CustomerDetailsPage(RestrictUserMixin, ListView):
         try:
             user.save()
         except IntegrityError:
-            messages.error(request, f"Email '{user.email}' already in use")
+            messages.error(request, EMAIL_IN_USE_MESSAGE)
             return redirect("customer:details")
 
         return redirect(request.session.get("next", reverse("customer:select-items")))

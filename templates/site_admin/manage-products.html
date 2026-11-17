@@ -24,7 +24,10 @@
         </div>
         <div class="card">
             <div class="card-body">
-                <table id="manageproduct" class="table table-bordered dt-responsive  nowrap w-100">
+                <div class="dataTables_wrapper dt-bootstrap4 no-footer">
+{% include "site_admin/partials/list_toolbar.html" %}
+<div class="table-responsive">
+<table id="manageproduct" class="table table-bordered dataTable no-footer dt-responsive nowrap w-100">
                     <thead>
                         <tr>
                             <th class="align-middle">ID</th>
@@ -54,9 +57,14 @@
                                         class="bx bx-trash"></i></a>
                             </td>
                         </tr>
-                        {% endfor %}
+                        {% empty %}
+<tr><td colspan="6" class="text-center text-muted">No matching entries found</td></tr>
+{% endfor %}
                     </tbody>
                 </table>
+</div>
+{% include "site_admin/partials/list_pager.html" %}
+</div>
             </div>
         </div>
     </div>
@@ -192,14 +200,7 @@
    {% comment %} <script src="{% static 'js/halfmoon.js' %}"></script> {% endcomment %}
 
             $(document).ready(function () {
-                $("#manageproduct").DataTable(),
-                    $("#datatable-buttons")
-                        .DataTable({ lengthChange: !1, buttons: ["copy", "excel", "pdf", "colvis"] })
-                        .buttons()
-                        .container()
-                        .appendTo("#datatable-buttons_wrapper .col-md-6:eq(0)"),
-                    $(".dataTables_length select").addClass("form-select form-select-sm");
-            });
+                });
 
             $(document).ready(function () {
                 var readURL = function (input) {

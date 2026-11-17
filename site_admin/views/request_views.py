@@ -1,4 +1,5 @@
 import json
+import re
 from datetime import datetime
 from decimal import Decimal, InvalidOperation
 
@@ -14,15 +15,34 @@ from django.views.generic import DetailView, ListView
 
 from accounts.decorators import role_required
 from accounts.restriction import RestrictUserMixin
+from common_models.audit import pickup_item_snapshot, pickup_snapshot, record
 from common_models.models import Cancellation, City, Item, Pickup, PickupBoy, PickupItems, State
-from common_models.services import MAX_QUANTITY, PickupRequestError, update_pickup_address
+from common_models.services import (
+    MAX_QUANTITY,
+    PickupRequestError,
+    ensure_editable,
+    update_pickup_address,
+)
 from common_models.utils import to_uuid
 from notifications.utils import create_notification
+from site_admin.pagination import PaginatedSearchMixin, redirect_to_list
 
 BOY_REQUIRED_STATUSES = ("Approved", "Picked-up", "Rescheduled")
 RESCHEDULE_DATE_FORMAT = "%d %b, %Y"
 QUANTITY_LIMIT = Decimal("10000")
 PAYMENT_LIMIT = Decimal("1000000")
+MIN_STATUS_SEARCH_LENGTH = 3
+DATE_SEARCH_PATTERN = re.compile(r"^\d{1,2}-\d{1,2}-\d{4}$")
+STATUS_KEYWORDS = {
+    "requested": "Requested",
+    "raised": "Requested",
+    "approved": "Approved",
+    "cancelled": "Cancelled",
+    "canceled": "Cancelled",
+    "picked-up": "Picked-up",
+    "paid": "Picked-up",
+    "rescheduled": "Rescheduled",
+}
 
 
 class RequestUpdateError(Exception):
@@ -39,6 +59,24 @@ def _decimal(value, limit):
     return number
 
 
+def _status_clause(word):
+    word = word.lower()
+    if len(word) < MIN_STATUS_SEARCH_LENGTH:
+        return Q()
+    matched = {status for keyword, status in STATUS_KEYWORDS.items() if keyword.startswith(word)}
+    return Q(status__in=matched) if matched else Q()
+
+
+def _date_clause(word):
+    if not DATE_SEARCH_PATTERN.match(word):
+        return Q()
+    try:
+        day = datetime.strptime(word, "%d-%m-%Y").date()
+    except ValueError:
+        return Q()
+    return Q(created__date=day) | Q(pickup_date=day)
+
+
 def _get_pickup(pk):
     try:
         return Pickup.objects.get(pk=pk)
@@ -46,14 +84,24 @@ def _get_pickup(pk):
         raise Http404
 
 
-class ManageRequestsView(RestrictUserMixin, ListView):
+class ManageRequestsView(PaginatedSearchMixin, RestrictUserMixin, ListView):
     model = Pickup
     template_name = "site_admin/manage-requests.html"
     login_url = reverse_lazy("site_admin:login")
     role_name = "Admin"
+    search_fields = (
+        "pickup_id",
+        "customer__first_name",
+        "customer__last_name",
+        "customer__phone",
+        "pickup_boy__full_name",
+    )
 
     def get_queryset(self):
-        return Pickup.objects.select_related("customer", "pickup_boy")
+        return Pickup.objects.select_related("customer", "pickup_boy").order_by("-created", "pk")
+
+    def search_clause(self, word):
+        return _status_clause(word) | _date_clause(word)
 
 
 class RequestRespondView(RestrictUserMixin, DetailView):
@@ -243,21 +291,35 @@ def delete_pickup_item(request):
     row_id = to_uuid(request.POST.get("pickup_id"))
     if row_id is None:
         return JsonResponse({"status": False, "notes": "Invalid item."}, status=400)
-    deleted, _ = PickupItems.objects.filter(pk=row_id).delete()
-    if not deleted:
+    row = PickupItems.objects.select_related("pickup", "item").filter(pk=row_id).first()
+    if row is None:
         return JsonResponse({"status": False, "notes": "Item not found."}, status=404)
+    try:
+        ensure_editable(row.pickup, "delete")
+    except PickupRequestError as exc:
+        return JsonResponse({"status": False, "notes": str(exc)}, status=400)
+    with transaction.atomic():
+        record(request.user, "pickup_item_deleted", "PickupItems", row.pk, pickup_item_snapshot(row))
+        row.delete()
     return JsonResponse({"status": True, "notes": "Item successfully removed"})
 
 
 @require_POST
 @role_required("Admin", login_url="site_admin:login")
 def Order_delete(request):
-    try:
-        deleted, _ = Pickup.objects.filter(pickup_id=request.POST.get("item_delete_id")).delete()
-    except (ValidationError, ValueError):
-        deleted = 0
-    if deleted:
-        messages.success(request, "Request Successfully Deleted")
-    else:
+    pickup_id = to_uuid(request.POST.get("item_delete_id"))
+    pickup = (
+        Pickup.objects.select_related("customer", "city", "state", "pickup_boy")
+        .filter(pickup_id=pickup_id)
+        .first()
+        if pickup_id
+        else None
+    )
+    if pickup is None:
         messages.error(request, "Request not found")
-    return redirect("site_admin:manage-requests")
+        return redirect_to_list(request, "site_admin:manage-requests")
+    with transaction.atomic():
+        record(request.user, "pickup_deleted", "Pickup", pickup.pickup_id, pickup_snapshot(pickup))
+        pickup.delete()
+    messages.success(request, "Request Successfully Deleted")
+    return redirect_to_list(request, "site_admin:manage-requests")

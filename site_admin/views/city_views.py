@@ -5,6 +5,7 @@ from django.shortcuts import redirect, render
 from accounts.decorators import role_required
 from common_models.models import City, State
 from common_models.utils import to_uuid
+from site_admin.pagination import list_context, paginate, redirect_to_list
 
 NAME_MAX_LENGTH = 50
 
@@ -14,14 +15,20 @@ def avail_city_view(request, del_pk=None):
     if del_pk is not None:
         if City.objects.filter(pk=del_pk).update(available=False):
             messages.success(request, "City removed as service-able area.")
-    elif request.method == "POST":
+        return redirect_to_list(request, "site_admin:avail_city")
+
+    if request.method == "POST":
         city_id = to_uuid(request.POST.get("city_id"))
         if city_id is not None and City.objects.filter(pk=city_id).update(available=True):
             messages.success(request, "City added as service-able area.")
+        return redirect_to_list(request, "site_admin:avail_city")
 
+    cities = City.objects.filter(available=True).select_related("state").order_by("state__name", "name", "pk")
+    result = paginate(request, cities, search_fields=("name", "state__name"))
     context = {
-        "avail_city": City.objects.filter(available=True),
+        "avail_city": result.page.object_list,
         "states": State.objects.all(),
+        **list_context(result),
     }
     return render(request, "site_admin/add-city-available.html", context)
 

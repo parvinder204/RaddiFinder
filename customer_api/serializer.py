@@ -5,17 +5,31 @@ from rest_framework import serializers
 
 from accounts.models import Person
 from accounts.services import consume_verified_otp
+from accounts.utils import ProfileValidationError, ensure_email_available
 from common_models.models import City, Item, Pickup, State
 from notifications.models import Notifications, Recipients
 
 PHONE_PATTERN = r"^\d{10}$"
 
 
-class UpdateSettingSerializer(serializers.ModelSerializer):
+class EmailValidationMixin:
+    def validate_email(self, value):
+        email = (value or "").strip()
+        if not email:
+            return None
+        try:
+            ensure_email_available(email, self.instance)
+        except ProfileValidationError as exc:
+            raise serializers.ValidationError(str(exc))
+        return email
+
+
+class UpdateSettingSerializer(EmailValidationMixin, serializers.ModelSerializer):
     class Meta:
         model = Person
         fields = ("image", "first_name", "last_name", "email", "phone", "address", "state", "city", "pin_code")
         read_only_fields = ("phone",)
+        extra_kwargs = {"email": {"validators": []}}
 
 
 class DashboardItemsSerializer(serializers.ModelSerializer):
@@ -104,10 +118,11 @@ class SetPasswordSerializer(serializers.Serializer):
             raise serializers.ValidationError({"phone": str(exc)})
 
 
-class RegisterSerializer(serializers.ModelSerializer):
+class RegisterSerializer(EmailValidationMixin, serializers.ModelSerializer):
     class Meta:
         model = Person
         fields = ("first_name", "last_name", "email", "address", "state", "city", "pin_code")
+        extra_kwargs = {"email": {"validators": []}}
 
 
 class NotificationSerializer(serializers.ModelSerializer):

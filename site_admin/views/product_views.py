@@ -1,7 +1,6 @@
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models import ProtectedError
-from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, ListView
 
@@ -9,20 +8,25 @@ from accounts.restriction import RestrictUserMixin
 from common_models.models import Item
 from common_models.utils import to_uuid
 from site_admin.forms import ItemForm
+from site_admin.pagination import PaginatedSearchMixin, redirect_to_list
 
 
-class ManageProductsView(RestrictUserMixin, ListView):
+class ManageProductsView(PaginatedSearchMixin, RestrictUserMixin, ListView):
     model = Item
     template_name = "site_admin/manage-products.html"
     login_url = reverse_lazy("site_admin:login")
     role_name = "Admin"
+    search_fields = ("name", "unit", "description", "price")
+
+    def get_queryset(self):
+        return Item.objects.order_by("created", "pk")
 
     def post(self, request):
         if "update_submit" in request.POST:
             self._update(request)
         elif "delete_submit" in request.POST:
             self._delete(request)
-        return redirect("site_admin:manage-products")
+        return redirect_to_list(request, "site_admin:manage-products")
 
     def _update(self, request):
         item_id = to_uuid(request.POST.get("id"))

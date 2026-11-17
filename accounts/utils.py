@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from django.utils.http import url_has_allowed_host_and_scheme
@@ -5,6 +6,7 @@ from django.utils.http import url_has_allowed_host_and_scheme
 NAME_MAX_LENGTH = 50
 EMAIL_MAX_LENGTH = 254
 PIN_CODE_MAX_LENGTH = 6
+EMAIL_IN_USE_MESSAGE = "A user with that email already exists."
 
 
 class ProfileValidationError(ValueError):
@@ -29,6 +31,16 @@ def clean_email(value):
     except ValidationError:
         raise ProfileValidationError("Enter a valid email address.")
     return value
+
+
+def ensure_email_available(email, user=None):
+    if not email:
+        return
+    queryset = get_user_model().objects.filter(email__iexact=email)
+    if user is not None and user.pk is not None:
+        queryset = queryset.exclude(pk=user.pk)
+    if queryset.exists():
+        raise ProfileValidationError(EMAIL_IN_USE_MESSAGE)
 
 
 def clean_pin_code(value):

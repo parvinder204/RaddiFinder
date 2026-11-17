@@ -24,10 +24,13 @@
             <div class="card-body">
 
 
-                <table id="manageorder" class="dataTableSort table table-bordered dt-responsive  nowrap w-100">
+                <div class="dataTables_wrapper dt-bootstrap4 no-footer">
+{% include "site_admin/partials/list_toolbar.html" %}
+<div class="table-responsive">
+<table id="manageorder" class="table table-bordered dataTable no-footer dt-responsive nowrap w-100">
                     <thead>
                         <tr>
-                            <th id="desc_order_by" class="align-middle">Creation Date</th>
+                            <th class="align-middle">Creation Date</th>
                             <th class="align-middle">Order ID</th>
                             <th class="align-middle">Pickup Date</th>
                             <th class="align-middle">Customer Name</th>
@@ -68,9 +71,14 @@
                                 </a>
                             </td>
                         </tr>
-                        {% endfor %}
+                        {% empty %}
+<tr><td colspan="6" class="text-center text-muted">No matching entries found</td></tr>
+{% endfor %}
                     </tbody>
                 </table>
+</div>
+{% include "site_admin/partials/list_pager.html" %}
+</div>
 
             </div>
         </div>
@@ -86,7 +94,7 @@
 				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 			</div>
 			<div class="modal-body">
-				<form class="needs-validation" novalidate="" action="{% url 'site_admin:order_delete' %}" method="post">{% csrf_token %}
+				<form class="needs-validation" novalidate="" action="{% url 'site_admin:order_delete' %}{% if current_query %}?{{ current_query }}{% endif %}" method="post">{% csrf_token %}
 					<p class="text-muted warning-text">Are you sure to delete this <span class="fw-bold" id="uu_update"></span></p>
 					<div class="row">
 						{% comment %} <input type="hidden" id="requested_id" name="requested_id" value="{{pickup_list.pickup_id}}"> {% endcomment %}
@@ -104,22 +112,6 @@
 	</div>
 </div>
 
-<!-- Datatable init js -->
-<script>
-    $(document).ready(function () {
-        $("#manageorder").DataTable(),
-            $("#datatable-buttons")
-                .DataTable({ lengthChange: !1, buttons: ["copy", "excel", "pdf", "colvis"] })
-                .buttons()
-                .container()
-                .appendTo("#datatable-buttons_wrapper .col-md-6:eq(0)"),
-            $(".dataTables_length select").addClass("form-select form-select-sm");
-
-        //,order: [[1, 'desc']]
-        $('#desc_order_by').click()
-
-    });
-</script>
 <script>
 	$(document).ready(function () {
 	    $('.c_del').click(function () {

@@ -1,0 +1,36 @@
+<div class="row">
+    <div class="col-sm-12 col-md-5">
+        <div class="dataTables_info" role="status" aria-live="polite">
+            {% if total_count %}Showing {{ first_index }} to {{ last_index }} of {{ total_count }} entries{% else %}No matching entries found{% endif %}
+        </div>
+    </div>
+    <div class="col-sm-12 col-md-7">
+        <div class="dataTables_paginate paging_simple_numbers">
+            <ul class="pagination">
+                <li class="paginate_button page-item previous{% if not page_obj.has_previous %} disabled{% endif %}">
+                    {% if page_obj.has_previous %}
+                    <a class="page-link" href="?{% if list_query %}{{ list_query }}&{% endif %}page={{ page_obj.previous_page_number }}">Previous</a>
+                    {% else %}
+                    <span class="page-link">Previous</span>
+                    {% endif %}
+                </li>
+                {% for link in page_links %}
+                {% if link == ellipsis %}
+                <li class="paginate_button page-item disabled"><span class="page-link">{{ ellipsis }}</span></li>
+                {% elif link == page_obj.number %}
+                <li class="paginate_button page-item active"><span class="page-link" aria-current="page">{{ link }}</span></li>
+                {% else %}
+                <li class="paginate_button page-item"><a class="page-link" href="?{% if list_query %}{{ list_query }}&{% endif %}page={{ link }}">{{ link }}</a></li>
+                {% endif %}
+                {% endfor %}
+                <li class="paginate_button page-item next{% if not page_obj.has_next %} disabled{% endif %}">
+                    {% if page_obj.has_next %}
+                    <a class="page-link" href="?{% if list_query %}{{ list_query }}&{% endif %}page={{ page_obj.next_page_number }}">Next</a>
+                    {% else %}
+                    <span class="page-link">Next</span>
+                    {% endif %}
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>

@@ -18,13 +18,9 @@
         </div>
     </div>
 </div>
-<div class="row">
-    <div class="col-12">
-
-
-    </div>
+<div class="dataTables_wrapper dt-bootstrap4 no-footer mb-3">
+    {% include "site_admin/partials/list_toolbar.html" %}
 </div>
-{% comment %} {% for o in object_list %}{% endfor %} {% endcomment %}
 
 {% for i in notif_list %}
 <div class="card custom-notification-style mb-3 custom-unread">
@@ -50,5 +46,12 @@
         </div>
     </div>
 </div>
+{% empty %}
+<div class="card">
+    <div class="card-body text-center text-muted">No matching entries found</div>
+</div>
 {% endfor %}
+<div class="dataTables_wrapper dt-bootstrap4 no-footer">
+    {% include "site_admin/partials/list_pager.html" %}
+</div>
 {% endblock content %}

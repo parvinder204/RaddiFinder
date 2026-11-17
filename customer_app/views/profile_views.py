@@ -6,7 +6,14 @@ from django.views import View
 from django.views.generic import ListView
 
 from accounts.restriction import RestrictUserMixin
-from accounts.utils import ProfileValidationError, clean_email, clean_name, clean_pin_code
+from accounts.utils import (
+    EMAIL_IN_USE_MESSAGE,
+    ProfileValidationError,
+    clean_email,
+    clean_name,
+    clean_pin_code,
+    ensure_email_available,
+)
 from common_models.models import City, State
 from common_models.services import MAX_IMAGE_BYTES
 from common_models.utils import is_valid_image, to_uuid
@@ -41,6 +48,7 @@ class AccountSettingsView(RestrictUserMixin, ListView):
             first_name = clean_name(data.get("first_name"), "First name")
             last_name = clean_name(data.get("last_name"), "Last name")
             email = clean_email(data.get("email"))
+            ensure_email_available(email, request.user)
             pin_code = clean_pin_code(data.get("pin_code"))
         except ProfileValidationError as exc:
             messages.error(request, str(exc))
@@ -60,7 +68,7 @@ class AccountSettingsView(RestrictUserMixin, ListView):
         try:
             user.save()
         except IntegrityError:
-            messages.error(request, f"Email {user.email} already exists")
+            messages.error(request, EMAIL_IN_USE_MESSAGE)
         else:
             messages.success(request, "Account Details successfully saved")
         return redirect("customer:account-settings")

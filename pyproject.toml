@@ -1,0 +1,9 @@
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "RaddiFinder.settings"
+python_files = ["test_*.py"]
+testpaths = ["tests"]
+addopts = "-ra"
+env = [
+    "D:SECRET_KEY=test-only-secret-key-not-for-production-use-0123456789",
+    "D:CACHE_URL=locmemcache://",
+]

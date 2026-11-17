@@ -8,6 +8,7 @@ from accounts.restriction import RestrictUserMixin
 from common_models.models import PickupBoy
 from common_models.utils import to_uuid
 from site_admin.forms import PickupBoyForm
+from site_admin.pagination import PaginatedSearchMixin, redirect_to_list
 
 PHONE_EXISTS_MESSAGE = "Phone Number already exists."
 
@@ -21,21 +22,22 @@ def _report_form_errors(request, form):
             messages.error(request, error)
 
 
-class ManagePickupBoyView(RestrictUserMixin, ListView):
+class ManagePickupBoyView(PaginatedSearchMixin, RestrictUserMixin, ListView):
     model = PickupBoy
     template_name = "site_admin/manage-pickup-boy.html"
     login_url = reverse_lazy("site_admin:login")
     role_name = "Admin"
+    search_fields = ("full_name", "phone")
 
     def get_queryset(self):
-        return PickupBoy.objects.filter(employed=True)
+        return PickupBoy.objects.filter(employed=True).order_by("created", "pk")
 
     def post(self, request):
         if "update_submit" in request.POST:
             self._update(request)
         elif "delete_submit" in request.POST:
             self._delete(request)
-        return redirect("site_admin:manage-pickup-boy")
+        return redirect_to_list(request, "site_admin:manage-pickup-boy")
 
     def _get_boy(self, raw_id):
         boy_id = to_uuid(raw_id)

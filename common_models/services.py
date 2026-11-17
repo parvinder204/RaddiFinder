@@ -1,7 +1,8 @@
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 from decimal import Decimal, InvalidOperation
 
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError, transaction
 from django.db.models import F, Sum
@@ -41,13 +42,22 @@ def _parse_quantity(value):
     return quantity.quantize(Decimal("0.001"))
 
 
+def _lead_time_message(lead_days):
+    if lead_days == 0:
+        return "Pickup date cannot be in the past."
+    if lead_days == 1:
+        return "Pickup date cannot be today or a previous day."
+    return f"Pickups must be booked at least {lead_days} days in advance."
+
+
 def _parse_pickup_date(value):
     try:
         pickup_date = datetime.strptime(str(value), "%Y-%m-%d").date()
     except ValueError:
         raise PickupRequestError("Invalid pickup date.")
-    if pickup_date <= timezone.localdate():
-        raise PickupRequestError("Pickup date cannot be today or a previous day.")
+    lead_days = max(settings.PICKUP_MIN_LEAD_DAYS, 0)
+    if pickup_date < timezone.localdate() + timedelta(days=lead_days):
+        raise PickupRequestError(_lead_time_message(lead_days))
     return pickup_date
 
 
