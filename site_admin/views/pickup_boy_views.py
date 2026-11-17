@@ -8,7 +8,7 @@ from accounts.restriction import RestrictUserMixin
 from common_models.models import PickupBoy
 from common_models.utils import to_uuid
 from site_admin.forms import PickupBoyForm
-from site_admin.pagination import PaginatedSearchMixin, redirect_to_list
+from common_models.pagination import PaginatedSearchMixin, redirect_to_list
 
 PHONE_EXISTS_MESSAGE = "Phone Number already exists."
 

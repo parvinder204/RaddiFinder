@@ -8,7 +8,7 @@ from accounts.restriction import RestrictUserMixin
 from common_models.models import Item
 from common_models.utils import to_uuid
 from site_admin.forms import ItemForm
-from site_admin.pagination import PaginatedSearchMixin, redirect_to_list
+from common_models.pagination import PaginatedSearchMixin, redirect_to_list
 
 
 class ManageProductsView(PaginatedSearchMixin, RestrictUserMixin, ListView):

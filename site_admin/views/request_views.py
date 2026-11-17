@@ -25,7 +25,7 @@ from common_models.services import (
 )
 from common_models.utils import to_uuid
 from notifications.utils import create_notification
-from site_admin.pagination import PaginatedSearchMixin, redirect_to_list
+from common_models.pagination import PaginatedSearchMixin, redirect_to_list
 
 BOY_REQUIRED_STATUSES = ("Approved", "Picked-up", "Rescheduled")
 RESCHEDULE_DATE_FORMAT = "%d %b, %Y"

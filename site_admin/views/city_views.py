@@ -5,7 +5,7 @@ from django.shortcuts import redirect, render
 from accounts.decorators import role_required
 from common_models.models import City, State
 from common_models.utils import to_uuid
-from site_admin.pagination import list_context, paginate, redirect_to_list
+from common_models.pagination import list_context, paginate, redirect_to_list
 
 NAME_MAX_LENGTH = 50
 

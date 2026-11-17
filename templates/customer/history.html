@@ -23,11 +23,11 @@
 			<div class="ux-page-header">
 				<div>
 					<h2 class="ux-page-header__title">Request History</h2>
-					<p class="ux-page-header__meta">{{ pickup_list|length }} request{{ pickup_list|length|pluralize }} so far</p>
+					<p class="ux-page-header__meta">{{ total_count }} request{{ total_count|pluralize }} so far</p>
 				</div>
 				<a href="{% url 'customer:select-items' %}" class="btn btn-sm btn-primary-custom"><i class="fa fa-plus me-1" aria-hidden="true"></i> New Request</a>
 			</div>
-			{% if not pickup_list %}
+			{% if not total_count %}
 			<div class="ux-empty">
 				<div class="ux-empty__icon"><i class="fa fa-calendar-o" aria-hidden="true"></i></div>
 				<h3 class="ux-empty__title">No requests yet</h3>
@@ -71,6 +71,7 @@
 					{% endif %}
 		        </tbody>
 		    </table>
+			{% include "customer/partials/pager.html" %}
 			{% endif %}
 		</section>
 	</div>

@@ -10,6 +10,7 @@ from django.views.generic import DetailView, ListView
 from accounts.decorators import role_required
 from accounts.restriction import RestrictUserMixin
 from common_models.models import City, Item, Pickup, PickupItems, State
+from common_models.pagination import PaginatedSearchMixin
 from common_models.services import (
     PickupRequestError,
     add_items,
@@ -18,7 +19,6 @@ from common_models.services import (
     items_from_post,
     remove_item,
     update_pickup_address,
-    with_amounts,
 )
 from common_models.utils import decode_file, render_to_pdf, to_uuid
 from notifications.utils import create_notification
@@ -104,14 +104,14 @@ class SelectView(View):
         return redirect("customer:select-items")
 
 
-class HistoryView(RestrictUserMixin, ListView):
+class HistoryView(PaginatedSearchMixin, RestrictUserMixin, ListView):
     login_url = reverse_lazy("customer:phone-number")
     role_name = "Customer"
     template_name = "customer/history.html"
     model = Pickup
 
     def get_queryset(self):
-        return with_amounts(Pickup.objects.filter(customer=self.request.user))
+        return Pickup.objects.filter(customer=self.request.user).order_by("-created", "pk")
 
 
 class ViewOrderView(RestrictUserMixin, DetailView):

@@ -223,10 +223,10 @@ These are server-rendered pages and form posts, not part of the mobile API. They
 | `/forgot-password`, `/forgot-new` | Password reset by OTP |
 | `/details` | Address details after sign-in |
 | `/confirm-request` | Review and submit a request |
-| `/history`, `/view-order/<id>` | Order list and detail |
+| `/history`, `/view-order/<id>` | Order list (10 per page, `?page=2`) and order detail |
 | `/get-invoice/<id>` | Invoice PDF for a picked-up order |
 | `/account-settings`, `/account-deactivation` | Profile and account closure |
-| `/notifications` | Notification list |
+| `/notifications` | Notification list (10 per page, `?page=2`) |
 
 ### Admin dashboard (`/site_admin/`)
 

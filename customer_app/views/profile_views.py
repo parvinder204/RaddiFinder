@@ -15,6 +15,7 @@ from accounts.utils import (
     ensure_email_available,
 )
 from common_models.models import City, State
+from common_models.pagination import list_context, paginate
 from common_models.services import MAX_IMAGE_BYTES
 from common_models.utils import is_valid_image, to_uuid
 from notifications.models import Recipients
@@ -79,7 +80,15 @@ class NotificationView(RestrictUserMixin, View):
     login_url = reverse_lazy("customer:phone-number")
 
     def get(self, request, *args, **kwargs):
-        recipients = Recipients.objects.filter(recipient=request.user)
-        notifications = list(recipients.select_related("notification").order_by("-notification__created"))
-        recipients.filter(read=False).update(read=True)
-        return render(request, "customer/notification.html", {"notif_list": notifications})
+        recipients = (
+            Recipients.objects.filter(recipient=request.user)
+            .select_related("notification")
+            .order_by("-notification__created", "pk")
+        )
+        result = paginate(request, recipients)
+        notifications = list(result.page.object_list)
+        unread = [row.pk for row in notifications if not row.read]
+        if unread:
+            Recipients.objects.filter(pk__in=unread).update(read=True)
+        context = {"notif_list": notifications, **list_context(result)}
+        return render(request, "customer/notification.html", context)

@@ -71,16 +71,17 @@ DRF views and serializers for the mobile app. Registration is OTP then password 
 
 The admin dashboard. Admins review requests, approve them with a pickup boy, reschedule, record actual weights and prices, mark orders as picked up and paid, cancel with a reason, and manage products, staff and service areas. The dashboard aggregates totals and the top items by realised value.
 
-### Admin list pages
+### List pages
 
-The requests, notifications, pickup boys, products and service areas pages are paginated and searched on the server. The browser only receives the rows for the page it is showing.
+The admin requests, notifications, pickup boys, products and service areas pages, and the customer history and notification pages, are paginated on the server. The browser only receives the rows for the page it is showing. The admin pages also search on the server.
 
 | Part | Role |
 | --- | --- |
-| `site_admin/pagination.py` | Reads `q`, `per_page` and `page` from the URL, filters and slices the queryset, and builds the template context |
+| `common_models/pagination.py` | Reads `q`, `per_page` and `page` from the URL, filters and slices the queryset, and builds the template context |
 | `PaginatedSearchMixin` | Adds the same behaviour to any class-based list view |
 | `templates/site_admin/partials/list_toolbar.html` | Page-size selector and search box, a plain GET form |
 | `templates/site_admin/partials/list_pager.html` | "Showing x to y of z" and the page links |
+| `templates/customer/partials/pager.html` | Previous, numbered and Next links for the customer pages. Hidden when there is only one page. |
 | `static/js/list-controls.js` | Submits the form when the page size changes or after a short pause in typing, and puts the cursor back in the search box |
 
 The whole list state lives in the URL, for example `/site_admin/manage-requests?q=asha&per_page=25&page=2`. Refreshing, bookmarking or sharing the link shows the same page. Changing the search or page size starts again from page 1. A page number past the end shows the last page, and an invalid one shows page 1.
@@ -97,7 +98,7 @@ Search words are combined with AND, and each word can match any of the page's se
 | Products | Name, unit, description and price |
 | Service areas | City and state |
 
-Opening the notifications page marks only the notifications on the visible page as read.
+Customer history and notifications use the same URL parameters (`page`, and `per_page` if given) without a search box. Opening a notifications page, admin or customer, marks only the notifications on the visible page as read. The mobile API history endpoint still returns every order in one response.
 
 ### notifications
 

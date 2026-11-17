@@ -13,7 +13,7 @@ from django.views.generic import TemplateView
 from accounts.restriction import RestrictUserMixin
 from common_models.models import Item, Pickup, PickupItems
 from notifications.models import Recipients
-from site_admin.pagination import list_context, paginate
+from common_models.pagination import list_context, paginate
 
 PENDING_STATUSES = ("Requested", "Approved")
 PERIOD_DAYS = {"today": 0, "week": 7, "month": 30}
