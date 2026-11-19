@@ -16,6 +16,7 @@ from notifications.models import Recipients
 from common_models.pagination import list_context, paginate
 
 PENDING_STATUSES = ("Requested", "Approved")
+DASHBOARD_REQUEST_LIMIT = 5
 PERIOD_DAYS = {"today": 0, "week": 7, "month": 30}
 MONEY = DecimalField(max_digits=14, decimal_places=2)
 ESTIMATED_AMOUNT = F("quantity") * F("item__price")
@@ -85,7 +86,7 @@ class DashboardView(RestrictUserMixin, TemplateView):
         for period in PERIOD_DAYS:
             context[period] = _period_stats(period, today)
 
-        context["latest_requests"] = Pickup.objects.select_related("customer")[:6]
+        context["latest_requests"] = Pickup.objects.select_related("customer").order_by("-created")[:DASHBOARD_REQUEST_LIMIT]
 
         demand_items = Item.objects.annotate(instances=Count("pickupitems")).order_by("-instances")[:5]
         context["demand_items"] = [{"name": item.name, "count": item.instances} for item in demand_items]

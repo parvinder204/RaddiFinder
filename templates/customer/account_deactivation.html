@@ -9,20 +9,21 @@
     <link rel="stylesheet" href="{% static 'customer/css/bootstrap.min.css' %}">
     <link rel="stylesheet" href="{% static 'customer/css/style.css' %}">
     <link rel="stylesheet" href="{% static 'customer/font-awesome-4.7.0/css/font-awesome.min.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
+    <link rel="stylesheet" href="{% static 'css/theme.css' %}">
+    <link rel="stylesheet" href="{% static 'customer/css/modern.css' %}">
+    <link rel="stylesheet" href="{% static 'css/loader.css' %}">
+    <script src="{% static 'js/loader.js' %}"></script>
 </head>
-<body>
+<body class="rf-site">
 
-<!-- Header Start from here -->
-<header class="py-md-4 py-3 shadow-sm">
-    <div class="logo-center-style d-flex  justify-content-center">
-        <a href="https://raddifinder.com/">
-            <img src="{% static 'images/logo.png' %}" class="menu-logo" style="max-width:90px;">
-        </a>
-    </div>
-	{% comment %} <nav class="container d-flex align-items-center justify-content-between">
-	</nav> {% endcomment %}
-</header>
-<!-- Header end here -->
+{% include "customer/partials/navbar.html" %}
+{% include "customer/partials/sidebar.html" %}
+{% if request.user.is_authenticated %}
+{% include "customer/partials/profile_panel.html" %}
+{% endif %}
 
 <!-- Alert message start here -->
 {% if messages %}
@@ -163,6 +164,8 @@
 </div>
 <!-- Main-wrapper end here -->
 
+{% include "customer/partials/footer.html" %}
+
 
 
 
@@ -191,88 +194,84 @@
 <script src="{% static 'customer/js/fontawesome.min.js' %}"></script>
 <script src="{% static 'customer/js/custom.js' %}"></script>
 <script src="{% static 'js/pages/form-validation.init.js' %}"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
-<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-<script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/jquery.validate.min.js"></script>
 
 
 {% comment %} this is use for verify phone and otp {% endcomment %}
 <script>
     $(document).ready(function () {
 
-$('#clickme').click(function () {
-    if ($('#phone_otp').val().length == 10) {
-        $.ajax({
-            method: "POST",
-            url: "{% url 'customer:popup-login' %}",
-            data: {
-                'phone': $('#phone_otp').val(),
-                'action': 'otp_sent',
-                'csrfmiddlewaretoken': '{{csrf_token}}',
-            },
-            success: function (data) {
-               
-                if (data.status == "sent") {
-                    $('#clickme').hide();
-                    $('#phone_section').hide();
-                    $('.input1').hide();
-                    $('#phone_otp').attr('disabled', true);
-                    $('#input2').show();
-                    $('#phone_error').html("")
-                    $('#otp_error').html("")
-                    $('#valid_till').html(`An OTP has been sent to +91${$('#phone_otp').val()}, valid till ${data.valid_till}.`);
-                    // generateOTP($('#phone_otp').val());
-                }
-            }
-        });
-    }
-    else {
-        console.log('Phone number not valid...')
-        $('#phone_error').html("Enter Valid Phone Number.")
-        $('#otp_error').html("")
-    }
-});
+        var LOGIN_URL = "{% url 'customer:popup-login' %}";
+        var RESEND_URL = "{% url 'customer:create-otp' %}";
 
-$('#resend_otp').click(function () {
-    $.ajax({
-        method: "POST",
-        url: "{% url 'customer:create-otp' %}",
-        data: {
-            'phone': $('#phone_otp').val(),
-            'csrfmiddlewaretoken': '{{csrf_token}}',
-        },
-        success: function (data) {
-            if (data.status == "sent") {
+        // ── Send OTP ──────────────────────────────────────────────
+        $('#clickme').click(function () {
+            var phone = $.trim($('#phone_otp').val());
+            if (!/^\d{10}$/.test(phone)) {
+                $('#phone_error').html("Enter Valid Phone Number.");
+                $('#otp_error').html("");
+                return;
+            }
+            $('#phone_error').html("");
+
+            RFAjax.post(LOGIN_URL, {
+                phone: phone,
+                action: 'otp_sent',
+                csrfmiddlewaretoken: '{{csrf_token}}'
+            }, { button: this, message: 'Sending OTP to your WhatsApp\u2026' }).then(function (data) {
+                if (data.status !== "sent") {
+                    $('#phone_error').text(data.message || "Enter Valid Phone Number.");
+                    return;
+                }
+                $('#clickme').hide();
+                $('#phone_section').hide();
+                $('.input1').hide();
+                $('#phone_otp').attr('disabled', true);
+                $('#input2').show();
+                $('#phone_error').html("");
+                $('#otp_error').html("");
+                $('#valid_till').text('An OTP has been sent to +91' + phone + ', valid till ' + data.valid_till + '.');
+            }, function (error) {
+                RFAjax.fail(error, '#phone_error');
+            });
+        });
+
+        // ── Resend OTP ────────────────────────────────────────────
+        $('#resend_otp').click(function () {
+            var phone = $.trim($('#phone_otp').val());
+            RFAjax.post(RESEND_URL, {
+                phone: phone,
+                csrfmiddlewaretoken: '{{csrf_token}}'
+            }, { button: this, message: 'Sending a new OTP\u2026' }).then(function (data) {
+                if (data.status !== "sent") {
+                    $('#otp_error').text(data.message || "Could not send the OTP. Please try again.");
+                    return;
+                }
                 $('#otp_error').html("");
                 $('#check-otp').attr('disabled', false);
                 $('#btn-verify').attr('disabled', false);
-                $('#valid_till').html(`An OTP has been sent to +91${$('#phone_otp').val()}, valid till ${data.valid_till}.`);
-                generateOTP($('#phone_otp').val());
-            }
-        }
-    });
-});
-});
-    $(document).ready(function () {
+                $('#valid_till').text('An OTP has been sent to +91' + phone + ', valid till ' + data.valid_till + '.');
+            }, function (error) {
+                RFAjax.fail(error, '#otp_error');
+            });
+        });
+
+        // ── Verify OTP and deactivate ─────────────────────────────
         $('#btn-verify').click(function () {
-            $.ajax({
-                method: "POST",
-                url: "{% url 'customer:account_deactivation' %}",
-                data: {
-                    'phone': $('#phone_otp').val(),
-                    'action': 'otp_verify',
-                    'otp': $('#check-otp').val(),
-                    csrfmiddlewaretoken: '{{csrf_token}}',
-                },
-                success: function (data) {
-                    console.log(data);
-                    if (data.status == "Account deactivated!") {
-                        document.getElementById('input2').remove()
-                        document.getElementById('show_deactivated').innerHTML = `<h2 class="text-success">${data.status}</h2><h6 class="text-center text-dark mb-4"> <br>You can reactivate your account, please contact us.</h6>`
-                        setTimeout(() => {window.location.href = "{% url 'customer:select-items' %}"}, 7000);
-                    }
-                    else { $('#otp_error').html(data.status); }
+            RFAjax.post("{% url 'customer:account_deactivation' %}", {
+                phone: $('#phone_otp').val(),
+                action: 'otp_verify',
+                otp: $('#check-otp').val(),
+                csrfmiddlewaretoken: '{{csrf_token}}'
+            }, { button: this, message: 'Verifying OTP\u2026' }).then(function (data) {
+                if (data.status == "Account deactivated!") {
+                    document.getElementById('input2').remove();
+                    document.getElementById('show_deactivated').innerHTML = '<h2 class="text-success">' + data.status + '</h2><h6 class="text-center text-dark mb-4"> <br>You can reactivate your account, please contact us.</h6>';
+                    setTimeout(function () { window.location.href = "{% url 'customer:select-items' %}"; }, 7000);
+                } else {
+                    $('#otp_error').text(data.message || data.status);
                 }
+            }, function (error) {
+                RFAjax.fail(error, '#otp_error');
             });
         });
     });
@@ -283,25 +282,3 @@ $('#resend_otp').click(function () {
 
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

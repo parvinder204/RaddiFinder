@@ -172,6 +172,7 @@ Returns the customer's orders:
 [
   {
     "pickup_id": "<uuid>",
+    "reference": "PKRQ_12",
     "pickup_date": "2026-11-20",
     "status": "Requested",
     "estimated_amount": "120.00",
@@ -184,7 +185,7 @@ When there are none the body is `{"error": "History is blank"}`.
 
 ### GET `/customer_api/api/view-order/<pickup_id>`
 
-Returns one order with its items, `expected_amount` (from catalogue prices), `final_amount` (from the actual weights and prices recorded at pickup) and `customer_name`. Returns `404` for orders that belong to someone else.
+Every order also carries `reference` (for example `PKRQ_12`) next to `pickup_id`, which is still the UUID used in URLs. Item rows include `reference` and `item_reference` as well. Returns one order with its items, `expected_amount` (from catalogue prices), `final_amount` (from the actual weights and prices recorded at pickup) and `customer_name`. Returns `404` for orders that belong to someone else.
 
 ### POST `/customer_api/api/user-item-add`
 

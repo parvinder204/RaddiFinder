@@ -90,6 +90,7 @@ class ManageRequestsView(PaginatedSearchMixin, RestrictUserMixin, ListView):
     login_url = reverse_lazy("site_admin:login")
     role_name = "Admin"
     search_fields = (
+        "reference",
         "pickup_id",
         "customer__first_name",
         "customer__last_name",

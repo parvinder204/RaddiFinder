@@ -66,13 +66,18 @@ def send_otp_message(phone, otp):
     return _post_template(settings.MSG91_TEMPLATE_OTP, f"91{phone}", components)
 
 
-def send_pickup_details(phone, pickup_boy_name, pickup_boy_phone):
+def send_pickup_details(phone, pickup_boy_name, pickup_boy_phone, reference=None):
     components = {
         "body_1": {"type": "text", "value": pickup_boy_name},
         "body_2": {"type": "text", "value": pickup_boy_phone},
     }
+    if reference and settings.MSG91_PICKUP_USES_REFERENCE:
+        components["body_3"] = {"type": "text", "value": reference}
     return _post_template(settings.MSG91_TEMPLATE_PICKUP, f"91{phone}", components)
 
 
-def send_request_received(phone):
-    return _post_template(settings.MSG91_TEMPLATE_RECEIVED, [f"91{phone}"], {})
+def send_request_received(phone, reference=None):
+    components = {}
+    if reference and settings.MSG91_RECEIVED_USES_REFERENCE:
+        components["body_1"] = {"type": "text", "value": reference}
+    return _post_template(settings.MSG91_TEMPLATE_RECEIVED, [f"91{phone}"], components)

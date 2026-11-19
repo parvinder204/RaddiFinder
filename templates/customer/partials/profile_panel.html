@@ -1,0 +1,42 @@
+{% load static %}
+<div class="offcanvas offcanvas-end rf-offcanvas" tabindex="-1" id="profile" aria-labelledby="profileLabel">
+    <div class="rf-offcanvas__header">
+        <h5 id="profileLabel" class="rf-offcanvas__title">Home</h5>
+        <button type="button" class="rf-icon-btn rf-icon-btn--ghost" data-bs-dismiss="offcanvas" aria-label="Close profile panel">
+            <i class="fa fa-times" aria-hidden="true"></i>
+        </button>
+    </div>
+    <div class="offcanvas-body rf-offcanvas__body">
+        <div class="rf-profile-card">
+            <img src="{% if request.user.image %}{{ request.user.image.url }}{% else %}{% static 'images/setting.png' %}{% endif %}" class="rf-profile-card__image" alt="">
+            <div>
+                <h5 class="rf-profile-card__name">{{ request.user.get_full_name }}</h5>
+                <p class="rf-profile-card__phone">+91 {{ request.user.formatted_phone_number }}</p>
+            </div>
+        </div>
+        <div class="rf-stat">
+            <p class="rf-stat__label">Total Sales</p>
+            <h5 class="rf-stat__value">Rs. {{ amount__sum|floatformat:2|default:0 }}</h5>
+        </div>
+        <p class="rf-offcanvas__section">Setting</p>
+        <ul class="nav flex-column rf-side-nav">
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'customer:account-settings' %}"><i class="fa fa-user" aria-hidden="true"></i><span>Account Settings</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'customer:history' %}"><i class="fa fa-history" aria-hidden="true"></i><span>History</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link notify-badge" title="Notifications" href="{% url 'customer:notifications' %}">
+                    <i class="fa fa-bell" aria-hidden="true"></i><span>Notification</span>
+                    {% if request.user and notif_count %}<span class="rf-count">{{ notif_count }}</span>{% endif %}
+                </a>
+            </li>
+        </ul>
+        <ul class="nav flex-column rf-side-nav rf-side-nav--footer">
+            <li class="nav-item">
+                <a class="nav-link rf-side-nav__danger" href="{% url 'accounts:logout' %}" data-confirm="You will be signed out on this device." data-confirm-title="Log out?" data-confirm-ok="Log out"><i class="fa fa-sign-out" aria-hidden="true"></i><span>Logout</span></a>
+            </li>
+        </ul>
+    </div>
+</div>

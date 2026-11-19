@@ -35,7 +35,8 @@
 				<a href="{% url 'customer:select-items' %}" class="btn btn-primary-custom">Schedule a Pickup</a>
 			</div>
 			{% else %}
-			<table id="historyTable" class="history-table" style="width:100%">
+			<div class="table-responsive">
+<table id="historyTable" class="history-table" style="width:100%">
 		        <thead>
 		            <tr>
 		                <th>Creation Date</th>
@@ -53,7 +54,7 @@
 							<td data-label="Creation Date">{{i.created|date:"d M,Y"}}</td>
 							<td data-label="Request ID">
 								<button type="button" class="ux-copy" data-copy="{{i.pickup_id}}" data-copy-message="Request ID copied" title="Copy request ID {{i.pickup_id}}">
-									<span class="ux-short-id">{{i.pickup_id|slice:":8"}}</span>
+									<span class="ux-short-id">{{i.reference}}</span>
 									<i class="fa fa-clone" aria-hidden="true"></i>
 								</button>
 							</td>
@@ -71,6 +72,7 @@
 					{% endif %}
 		        </tbody>
 		    </table>
+</div>
 			{% include "customer/partials/pager.html" %}
 			{% endif %}
 		</section>

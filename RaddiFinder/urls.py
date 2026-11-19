@@ -1,12 +1,14 @@
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import include, path
+from django.urls import include, path, re_path
+from django.views.static import serve as serve_media
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import permissions
 
 from common_models.views import pickup_image
+from RaddiFinder.views import devtools_probe
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -35,6 +37,22 @@ if settings.API_DOCS_ENABLED:
     urlpatterns += [
         path("docs/", schema_view.with_ui("swagger", cache_timeout=0), name="schema-swagger-ui"),
         path("redoc/", schema_view.with_ui("redoc", cache_timeout=0), name="schema-redoc"),
+    ]
+
+if settings.DEBUG:
+    urlpatterns += [
+        path(".well-known/appspecific/com.chrome.devtools.json", devtools_probe, name="devtools-probe"),
+    ]
+
+if settings.SERVE_MEDIA and not settings.DEBUG:
+    # DEBUG off: static() below adds nothing, so serve uploaded media explicitly.
+    # pickup_image (registered earlier) still guards pickup_request/ files.
+    urlpatterns += [
+        re_path(
+            rf"^{settings.MEDIA_URL.strip('/')}/(?P<path>.*)$",
+            serve_media,
+            {"document_root": settings.MEDIA_ROOT},
+        ),
     ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -22,22 +22,22 @@ ADMIN_MAIL_SUBJECT = "Received a new booking request."
 
 
 def _admin_content(user, pickup):
-    return f"You have received a new pickup request {pickup.pickup_id} from {user.get_full_name()}.\n"
+    return f"You have received a new pickup request {pickup.reference} from {user.get_full_name()}.\n"
 
 
 def _build_content(notif_type, user, pickup):
     if notif_type == "created":
-        return f"Your pickup request {pickup.pickup_id} has been received."
+        return f"Your pickup request {pickup.reference} has been received."
     if notif_type == "cancelled":
-        return f"Your pickup request {pickup.pickup_id} has been cancelled"
+        return f"Your pickup request {pickup.reference} has been cancelled"
     if notif_type == "rescheduled":
-        return f"Pickup request {pickup.pickup_id} has been rescheduled to {pickup.pickup_date}"
+        return f"Pickup request {pickup.reference} has been rescheduled to {pickup.pickup_date}"
     if notif_type == "approved":
-        content = f"Pickup request {pickup.pickup_id} has been approved for pickup on {pickup.pickup_date}."
+        content = f"Pickup request {pickup.reference} has been approved for pickup on {pickup.pickup_date}."
         if pickup.pickup_boy:
             content += f" Pickup boy: {pickup.pickup_boy}"
         return content
-    return f"Pickup request {pickup.pickup_id} has been picked up."
+    return f"Pickup request {pickup.reference} has been picked up."
 
 
 def _send_admin_mail(plain_text, html_message, recipients):
@@ -80,13 +80,17 @@ def _dispatch_side_effects(notif_type, user, pickup):
     if notif_type == "created":
         content = _create_admin_notification(user, pickup)
         if user.phone:
-            run_in_background(send_request_received, user.phone)
+            run_in_background(send_request_received, user.phone, pickup.reference)
         _queue_admin_mail(user, content)
     elif notif_type == "approved":
         pickup_boy = pickup.pickup_boy
         if user.phone and pickup_boy:
             run_in_background(
-                send_pickup_details, user.phone, pickup_boy.full_name, pickup_boy.phone
+                send_pickup_details,
+                user.phone,
+                pickup_boy.full_name,
+                pickup_boy.phone,
+                pickup.reference,
             )
 
 

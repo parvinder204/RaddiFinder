@@ -118,6 +118,7 @@ class ViewOrderListApi(APIView):
         items = {}
         for row in pickup_items:
             items[row.item.name] = {
+                "item_reference": row.item.reference,
                 "item_name": row.item.name,
                 "item_price": row.final_price or row.item.price,
                 "item_unit": row.item.unit,

@@ -166,6 +166,7 @@ class Apigetpost(generics.GenericAPIView):
             items.append(
                 {
                     "id": item.id,
+                    "reference": item.reference,
                     "name": item.name,
                     "price": item.price,
                     "unit": item.unit,

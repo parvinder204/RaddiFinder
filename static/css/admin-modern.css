@@ -1,0 +1,283 @@
+#layout-wrapper,
+.main-content,
+.page-content {
+    background: transparent;
+}
+
+#page-topbar {
+    background: rgb(255 255 255 / 80%);
+    border-bottom: 1px solid var(--rf-border);
+    box-shadow: var(--rf-shadow-sm);
+    -webkit-backdrop-filter: saturate(160%) blur(14px);
+    backdrop-filter: saturate(160%) blur(14px);
+}
+
+.navbar-header {
+    height: 72px;
+}
+
+.navbar-header > .d-flex {
+    align-items: center;
+}
+
+body[data-sidebar="dark"] .navbar-brand-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 72px;
+    padding: 0 1rem;
+    background: linear-gradient(180deg, var(--rf-ink), #0c1a3f);
+}
+
+.navbar-brand-box .logo {
+    display: block;
+    line-height: 1;
+}
+
+.navbar-brand-box .logo img {
+    display: block;
+    width: auto;
+    padding: 3px 10px;
+    border-radius: var(--rf-radius-md);
+    background: #fff;
+    box-shadow: var(--rf-shadow-sm);
+    transition: box-shadow var(--rf-speed) var(--rf-ease), transform var(--rf-speed) var(--rf-ease);
+}
+
+.navbar-brand-box .logo:hover img {
+    box-shadow: var(--rf-shadow-lg);
+    transform: translateY(-1px);
+}
+
+.navbar-brand-box .rf-logo-lg {
+    height: 48px;
+}
+
+.navbar-brand-box .rf-logo-sm {
+    height: 38px;
+    padding: 3px 5px;
+}
+
+#page-topbar #vertical-menu-btn.header-item {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    margin: 0 0.5rem;
+    padding: 0;
+    border: 1px solid var(--rf-border);
+    border-radius: var(--rf-radius-md);
+    background: #fff;
+    color: var(--rf-navy);
+    font-size: 1.4rem;
+    box-shadow: var(--rf-shadow-xs);
+}
+
+#page-topbar #vertical-menu-btn.header-item:hover,
+#page-topbar #vertical-menu-btn.header-item:focus-visible {
+    color: var(--rf-teal-strong);
+    box-shadow: var(--rf-shadow-md);
+    transform: translateY(-2px);
+}
+
+#page-topbar .header-item {
+    height: 48px;
+    margin-top: auto;
+    margin-bottom: auto;
+    border-radius: var(--rf-radius-md);
+    transition: background-color var(--rf-speed) var(--rf-ease), box-shadow var(--rf-speed) var(--rf-ease),
+        color var(--rf-speed) var(--rf-ease), transform var(--rf-speed) var(--rf-ease);
+}
+
+#page-topbar .header-item:hover {
+    background-color: var(--rf-teal-soft);
+    box-shadow: var(--rf-shadow-sm);
+}
+
+#page-topbar .dropdown-menu {
+    margin-top: 0.5rem;
+}
+
+body[data-sidebar="dark"] .vertical-menu {
+    background: linear-gradient(180deg, var(--rf-ink) 0%, var(--rf-navy) 100%);
+    box-shadow: var(--rf-shadow-lg);
+}
+
+body[data-sidebar="dark"] #sidebar-menu .menu-title {
+    color: #8d96b2;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+}
+
+body[data-sidebar="dark"] #sidebar-menu ul li a {
+    color: #c5cbe0;
+    font-size: 0.84rem;
+    font-weight: 500;
+    letter-spacing: 0;
+    transition: background-color var(--rf-speed) var(--rf-ease), box-shadow var(--rf-speed) var(--rf-ease),
+        color var(--rf-speed) var(--rf-ease), transform var(--rf-speed) var(--rf-ease);
+}
+
+body[data-sidebar="dark"] #sidebar-menu ul li a i {
+    color: var(--rf-teal);
+    font-size: 1.2rem;
+    transition: color var(--rf-speed) var(--rf-ease);
+}
+
+body[data-sidebar="dark"] #sidebar-menu ul li a:hover,
+body[data-sidebar="dark"] #sidebar-menu ul li a:focus-visible {
+    background: rgb(22 215 170 / 14%);
+    color: #fff;
+    box-shadow: 0 12px 26px rgb(0 0 0 / 28%);
+}
+
+body[data-sidebar="dark"] #sidebar-menu ul li a:hover i {
+    color: #fff;
+}
+
+body[data-sidebar="dark"] #sidebar-menu ul li.mm-active > a,
+body[data-sidebar="dark"] #sidebar-menu ul li a.active {
+    background: rgb(22 215 170 / 20%);
+    color: #fff !important;
+    box-shadow: inset 3px 0 0 var(--rf-teal);
+}
+
+body[data-sidebar="dark"] #sidebar-menu ul li.mm-active > a i,
+body[data-sidebar="dark"] #sidebar-menu ul li a.active i {
+    color: #fff !important;
+}
+
+body:not(.vertical-collpsed) #sidebar-menu ul li a {
+    margin: 2px 8px;
+    padding: 0.6rem 0.8rem;
+    overflow: hidden;
+    border-radius: var(--rf-radius-md);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+body:not(.vertical-collpsed) #sidebar-menu ul li a:hover {
+    transform: translateX(3px);
+}
+
+.footer {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid var(--rf-border);
+    background: rgb(255 255 255 / 75%);
+    color: var(--rf-muted);
+    font-size: 0.85rem;
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+}
+
+.page-title-box h4 {
+    font-weight: 600;
+}
+
+img.avatar-sm,
+image.avatar-sm {
+    width: 3rem;
+    height: 3rem;
+    padding: 0.2rem;
+    border-radius: var(--rf-radius-md);
+    background: #fff;
+    box-shadow: var(--rf-shadow-xs);
+    object-fit: contain;
+    object-position: center;
+    transition: transform var(--rf-speed) var(--rf-ease), box-shadow var(--rf-speed) var(--rf-ease);
+}
+
+img.avatar-sm:hover {
+    box-shadow: var(--rf-shadow-md);
+    transform: scale(1.08);
+}
+
+input[data-provide="datepicker"] {
+    cursor: pointer;
+}
+
+.datepicker {
+    padding: 0.6rem;
+    border: 1px solid var(--rf-border);
+    border-radius: var(--rf-radius-lg);
+    box-shadow: var(--rf-shadow-lg);
+    font-family: var(--rf-font);
+}
+
+.datepicker-dropdown {
+    z-index: 2600 !important;
+}
+
+.datepicker table tr td,
+.datepicker table tr th {
+    border-radius: 10px;
+    transition: background-color var(--rf-speed) var(--rf-ease), box-shadow var(--rf-speed) var(--rf-ease);
+}
+
+.datepicker table tr td.day:hover,
+.datepicker table tr td span:hover,
+.datepicker .datepicker-switch:hover,
+.datepicker .prev:hover,
+.datepicker .next:hover {
+    background: var(--rf-teal-soft);
+    box-shadow: var(--rf-shadow-xs);
+}
+
+.datepicker table tr td.active,
+.datepicker table tr td.active:hover,
+.datepicker table tr td.active.active,
+.datepicker table tr td span.active,
+.datepicker table tr td span.active:hover {
+    border-color: var(--rf-teal);
+    background-color: var(--rf-teal);
+    background-image: none;
+    color: #fff;
+    text-shadow: none;
+    box-shadow: var(--rf-shadow-accent);
+}
+
+.datepicker table tr td.today:not(.active) {
+    box-shadow: inset 0 0 0 1px var(--rf-teal);
+    background: transparent;
+    color: var(--rf-ink);
+}
+
+.mini-stats-wid .flex-grow-1 {
+    min-width: 0;
+}
+
+.mini-stats-wid p {
+    margin-bottom: 0.35rem;
+    overflow: hidden;
+    font-size: clamp(0.68rem, 0.52rem + 0.45vw, 0.85rem);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.mini-stats-wid h4 {
+    overflow: hidden;
+    font-size: clamp(0.95rem, 0.72rem + 0.9vw, 1.3rem);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+@media (max-width: 767.98px) {
+    .page-title-box h4 {
+        font-size: 1rem;
+    }
+
+    .footer {
+        padding: 0.8rem 1rem;
+        font-size: 0.78rem;
+    }
+
+    table.dataTable th,
+    table.dataTable td {
+        font-size: 0.78rem;
+    }
+
+    #page-topbar .header-item {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+}

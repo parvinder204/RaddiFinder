@@ -29,6 +29,10 @@ USE_HTTPS = env.bool("USE_HTTPS", default=False)
 API_DOCS_ENABLED = env.bool("API_DOCS_ENABLED", default=DEBUG)
 CLIENT_IP_HEADER = env("CLIENT_IP_HEADER", default="")
 
+# True when the site is only reachable from this machine (local development).
+LOCAL_HOSTS = {"localhost", "127.0.0.1", "[::1]", "::1"}
+LOCAL_ONLY = set(ALLOWED_HOSTS) <= LOCAL_HOSTS
+
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -52,6 +56,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -138,6 +143,16 @@ STATIC_ROOT = env("STATIC_ROOT", default="/var/www/RaddiFinder/static")
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
+# runserver only serves /static/ and /media/ itself while DEBUG is on. WhiteNoise serves
+# static files with DEBUG off. Locally it reads straight from the app/static folders, so
+# collectstatic is not needed; in production keep running collectstatic (nginx can still
+# serve /static/ and /media/ directly and take priority).
+WHITENOISE_USE_FINDERS = env.bool("WHITENOISE_USE_FINDERS", default=DEBUG or LOCAL_ONLY)
+WHITENOISE_AUTOREFRESH = env.bool("WHITENOISE_AUTOREFRESH", default=DEBUG or LOCAL_ONLY)
+# Uploaded media (item and profile images) with DEBUG off. On by default for local hosts
+# only; production should serve MEDIA_ROOT from the web server instead.
+SERVE_MEDIA = env.bool("SERVE_MEDIA", default=DEBUG or LOCAL_ONLY)
+
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 AUTH_USER_MODEL = "accounts.Person"
@@ -205,6 +220,8 @@ MSG91_TEMPLATE_OTP = env("MSG91_TEMPLATE_OTP", default="raddi_finder")
 MSG91_TEMPLATE_PICKUP = env("MSG91_TEMPLATE_PICKUP", default="pickup_detail")
 MSG91_TEMPLATE_RECEIVED = env("MSG91_TEMPLATE_RECEIVED", default="received_raddifinder")
 MSG91_TIMEOUT = env.int("MSG91_TIMEOUT", default=10)
+MSG91_RECEIVED_USES_REFERENCE = env.bool("MSG91_RECEIVED_USES_REFERENCE", default=False)
+MSG91_PICKUP_USES_REFERENCE = env.bool("MSG91_PICKUP_USES_REFERENCE", default=False)
 # Local development only: print OTPs in the server console instead of sending them.
 # Ignored unless DEBUG is True.
 OTP_CONSOLE_FALLBACK = env.bool("OTP_CONSOLE_FALLBACK", default=False)

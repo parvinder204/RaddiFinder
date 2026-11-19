@@ -45,8 +45,12 @@ The front end is server-rendered Django templates with no build step. Static ass
 | Part | Libraries |
 | --- | --- |
 | Admin dashboard | Bootstrap 5, jQuery, ApexCharts, MetisMenu, SimpleBar, bootstrap-datepicker, bootstrap-timepicker, jQuery Validation, Parsley. Only the DataTables stylesheets remain, to style the server-side lists. |
-| Customer site | Bootstrap, Font Awesome 4.7 and project scripts in `static/customer/js` |
+| Customer site | Bootstrap 5.0, Font Awesome 4.7 and project scripts in `static/customer/js` |
+| Waves shim | `static/js/waves-shim.js` stands in for the Waves ripple library, which was never shipped, so the admin theme script no longer fails |
 | Admin lists | Server-side pagination and search, with `static/js/list-controls.js` for the search box and page-size selector |
+| Design layer | `static/css/theme.css` with Poppins from Google Fonts, plus `customer/css/modern.css` and `css/admin-modern.css` |
+| Calendar | Custom vanilla JavaScript calendar in `static/js/calendar-picker.js` for the customer date fields |
+| Dropdowns | Custom vanilla JavaScript dropdown in `static/js/select-picker.js` that wraps every single-choice `<select>` |
 | Shared | `static/js/session-sync.js` keeps tabs in sync when a session ends |
 
 ## Testing

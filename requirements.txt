@@ -7,6 +7,9 @@ django-environ>=0.11,<1.0
 django-crontab>=0.7.1,<1.0
 django-import-export>=4.0,<5.0
 
+# Static files (serves CSS/JS/images when DEBUG is off)
+whitenoise>=6.6,<7.0
+
 # Database
 psycopg2-binary>=2.9,<3.0
 

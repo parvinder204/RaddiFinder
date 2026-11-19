@@ -7,157 +7,29 @@
 	<title id="page_title">{% block title %}{% endblock title %}</title>
     <link rel="shortcut icon" href="{% static 'images/logo.png' %}" type="image/x-icon">  
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
+    <link rel="stylesheet" href="{% static 'customer/font-awesome-4.7.0/css/font-awesome.min.css' %}">
     {% block extra_head %}
     
     {% endblock extra_head %}
     <link rel="stylesheet" href="{% static 'css/ux-common.css' %}">
     <link rel="stylesheet" href="{% static 'customer/css/ux.css' %}">
+    <link rel="stylesheet" href="{% static 'css/theme.css' %}">
+    <link rel="stylesheet" href="{% static 'css/calendar-picker.css' %}">
+    <link rel="stylesheet" href="{% static 'css/select-picker.css' %}">
+    <link rel="stylesheet" href="{% static 'customer/css/modern.css' %}">
+    <link rel="stylesheet" href="{% static 'css/loader.css' %}">
+    <script src="{% static 'js/loader.js' %}"></script>
 </head>
-<body>
+<body class="rf-site">
 
-<!-- Header Start from here -->
-<header class="py-md-4 py-3 shadow-sm">
-	<nav class="container d-flex align-items-center justify-content-between">
-		<a href="" class="anchor-hover-style rounded-style shadow-sm" data-bs-toggle="offcanvas" data-bs-target="#menu" aria-controls="offcanvasRight">
-			<i class="fa fa-bars icon-style" aria-hidden="true"></i>
-		</a>
-		<div class="offcanvas offcanvas-start bg-dark" tabindex="-1" id="menu" aria-labelledby="offcanvasRightLabel">
-			<div class="offcanvas-header d-flex justify-content-center">
-				<div class="row w-100 align-items-center">
-					<div class="col-4">
-						
-					</div>
-					<div class="col-4 text-center">
-						<img src="{% static 'images/old-logo3.png' %}" class="menu-logo">
-					</div>
-					<div class="col-4 text-end">
-						<a href="" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
-							<img src="{% static 'images/close-btn.png' %}">
-						</a>
-					</div>
-				</div>
-			</div>
-			<div class="offcanvas-body">
-			    <div class="row mb-5">
-			    	<div class="col-12">
-			    		<ul class="nav flex-column">
-							<li class="nav-item">
-							    <a class="nav-link" aria-current="page" href="{% url 'customer:dashboard' %}">Home</a>
-							</li>
-							<li class="nav-item">
-							    <a class="nav-link" href="{% url 'customer:history' %}">History</a>
-							</li>
-							<li class="nav-item">
-							    <a class="nav-link" href="{% url 'customer:account-settings' %}">Settings</a>
-							</li>
-							<li class="nav-item">
-							    <a class="nav-link" href="{% url 'customer:notifications' %}">Notification</a>
-							</li>
-						</ul>
-			    	</div>	
-			    </div>
-			    <div class="row">
-			    	<div class="col-12 text-muted-style">
-			    		<p><i class="fa fa-location-arrow me-2" aria-hidden="true"></i> Plot No. 30, Street Number 3, Krishna Enclave, Jhampur, SAS Nagar Mohali, Punjab - 160014</p>
-						<p><i class="fa fa-phone-square me-2" aria-hidden="true"></i> +917508777004, +917508777005</p>
-						<p><i class="fa fa-envelope me-2" aria-hidden="true"></i> Info@raddifinder.com</p>
-			    	</div>
-			    </div>
-			</div>
-		</div>
-		<div class="logo-center-style">
-			<a href="https://raddifinder.com/">
-				<img src="{% static 'images/logo.png' %}" class="menu-logo" style="max-width:90px;">
-			</a>
-		</div>
-		<div class="d-flex align-items-center justify-content-between">
-			{% if request.user.is_authenticated %}
-			<a href="" class="profile-size ms-2" data-bs-toggle="offcanvas" data-bs-target="#profile" aria-controls="offcanvasRight">
-				<img src="{% if request.user.image %}{{request.user.image.url}}{% else %}{% static 'images/profile.png' %}{% endif %}" class="rounded-circle img-thumbnail img-fluid" alt="...">
-			</a>
-			<div class="offcanvas offcanvas-end bg-dark" tabindex="-1" id="profile" aria-labelledby="offcanvasRightLabel">
-				<div class="offcanvas-header d-flex justify-content-center">
-					<div class="row w-100 align-items-center justify-content-between">
-						<div class="col-4">
-							<a href="" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
-								<img src="{% static 'images/close-btn.png' %}">
-							</a>
-						</div>
-						<div class="col-4 text-center">
-							<h5 id="offcanvasRightLabel" class="mb-0">Home</h5>
-						</div>
-						<div class="col-4"></div>
-					</div>
-				</div>
-				<div class="offcanvas-body">
-				    <div class="row justify-content-center align-items-center mb-3">
-				    	<div class="col-12">
-				    		<div class="card custom-card shadow border-0">
-				    			<svg class="svg-one" xmlns="http://www.w3.org/2000/svg" width="61.32" height="50.152"><path data-name="Path 50" d="M61.32 0S30.31 5.69 29.38 28.24C28.43 50.78 0 50.15 0 50.15V10A10 10 0 0110 0z" fill="#5e5ce6"/></svg>
-				    			<div class="card-body">
-				    				<div class="row g-0">
-									    <div class="col-4">
-									      <img src="{% if request.user.image %}{{request.user.image.url}}{% else %}{% static 'images/setting.png' %}{% endif %}" class="img-fluid rounded-start" alt="...">
-									    </div>
-									    <div class="col-8">
-									      <div class="card-body">
-									        <h5 class="card-title text-light">{{request.user.get_full_name}}</h5>
-									        <p class="card-text mb-0"><small class="text-muted text-muted-style">+91 {{request.user.formatted_phone_number}}</small></p>
-
-									      </div>
-									    </div>
-									</div>
-				    			</div>
-				    			<svg class="svg-two" xmlns="http://www.w3.org/2000/svg" width="48.224" height="58.905"><path data-name="Path 51" d="M48.224.515v48.39a10 10 0 01-10 10h-26.87s-11.96-1.4-11.33-16.2 18.26-8.5 23.61-27.71S48.224.515 48.224.515z" fill="#0a84ff"/></svg>
-				    		</div>
-				    	</div>
-				    </div>
-				    <div class="row align-items-center">
-				    	<div class="col py-3">
-				    		<p class="text-muted-style mb-0">Total Sales</p>
-				    		<h5 class="text-light">Rs. {{amount__sum|floatformat:2|default:0}}</h5>
-				    	</div>
-				    </div>
-				    <div class="row">
-				    	<div class="col-12 border-style py-4">
-				    		<p class="text-muted-style">Setting</p>
-				    		<ul class="nav flex-column">
-								<li class="nav-item">
-								    <a class="nav-link" aria-current="page" href="{% url 'customer:account-settings' %}"><i class="fa fa-user me-2" aria-hidden="true"></i> Account Settings</a>
-								</li>
-								{% comment %} <li class="nav-item">
-								    <a class="nav-link" aria-current="page" href="{% url 'customer:change-password' %}"><i class="fa fa-key me-2" aria-hidden="true"></i>Change Password</a>
-								</li> {% endcomment %}
-								<li class="nav-item">
-								    <a class="nav-link" aria-current="page" href="{% url 'customer:history' %}"><i class="fa fa-history me-2" aria-hidden="true"></i> History</a>
-								</li>
-								<li class="nav-item">
-								    <a class="nav-link notify-badge" aria-current="page" title="Notifications" href="{% url 'customer:notifications' %}"><i class="fa fa-bell me-2" aria-hidden="true"></i> Notification
-										{% if request.user and notif_count %}
-										<span class="custom-badge">{{notif_count}}</span>
-										{% endif %}</a>
-								</li>
-							</ul>
-				    	</div>
-				    	<div class="col-12 py-4">
-				    		<ul class="nav flex-column">
-								<li class="nav-item">
-								    <a class="nav-link" href="{% url 'accounts:logout' %}" data-confirm="You will be signed out on this device." data-confirm-title="Log out?" data-confirm-ok="Log out"><i class="fa fa-sign-out me-2" aria-hidden="true"></i> Logout</a>
-								</li>
-							</ul>
-				    	</div>
-				    </div>
-				</div>
-			</div>
-			{% else %}
-			<a href="{% url 'customer:phone-number' %}" class="anchor-hover-style rounded-style shadow-sm" title="Login">
-				<i class="fa fa-user icon-style" aria-hidden="true"></i>
-			</a>
-			{% endif %}
-		</div>
-	</nav>
-</header>
-<!-- Header end here -->
+{% include "customer/partials/navbar.html" %}
+{% include "customer/partials/sidebar.html" %}
+{% if request.user.is_authenticated %}
+{% include "customer/partials/profile_panel.html" %}
+{% endif %}
 
 <!-- Alert message start here -->
 {% if messages %}
@@ -209,45 +81,14 @@
 	})();
 </script>
 <!--End of Tawk.to Script-->
-<!-- footer Start from here -->
-{% comment %} <footer class="shadow-lg">
-	<div class="container d-flex align-items-center justify-content-between py-md-2 py-0">
-		<div>
-			<a href="{% url 'customer:dashboard' %}" class="navbar-a p-4" title="Home">
-				<i class="fa fa-home fa-2x" aria-hidden="true"></i>
-			</a>
-		</div> 
-		<div>
-			<a href="{% url 'customer:select-items' %}" class="navbar-a p-4" title="Select Items">
-				<i class="fa fa-calendar-o fa-2x" aria-hidden="true"></i>
-			</a>
-		</div>
-		<div>
-			<a href="{% url 'customer:history' %}" class="navbar-a p-4" title="History">
-				<i class="fa fa-history fa-2x" aria-hidden="true"></i>
-			</a>
-		</div>
-		<div>
-			<a href="{% url 'customer:account-settings' %}" class="navbar-a p-4" title="Account Settings">
-				<i class="fa fa-cog fa-2x" aria-hidden="true"></i>
-			</a>
-		</div> 
-		 <div>
-			<a href="{% url 'customer:notifications' %}" class="notify-badge navbar-a p-4" title="Notifications">
-				<i class="fa fa-bell fa-2x" aria-hidden="true"></i>
-				{% if request.user %}
-				<span class="custom-badge">{{notif_count|default:0}}</span>
-				{% endif %}
-			</a>
-		</div> 
-	</div>
-</footer> 
-<!-- footer end here --> {% endcomment %}
+{% include "customer/partials/footer.html" %}
 
 {% block extra_scripts %}
 
 {% endblock extra_scripts %}
 <script src="{% static 'js/ux.js' %}"></script>
+<script src="{% static 'js/calendar-picker.js' %}"></script>
+<script src="{% static 'js/select-picker.js' %}"></script>
 {% include "partials/session_sync.html" %}
 </body>
 </html>

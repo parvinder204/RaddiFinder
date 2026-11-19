@@ -1,0 +1,27 @@
+{% load static %}
+<header class="rf-navbar">
+    <nav class="container rf-navbar__inner" aria-label="Main navigation">
+        <div class="rf-navbar__start">
+            <button class="rf-icon-btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#menu" aria-controls="menu" aria-label="Open menu">
+                <i class="fa fa-bars" aria-hidden="true"></i>
+            </button>
+            <a href="https://raddifinder.com/" class="rf-brand" aria-label="RaddiFinder home">
+                <img src="{% static 'images/logo.png' %}" class="rf-brand__logo" alt="RaddiFinder" width="57" height="50">
+            </a>
+        </div>
+        <ul class="rf-navbar__links nav d-none d-lg-flex">
+            {% include "customer/partials/nav_items.html" %}
+        </ul>
+        <div class="rf-navbar__end">
+            {% if request.user.is_authenticated %}
+            <button type="button" class="rf-avatar" data-bs-toggle="offcanvas" data-bs-target="#profile" aria-controls="profile" aria-label="Open profile panel">
+                <img src="{% if request.user.image %}{{ request.user.image.url }}{% else %}{% static 'images/profile.png' %}{% endif %}" alt="">
+            </button>
+            {% else %}
+            <a href="{% url 'customer:phone-number' %}" class="rf-icon-btn" title="Login" aria-label="Login">
+                <i class="fa fa-user" aria-hidden="true"></i>
+            </a>
+            {% endif %}
+        </div>
+    </nav>
+</header>

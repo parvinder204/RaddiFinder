@@ -24,7 +24,7 @@
                 <div class="mb-3 row">
                     <label for="example-text-input" class="col-md-2 col-form-label">ID</label>
                     <div class="col-md-4">
-                        <input type="text" class="form-control" placeholder="12053" value="{{object.pickup_id}}"
+                        <input type="text" class="form-control" placeholder="PKRQ_1" value="{{object.reference}}"
                             readonly>
                     </div>
                     <label for="program6" class="col-md-2 col-form-label">Date</label>
@@ -395,9 +395,9 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body modal-custom-height">
-                <div class="row h-20">
-                    {% for i in item_list %}
-                    <div class="col-lg-4 mb-3">
+                <div class="product-grid product-grid--three">
+{% for i in item_list %}
+<div class="product-grid__item">
                         <div class="card shadow-sm same-height border-0 item-bg test-card">
                             <label for="check-{{i.id}}">
                                 <div class="card-body">

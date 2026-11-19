@@ -13,7 +13,7 @@ class CityAdmin(ImportExportModelAdmin):
 
 
 class ItemAdmin(ImportExportModelAdmin):
-    pass
+    readonly_fields = ("reference",)
 
 
 class AuditLogAdmin(admin.ModelAdmin):

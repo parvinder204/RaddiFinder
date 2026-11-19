@@ -106,10 +106,26 @@ Turn on `SSL_REDIRECT` and `HSTS_SECONDS` only after HTTPS is working, otherwise
 | `MSG91_AUTH_KEY`, `MSG91_INTEGRATED_NUMBER`, `MSG91_NAMESPACE` | empty | MSG91 WhatsApp account |
 | `MSG91_TEMPLATE_OTP`, `MSG91_TEMPLATE_PICKUP`, `MSG91_TEMPLATE_RECEIVED` | `raddi_finder`, `pickup_detail`, `received_raddifinder` | Approved template names |
 | `MSG91_TIMEOUT` | `10` | Seconds before a send is abandoned |
+| `MSG91_RECEIVED_USES_REFERENCE` | `0` | Send the request reference to the "request received" template as variable 1 |
+| `MSG91_PICKUP_USES_REFERENCE` | `0` | Send the request reference to the "pickup details" template as variable 3 |
 | `OTP_CONSOLE_FALLBACK` | `0` | Print OTPs to the log instead of sending. Development only. |
 | `OTP_LENGTH`, `OTP_EXPIRY_MINUTES`, `OTP_MAX_ATTEMPTS`, `OTP_RESEND_COOLDOWN_SECONDS` | `5`, `180`, `5`, `60` | OTP rules |
 | `OTP_SEND_LIMIT`, `OTP_VERIFY_LIMIT`, `OTP_RATE_WINDOW_SECONDS` | `10`, `30`, `600` | Per-IP OTP rate limits |
 | `SENTRY_DSN`, `SENTRY_TRACES_SAMPLE_RATE`, `SENTRY_SEND_PII` | empty, `0.0`, `0` | Error reporting |
+
+### WhatsApp templates and reference IDs
+
+WhatsApp only delivers template messages whose variables match the template that Meta approved. The current templates were approved without a request reference, so the app does not send one by default and WhatsApp messages keep working unchanged.
+
+To show the reference (`PKRQ_12`) in WhatsApp messages:
+
+1. In MSG91, create new versions of the templates with one more variable and get them approved.
+   - Request received: variable `{{1}}` is the request reference.
+   - Pickup details: `{{1}}` is the pickup boy name, `{{2}}` is the pickup boy phone and `{{3}}` is the request reference.
+2. Point `MSG91_TEMPLATE_RECEIVED` and `MSG91_TEMPLATE_PICKUP` at the new template names.
+3. Set `MSG91_RECEIVED_USES_REFERENCE=1` and `MSG91_PICKUP_USES_REFERENCE=1`, then restart.
+
+Turn a flag on only after its template is approved, otherwise MSG91 rejects the message and the customer gets nothing. In-app notifications and admin emails use the reference straight away.
 
 ## 4. Database and static files
 

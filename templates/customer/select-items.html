@@ -81,9 +81,9 @@
                                             <div class="col-md-12">
                                                 <h3 class="text-dark mb-3"> Select Items</h3>
                                                 <p id="sel_itm_prompt" class="text-danger" style="display:none;font-size: 20px;">You must select at least one item to proceed further.</p>
-                                                <div class="row">
-                                                    {% for i in item_list %}
-                                                    <div class="col-lg-3 col-md-4  col-6 mb-3">
+                                                <div class="product-grid">
+{% for i in item_list %}
+<div class="product-grid__item">
                                                         <div class="card shadow-sm same-height border-0 item-bg">
                                                             <label for="check-{{i.id}}">
                                                                 <div class="card-body">
@@ -340,6 +340,7 @@
 <script src="{% static 'customer/js/custom.js' %}"></script>
 <script src="{% static 'libs/jquery-validation/jquery.validate.min.js' %}"></script>
 <script src="{% static 'customer/js/select-items.js' %}"></script>
+<script src="{% static 'customer/js/wizard-draft.js' %}"></script>
 
 <!-- Script for background colour -->
 <script>
@@ -354,6 +355,13 @@
 
         window.localStorage.removeItem('item_list')
         $(".item-check").prop('checked', false)
+        item_count = 0
+
+        window.RaddiWizard && RaddiWizard.start({
+            authenticated: {% if request.user.is_authenticated %}true{% else %}false{% endif %},
+            userId: "{{ request.user.pk|default:'' }}",
+            restore: {% if sel_items %}false{% else %}true{% endif %}
+        })
 
         {%if sel_items%}
             $('.uatc').removeClass('disabled')
@@ -387,36 +395,38 @@
 
         // ── Send OTP ──────────────────────────────────────────────
         $('#clickme').click(function() {
-            if ($('#phone_otp').val().length == 10) {
-                $.ajax({
-                    method: "POST",
-                    url: "{% url 'customer:popup-login' %}",
-                    data: {
-                        'phone': $('#phone_otp').val(),
-                        'action': 'otp_sent',
-                        'csrfmiddlewaretoken': '{{csrf_token}}',
-                    },
-                    success: function(data) {
-                        if (data.status == "sent") {
-                            if (data.show) {
-                                $('#reg_show').show();
-                            }
-                            // Disable phone input, show Change Number button
-                            $('#phone_otp').attr('disabled', true);
-                            $('#clickme').hide();
-                            $('#change_number').show();
-
-                            $('#input2').show();
-                            $('#phone_error').html('');
-                            $('#otp_error').html('');
-                            $('#valid_till').html(`An OTP has been sent to +91${$('#phone_otp').val()}, valid till ${data.valid_till}.`);
-                        }
-                    }
-                });
-            } else {
+            var phone = $.trim($('#phone_otp').val());
+            if (!/^\d{10}$/.test(phone)) {
                 $('#phone_error').html("Invalid phone number.");
                 $('#otp_error').html('');
+                return;
             }
+            $('#phone_error').html('');
+
+            RFAjax.post("{% url 'customer:popup-login' %}", {
+                phone: phone,
+                action: 'otp_sent',
+                csrfmiddlewaretoken: '{{csrf_token}}'
+            }, { button: this, message: 'Sending OTP to your WhatsApp\u2026' }).then(function(data) {
+                if (data.status !== "sent") {
+                    $('#phone_error').text(data.message || "Invalid phone number.");
+                    return;
+                }
+                if (data.show) {
+                    $('#reg_show').show();
+                }
+                // Disable phone input, show Change Number button
+                $('#phone_otp').attr('disabled', true);
+                $('#clickme').hide();
+                $('#change_number').show();
+
+                $('#input2').show();
+                $('#phone_error').html('');
+                $('#otp_error').html('');
+                $('#valid_till').text('An OTP has been sent to +91' + phone + ', valid till ' + data.valid_till + '.');
+            }, function(error) {
+                RFAjax.fail(error, '#phone_error');
+            });
         });
 
         // ── Change Number (inside modal) ──────────────────────────
@@ -472,21 +482,21 @@
 
         // ── Resend OTP ────────────────────────────────────────────
         $('#resend_otp').click(function() {
-            $.ajax({
-                method: "POST",
-                url: "{% url 'customer:create-otp' %}",
-                data: {
-                    'phone': $('#phone_otp').val(),
-                    'csrfmiddlewaretoken': '{{csrf_token}}',
-                },
-                success: function(data) {
-                    if (data.status == "sent") {
-                        $('#otp_error').html('');
-                        $('#check-otp').attr('disabled', false);
-                        $('#btn-verify').attr('disabled', false);
-                        $('#valid_till').html(`An OTP has been sent to +91${$('#phone_otp').val()}, valid till ${data.valid_till}.`);
-                    }
+            var phone = $.trim($('#phone_otp').val());
+            RFAjax.post("{% url 'customer:create-otp' %}", {
+                phone: phone,
+                csrfmiddlewaretoken: '{{csrf_token}}'
+            }, { button: this, message: 'Sending a new OTP\u2026' }).then(function(data) {
+                if (data.status !== "sent") {
+                    $('#otp_error').text(data.message || "Could not send the OTP. Please try again.");
+                    return;
                 }
+                $('#otp_error').html('');
+                $('#check-otp').attr('disabled', false);
+                $('#btn-verify').attr('disabled', false);
+                $('#valid_till').text('An OTP has been sent to +91' + phone + ', valid till ' + data.valid_till + '.');
+            }, function(error) {
+                RFAjax.fail(error, '#otp_error');
             });
         });
 
@@ -518,36 +528,33 @@
                     return;
                 }
             }
-            $.ajax({
-                method: "POST",
-                url: "{% url 'customer:popup-login' %}",
-                data: {
-                    'phone': $('#phone_otp').val(),
-                    'fname': $('#ifname').val(),
-                    'lname': $('#ilname').val(),
-                    'action': 'otp_verify',
-                    'otp': $('#check-otp').val(),
-                    csrfmiddlewaretoken: '{{csrf_token}}',
-                },
-                success: function(data) {
-                    if (data.status == "login_done") {
-                        $('#login_modal').modal('hide');
-
-                        // Login rotates the CSRF token; refresh it in every form on the page
-                        if (data.csrf_token) {
-                            $('input[name=csrfmiddlewaretoken]').val(data.csrf_token);
-                        }
-
-                        // Collect checked products and submit
-                        a = $('input[type=checkbox]:checked.p_items')
-                        itemp = []
-                        for (i = 0; i < a.length; i++) { itemp.push(a[i].value) }
-                        $("#link_list").val(itemp)
-                        $("#iform").submit()
-                    } else {
-                        $('#otp_error').html(data.status);
+            RFAjax.post("{% url 'customer:popup-login' %}", {
+                phone: $('#phone_otp').val(),
+                fname: $('#ifname').val(),
+                lname: $('#ilname').val(),
+                action: 'otp_verify',
+                otp: $('#check-otp').val(),
+                csrfmiddlewaretoken: '{{csrf_token}}'
+            }, { button: this, message: 'Verifying OTP\u2026' }).then(function(data) {
+                if (data.status == "login_done") {
+                    // Login rotates the CSRF token; refresh it in every form on the page
+                    if (data.csrf_token) {
+                        $('input[name=csrfmiddlewaretoken]').val(data.csrf_token);
                     }
+
+                    // Collect checked products and submit (the loader stays up while the next page loads)
+                    RFLoader.show('Signing you in\u2026', { ttl: 15000 });
+                    $('#login_modal').modal('hide');
+                    a = $('input[type=checkbox]:checked.p_items')
+                    itemp = []
+                    for (i = 0; i < a.length; i++) { itemp.push(a[i].value) }
+                    $("#link_list").val(itemp)
+                    $("#iform").submit()
+                } else {
+                    $('#otp_error').text(data.message || data.status);
                 }
+            }, function(error) {
+                RFAjax.fail(error, '#otp_error');
             });
         });
     });
@@ -705,6 +712,7 @@
         var confirm_bool = check_button()
         if (confirm_bool) {
             window.localStorage.removeItem('item_list')
+            window.RaddiWizard && RaddiWizard.finish()
             var form = $('#confirm-form')
             form.submit()
         }

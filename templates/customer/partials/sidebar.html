@@ -1,0 +1,22 @@
+{% load static %}
+<div class="offcanvas offcanvas-start rf-offcanvas" tabindex="-1" id="menu" aria-labelledby="menuLabel">
+    <div class="rf-offcanvas__header">
+        <a href="https://raddifinder.com/" class="rf-offcanvas__brand">
+            <img src="{% static 'images/logo.png' %}" class="rf-offcanvas__logo" alt="RaddiFinder" width="55" height="48">
+        </a>
+        <span id="menuLabel" class="visually-hidden">Menu</span>
+        <button type="button" class="rf-icon-btn rf-icon-btn--ghost" data-bs-dismiss="offcanvas" aria-label="Close menu">
+            <i class="fa fa-times" aria-hidden="true"></i>
+        </button>
+    </div>
+    <div class="offcanvas-body rf-offcanvas__body">
+        <ul class="nav flex-column rf-side-nav">
+            {% include "customer/partials/nav_items.html" %}
+        </ul>
+        <div class="rf-offcanvas__contact">
+            <p><i class="fa fa-location-arrow" aria-hidden="true"></i><span>Plot No. 30, Street Number 3, Krishna Enclave, Jhampur, SAS Nagar Mohali, Punjab - 160014</span></p>
+            <p><i class="fa fa-phone-square" aria-hidden="true"></i><span>+917508777004, +917508777005</span></p>
+            <p><i class="fa fa-envelope" aria-hidden="true"></i><span>Info@raddifinder.com</span></p>
+        </div>
+    </div>
+</div>

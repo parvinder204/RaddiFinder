@@ -27,7 +27,7 @@ class ManagePickupBoyView(PaginatedSearchMixin, RestrictUserMixin, ListView):
     template_name = "site_admin/manage-pickup-boy.html"
     login_url = reverse_lazy("site_admin:login")
     role_name = "Admin"
-    search_fields = ("full_name", "phone")
+    search_fields = ("reference", "full_name", "phone")
 
     def get_queryset(self):
         return PickupBoy.objects.filter(employed=True).order_by("created", "pk")

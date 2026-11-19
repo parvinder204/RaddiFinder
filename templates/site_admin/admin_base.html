@@ -35,6 +35,15 @@
 	<script src="{% static 'libs/jquery/jquery.min.js' %}"></script>
 	<link href="{% static 'css/ux-common.css' %}" rel="stylesheet" type="text/css" />
 	<link href="{% static 'css/admin-ux.css' %}" rel="stylesheet" type="text/css" />
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
+	<link href="{% static 'css/theme.css' %}" rel="stylesheet" type="text/css" />
+	<link href="{% static 'css/select-picker.css' %}" rel="stylesheet" type="text/css" />
+	<link href="{% static 'css/admin-modern.css' %}" rel="stylesheet" type="text/css" />
+	<link href="{% static 'css/list-controls.css' %}" rel="stylesheet" type="text/css" />
+	<link href="{% static 'css/loader.css' %}" rel="stylesheet" type="text/css" />
+	<script src="{% static 'js/loader.js' %}"></script>
 
 </head>
 
@@ -50,21 +59,24 @@
 					<div class="navbar-brand-box">
 						<a href="{% url 'site_admin:dashboard' %}" class="logo logo-dark">
 							<span class="logo-sm">
-								<img src="{% static 'images/raddi-logo.png' %}" alt="" height="22">
+								<img src="{% static 'images/logo.png' %}" alt="RaddiFinder" class="rf-logo-sm">
 							</span>
 							<span class="logo-lg">
-								<img src="{% static 'images/raddi-logo.png' %}" alt="" height="50px">
+								<img src="{% static 'images/logo.png' %}" alt="RaddiFinder" class="rf-logo-lg">
 							</span>
 						</a>
 						<a href="{% url 'site_admin:dashboard' %}" class="logo logo-light">
 							<span class="logo-sm">
-								<img src="{% static 'images/raddi-logo.png' %}" alt="" height="22">
+								<img src="{% static 'images/logo.png' %}" alt="RaddiFinder" class="rf-logo-sm">
 							</span>
 							<span class="logo-lg">
-								<img src="{% static 'images/raddi-logo.png' %}" alt="" height="50px">
+								<img src="{% static 'images/logo.png' %}" alt="RaddiFinder" class="rf-logo-lg">
 							</span>
 						</a>
 					</div>
+					<button type="button" class="btn btn-sm header-item" id="vertical-menu-btn" aria-label="Toggle sidebar" title="Toggle sidebar">
+						<i class="mdi mdi-menu"></i>
+					</button>
 				</div>
 				<div class="d-flex">
 					<div class="dropdown d-inline-block">
@@ -234,7 +246,7 @@
 				<div class="container-fluid">
 					<div class="row">
 						<div class="col-sm-6">
-							2022 @ Raddi Finder.
+							&copy; {% now "Y" %} RaddiFinder. All rights reserved.
 						</div>
 						<div class="col-sm-6">
 							<div class="text-sm-end d-none d-sm-block">
@@ -328,7 +340,7 @@
 	<script src="{% static 'libs/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
 	<script src="{% static 'libs/metismenu/metisMenu.min.js' %}"></script>
 	<script src="{% static 'libs/simplebar/simplebar.min.js' %}"></script>
-	<script src="{% static 'libs/node-waves/waves.min.js' %}"></script>
+	<script src="{% static 'js/waves-shim.js' %}"></script>
 	<script src="{% static 'js/pages/form-validation.init.js' %}"></script>
 	<script src="{% static 'js/pages/dashboard.init.js' %}"></script>
 
@@ -345,6 +357,7 @@
 	{% comment %} <script src="{% static 'js/pages/apexcharts.init.js' %}"></script> {% endcomment %}
 <script src="{% static 'js/ux.js' %}"></script>
 <script src="{% static 'js/list-controls.js' %}"></script>
+<script src="{% static 'js/select-picker.js' %}"></script>
 {% include "partials/session_sync.html" %}
 </body>
 

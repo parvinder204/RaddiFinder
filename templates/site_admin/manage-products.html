@@ -41,7 +41,7 @@
                     <tbody>
                         {% for i in item_list %}
                         <tr>
-                            <td>{{i.id|slice:":8"}}</td>
+                            <td title="{{i.id}}">{{i.reference}}</td>
                             <td>
                                 <image src='{{i.image.url}}' alt class='avatar-sm'>
                             </td>

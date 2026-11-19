@@ -16,6 +16,7 @@ def pickup_item_snapshot(row):
         "id": str(row.pk),
         "pickup_id": str(row.pickup_id),
         "item_id": str(row.item_id),
+        "item_reference": row.item.reference,
         "item": row.item.name,
         "quantity": row.quantity,
         "actual_quantity": row.actual_quantity,
@@ -27,6 +28,7 @@ def pickup_snapshot(pickup):
     rows = PickupItems.objects.filter(pickup=pickup).select_related("item")
     return {
         "pickup_id": str(pickup.pickup_id),
+        "reference": pickup.reference,
         "customer_id": str(pickup.customer_id),
         "customer_phone": pickup.customer.phone,
         "status": pickup.status,

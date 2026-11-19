@@ -327,3 +327,38 @@ def test_notifications_only_show_the_admins_own(admin_client, admin_user, custom
     make_notifications(customer, 5)
     response = admin_client.get(reverse("site_admin:notifications"))
     assert response.context["total_count"] == 2
+
+
+@pytest.mark.django_db
+def test_requests_table_shows_the_reference_not_the_uuid(admin_client, customer, city):
+    order = make_pickups(customer, city, 1)[0]
+    html = admin_client.get(reverse("site_admin:manage-requests")).content.decode()
+    assert f">{order.reference}</td>" in html
+    assert f'title="{order.pickup_id}"' in html
+    assert f">#{order.pickup_id}<" not in html
+
+
+@pytest.mark.django_db
+def test_requests_search_by_reference(admin_client, customer, city):
+    orders = make_pickups(customer, city, 3)
+    response = admin_client.get(reverse("site_admin:manage-requests"), {"q": orders[1].reference})
+    assert [p.pickup_id for p in response.context["pickup_list"]] == [orders[1].pickup_id]
+
+
+@pytest.mark.django_db
+def test_products_table_shows_the_reference(admin_client):
+    items = make_items(2)
+    html = admin_client.get(reverse("site_admin:manage-products")).content.decode()
+    assert f">{items[0].reference}</td>" in html
+    response = admin_client.get(reverse("site_admin:manage-products"), {"q": items[1].reference})
+    assert [i.pk for i in response.context["item_list"]] == [items[1].pk]
+
+
+@pytest.mark.django_db
+def test_pickup_boys_table_shows_the_reference(admin_client):
+    boys = make_boys(2)
+    html = admin_client.get(reverse("site_admin:manage-pickup-boy")).content.decode()
+    assert f">{boys[0].reference}</td>" in html
+    response = admin_client.get(reverse("site_admin:manage-pickup-boy"), {"q": boys[1].reference})
+    assert [b.pk for b in response.context["pickupboy_list"]] == [boys[1].pk]
+    assert boys[0].reference.startswith("SRPB_")

@@ -16,7 +16,7 @@ class ManageProductsView(PaginatedSearchMixin, RestrictUserMixin, ListView):
     template_name = "site_admin/manage-products.html"
     login_url = reverse_lazy("site_admin:login")
     role_name = "Admin"
-    search_fields = ("name", "unit", "description", "price")
+    search_fields = ("reference", "name", "unit", "description", "price")
 
     def get_queryset(self):
         return Item.objects.order_by("created", "pk")

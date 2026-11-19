@@ -7,6 +7,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from .generic_models import Location, TimeStampedModel, UUIDModel
+from .reference_models import ReferenceModel
 
 
 def pickup_image_path(instance, filename):
@@ -14,7 +15,9 @@ def pickup_image_path(instance, filename):
     return f"pickup_request/{uuid.uuid4().hex}{extension}"
 
 
-class Item(UUIDModel, TimeStampedModel):
+class Item(ReferenceModel, UUIDModel, TimeStampedModel):
+    reference_prefix = "PROD"
+
     UNIT = (
         ("Kg", "Kg"),
         ("Unit", "Unit"),
@@ -33,7 +36,9 @@ class Item(UUIDModel, TimeStampedModel):
         return self.name
 
 
-class Pickup(Location, TimeStampedModel):
+class Pickup(ReferenceModel, Location, TimeStampedModel):
+    reference_prefix = "PKRQ"
+
     STATUS = (
         ("Requested", "Requested"),
         ("Approved", "Approved"),
@@ -97,7 +102,7 @@ class Pickup(Location, TimeStampedModel):
         ordering = ("-created",)
 
     def __str__(self):
-        return str(self.pickup_id)
+        return self.reference or str(self.pickup_id)
 
 
 class PickupItems(UUIDModel, TimeStampedModel):
@@ -142,10 +147,12 @@ class Cancellation(TimeStampedModel):
     reason = models.TextField(_("Reason"))
 
     def __str__(self):
-        return str(self.pickup.pickup_id)
+        return self.pickup.reference or str(self.pickup.pickup_id)
 
 
-class PickupBoy(UUIDModel, TimeStampedModel):
+class PickupBoy(ReferenceModel, UUIDModel, TimeStampedModel):
+    reference_prefix = "SRPB"
+
     employed = models.BooleanField(_("Employment Status"), default=True)
     full_name = models.CharField(_("Full Name"), max_length=100)
     phone = models.CharField(_("Phone Number"), max_length=10, unique=True)

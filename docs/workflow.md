@@ -38,6 +38,7 @@ Requested ──> Approved ──> Picked-up
    - There is a 60 second resend cooldown.
    - Five wrong attempts lock the code, and a new one must be requested.
    - A first-time number creates a customer account automatically.
+   - **Your selection survives signing in.** The items you picked and the step you reached are saved on your device (for up to 3 hours) and restored when you come back to the page. If you pick items, reach step 2 and then sign in from the login popup or from the login button in the navbar, you land on step 3 (address) with the same items still selected. The draft is dropped once the request is placed, and a draft saved by one signed-in customer is never restored for another.
 4. **Details.** First-time customers add their name, email (optional), address, state, city and PIN code.
 5. **Pick a slot.** The customer picks a date and a one-hour slot between 9 am and 6 pm. The date must be at least `PICKUP_MIN_LEAD_DAYS` days ahead, so tomorrow or later by default. Only cities marked available are accepted.
 6. **Confirm.** The request is saved as `Requested`. The customer gets a "request received" WhatsApp message and the admins are notified by email and in the dashboard.
@@ -91,7 +92,7 @@ Statuses `Approved`, `Rescheduled` and `Picked-up` require a pickup boy.
 | Picked up | In-app | |
 | Cancelled | In-app | |
 
-Messages are sent in the background after the order is saved. A failed send is logged and does not affect the order.
+Notification texts, admin emails and invoices identify a request by its reference (`PKRQ_12`), not its UUID. Messages are sent in the background after the order is saved. A failed send is logged and does not affect the order.
 
 ## Scheduled work
 

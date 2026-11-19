@@ -131,3 +131,11 @@ def test_notifications_only_show_the_customers_own(customer_client, customer, ot
 def test_notifications_empty_state(customer_client):
     response = customer_client.get(reverse("customer:notifications"))
     assert "You are all caught up" in response.content.decode()
+
+
+@pytest.mark.django_db
+def test_history_shows_the_reference(customer_client, customer, city):
+    order = make_pickups(customer, city, 1)[0]
+    html = customer_client.get(reverse("customer:history")).content.decode()
+    assert order.reference in html
+    assert str(order.pickup_id)[:8] not in html.split("ux-short-id", 1)[1].split("</span>", 1)[0]

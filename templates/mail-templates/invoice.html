@@ -46,6 +46,9 @@
                                 <table width="100%" style="width:100%;border-collapse: collapse;">
                                     <tbody>
                                         <tr>
+                                            <td align="right" style="padding-right:8px;Margin:0;line-height:24px;mso-line-height-rule:exactly;font-family:'open sans', 'helvetica neue', helvetica, arial, sans-serif;font-size:14px;font-style:normal;font-weight:normal;color:#252525;"><strong>Request ID:</strong><span>{{pickup.reference}}</span></td>
+                                        </tr>
+                                        <tr>
                                             <td align="right" style="padding-right:8px;Margin:0;line-height:24px;mso-line-height-rule:exactly;font-family:'open sans', 'helvetica neue', helvetica, arial, sans-serif;font-size:14px;font-style:normal;font-weight:normal;color:#252525;"><strong>Pickup Status:</strong><span>{{pickup.get_status_display}}</span></td>
                                         </tr>
                                         {% if pickup.status == "Picked-up" %}

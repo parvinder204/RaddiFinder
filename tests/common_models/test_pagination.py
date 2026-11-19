@@ -22,12 +22,10 @@ factory = RequestFactory()
 
 
 def make_items(count, prefix="Item"):
-    Item.objects.bulk_create(
-        [
-            Item(name=f"{prefix} {n:02d}", unit="Kg", description="desc", price=Decimal("1.00"))
-            for n in range(count)
-        ]
-    )
+    for n in range(count):
+        Item.objects.create(
+            name=f"{prefix} {n:02d}", unit="Kg", description="desc", price=Decimal("1.00")
+        )
 
 
 def get(**params):

@@ -53,7 +53,7 @@ class CitiesSerializer(serializers.ModelSerializer):
 class HistoryListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Pickup
-        fields = ("pickup_id", "pickup_date", "status")
+        fields = ("pickup_id", "reference", "pickup_date", "status")
 
 
 class ViewOrderListSerializer(serializers.ModelSerializer):
@@ -61,6 +61,7 @@ class ViewOrderListSerializer(serializers.ModelSerializer):
         model = Pickup
         fields = (
             "pickup_id",
+            "reference",
             "created",
             "pickup_date",
             "time_slot",

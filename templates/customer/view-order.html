@@ -51,7 +51,7 @@
 							<h4>Pickup Time</h4>
 							<p class="fw-normal"><span class="text-muted mb-0">Request ID <br> </span>
 								<button type="button" class="ux-copy" data-copy="{{pickup.pickup_id}}" data-copy-message="Request ID copied" title="Copy request ID">
-									<span class="ux-short-id">{{pickup.pickup_id}}</span>
+									<span class="ux-short-id">{{pickup.reference}}</span>
 									<i class="fa fa-clone" aria-hidden="true"></i>
 								</button>
 							</p>
@@ -293,11 +293,9 @@
 		<form method="post">{% csrf_token %}
 			<input type="text" name="pickup_id" hidden value="{{pickup.pickup_id}}">
 		<div class="modal-body modal-custom-height">
-			<div class="row h-20">
-				
-				{% for i in item_list %}
-				
-				<div class="col-lg-6 mb-3">
+			<div class="product-grid product-grid--compact">
+{% for i in item_list %}
+<div class="product-grid__item">
 					
 				  <div class="card shadow-sm same-height border-0 bg-lime-green">
 					
