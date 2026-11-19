@@ -49,12 +49,11 @@
                             <td>{{i.unit}}</td>
                             <td>{{i.price}}</td>
                             {% comment %} data-bs-toggle="modal" data-bs-target="#editproduct" {% endcomment %}
-                            <td><a href="javascript:void(0);" class="badge badge-pill badge-soft-success font-size-11">
-                                <i class="bx bx-pencil" onclick="passId('{{i.id}}')"></i></a>
-                                <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#deletenotify"
-                                    onclick="document.getElementById('delete_id').value='{{i.id}}'"
-                                    class="badge badge-pill badge-soft-danger font-size-11"><i
-                                        class="bx bx-trash"></i></a>
+                            <td class="text-nowrap">
+                                <div class="rf-actions">
+                                    <a href="javascript:void(0);" onclick="passId('{{i.id}}')" class="rf-action rf-action--edit" role="button" title="Edit product" aria-label="Edit {{i.name}}"><i class="mdi mdi-pencil-outline" aria-hidden="true"></i></a>
+                                    <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#deletenotify" onclick="document.getElementById('delete_id').value='{{i.id}}'" class="rf-action rf-action--delete" role="button" title="Delete product" aria-label="Delete {{i.name}}"><i class="mdi mdi-trash-can-outline" aria-hidden="true"></i></a>
+                                </div>
                             </td>
                         </tr>
                         {% empty %}

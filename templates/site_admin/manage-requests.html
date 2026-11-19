@@ -64,7 +64,7 @@
                             <td class="text-nowrap">
                                 <div class="rf-actions">
                                     <a href="{% url 'site_admin:view-request' p.pickup_id %}" target="_blank" rel="noopener" class="rf-action rf-action--view" title="View details" aria-label="View details of request {{p.reference}}"><i class="mdi mdi-eye-outline" aria-hidden="true"></i></a>
-                                    <a href="javascript:void(0);" ord_id="{{p.pickup_id}}" class="rf-action rf-action--delete c_del" role="button" title="Delete request" aria-label="Delete request {{p.reference}}"><i class="mdi mdi-trash-can-outline" aria-hidden="true"></i></a>
+                                    <a href="javascript:void(0);" ord_id="{{p.pickup_id}}" class="rf-action rf-action--delete c_del" ord_ref="{{p.reference}}" role="button" title="Delete request" aria-label="Delete request {{p.reference}}"><i class="mdi mdi-trash-can-outline" aria-hidden="true"></i></a>
                                 </div>
                             </td>
                         </tr>
@@ -97,9 +97,9 @@
 						{% comment %} <input type="hidden" id="requested_id" name="requested_id" value="{{pickup_list.pickup_id}}"> {% endcomment %}
 						<input type="text" id="item_delete_id" hidden  name="item_delete_id">
 						<div class="d-flex justify-content-end mt-3">
-							<button type="button" class="btn btn-sm btn-secondary-custom mx-2"
+							<button type="button" class="btn btn-sm btn-outline-secondary mx-2"
 								data-bs-dismiss="modal">Cancel</button>
-							<button class="btn btn-sm btn-primary-custom" name="delete_item_submit"
+							<button class="btn btn-sm btn-danger" name="delete_item_submit"
 								value="delete_item_submit" type="submit">Confirm</button>
 						</div>
 					</div>
@@ -112,11 +112,11 @@
 <script>
 	$(document).ready(function () {
 	    $('.c_del').click(function () {
-			var ord_id = $(this).attr("ord_id"); 
-			console.log(ord_id,'this is order id ')
+			var ord_id = $(this).attr("ord_id");
+			var ord_ref = $(this).attr("ord_ref") || ord_id;
 			$('#deleteItem').modal('show');
 			$('#item_delete_id').val(ord_id);
-			$('#uu_update').html(`<span>${ord_id}</span>`);
+			$('#uu_update').text(ord_ref);
 
 		});
 	});	
