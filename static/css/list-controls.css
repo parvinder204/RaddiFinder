@@ -241,3 +241,40 @@ table td .rf-actions {
         line-height: 1.4;
     }
 }
+
+.rf-action--edit {
+    border-color: rgb(25 135 84 / 25%);
+    background-color: rgb(25 135 84 / 10%);
+    color: #198754;
+}
+
+.rf-action--edit:hover,
+.rf-action--edit:focus-visible {
+    border-color: #198754;
+    background-color: #198754;
+    color: #fff;
+}
+
+/* Serviceable Areas: State / City text size */
+#managecity tbody th,
+#managecity tbody td {
+    font-size: 0.875rem;
+    font-weight: 500;
+    vertical-align: middle;
+}
+
+h4.rf-field-title {
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+@media (max-width: 575.98px) {
+    #managecity tbody th,
+    #managecity tbody td {
+        font-size: 0.78rem;
+    }
+
+    h4.rf-field-title {
+        font-size: 0.875rem;
+    }
+}

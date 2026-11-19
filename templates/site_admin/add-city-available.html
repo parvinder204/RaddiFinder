@@ -63,7 +63,7 @@
 							<th>{{ first_index|add:forloop.counter0 }}</th>
 							<th>{{ac.state.name|title}}</th>
 							<th>{{ac.name|title}}</th>
-							<th><a href="{% url 'site_admin:avail_city_del' del_pk=ac.id %}{% if current_query %}?{{ current_query }}{% endif %}" title="Remove {{ac.name}}" aria-label="Remove {{ac.name}} from serviceable areas" data-confirm="{{ac.name}} will no longer be offered as a serviceable area." data-confirm-title="Remove city?" data-confirm-ok="Remove" data-confirm-variant="danger"><i class="fa fa-trash icon-style" aria-hidden="true"></i></a></th>
+							<td class="text-nowrap"><div class="rf-actions"><a class="rf-action rf-action--delete" role="button" href="{% url 'site_admin:avail_city_del' del_pk=ac.id %}{% if current_query %}?{{ current_query }}{% endif %}" title="Remove {{ac.name}}" aria-label="Remove {{ac.name}} from serviceable areas" data-confirm="{{ac.name}} will no longer be offered as a serviceable area." data-confirm-title="Remove city?" data-confirm-ok="Remove" data-confirm-variant="danger"><i class="mdi mdi-trash-can-outline" aria-hidden="true"></i></a></div></td>
 						</tr>
 					{% empty %}
 <tr><td colspan="4" class="text-center text-muted">No matching entries found</td></tr>
@@ -85,7 +85,7 @@
 				<form class="needs-validation" method="post" action="{% url 'site_admin:avail_city' %}">{% csrf_token %}
 					<h4 class="card-title mb-4">Add a new Serviceable Area</h4>
 					<div class="form-group mb-3">
-						<h4 class="text-dark mb-0 text-start">State <sup class="text-danger">*</sup></h4>
+						<h4 class="text-dark mb-0 text-start rf-field-title">State <sup class="text-danger">*</sup></h4>
 						<select class="form-select prompt-target" required="required" id="select-state" name="state" onchange="fetch_cities(this.value)">
 							<option value="">Select State</option>
 							{% for s in states %}
@@ -95,7 +95,7 @@
 						<p id="state-prompt" class="text-danger pull-left" style="display:none;font-size: 12px;">Select State</p>
 					</div>
 					<div class="form-group mb-3">
-						<h4 class="text-dark mb-0 text-start">City <sup class="text-danger">*</sup></h4>
+						<h4 class="text-dark mb-0 text-start rf-field-title">City <sup class="text-danger">*</sup></h4>
 						<select class="form-select prompt-target" required="required" name="city_id" id="select-city">
 							<option value="">Select City</option>
 						</select>

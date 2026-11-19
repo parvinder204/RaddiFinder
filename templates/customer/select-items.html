@@ -202,7 +202,7 @@
                                                         <div class="row">
                                                             <div class="col-12 mb-3">
                                                                 <div class="form-group mb-3">
-                                                                    <input type="date" class="form-control prompt-target" required="required" id="date-select" name="date">
+                                                                    <input type="date" class="form-control prompt-target" required="required" id="date-select" name="date" min="{% now 'Y-m-d' %}">
                                                                     <p id="date-prompt" class="text-danger pull-left" style="display:none;font-size: 12px;">Select a valid date. Date must be tomorrow or later.</p>
                                                                 </div>
                                                                 <div class="form-group mb-3">
@@ -584,7 +584,16 @@
 
 <!-- check for confirm button -->
 <script>
-    const arrow_time = (now) => `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
+    // Compare a "YYYY-MM-DD" value with today's local date: -1 past, 0 today, 1 future, null invalid/empty.
+    function compareWithToday(value) {
+        var m = /^(\d{4})-(\d{1,2})-(\d{1,2})$/.exec(value || '')
+        if (!m) { return null }
+        var chosen = (+m[1]) * 10000 + (+m[2]) * 100 + (+m[3])
+        var now = new Date()
+        var today = now.getFullYear() * 10000 + (now.getMonth() + 1) * 100 + now.getDate()
+        return chosen < today ? -1 : (chosen > today ? 1 : 0)
+    }
+
     function abc(i=0) {
         $('#opt_catch_error').hide()
         $('#time-prompt').hide()
@@ -592,18 +601,18 @@
         $('#reschedule-time').attr('disabled', false)
         $('#reschedule-time').val(undefined).trigger('change');
 
-        now   = new Date();
-        today = arrow_time(now);
-        enow  = new Date($("#date-select").val())
-        edate = arrow_time(enow);
-
-        if (new Date(today) > new Date(edate)) {
-            $('#time-prompt').show()
+        var relation = compareWithToday($("#date-select").val())
+        if (relation === null) {
             $('#reschedule-time').attr('disabled', true)
             return false
         }
-        if (today == edate) {
-            if (i == 0) { now.setHours(now.getHours() + 3); i = now.getHours() }
+        if (relation < 0) {
+            $('#date-prompt').show()
+            $('#reschedule-time').attr('disabled', true)
+            return false
+        }
+        if (relation === 0) {
+            if (i == 0) { var now = new Date(); now.setHours(now.getHours() + 3); i = now.getHours() }
         } else {
             i = 9
         }
@@ -618,7 +627,7 @@
         }
         return true
     }
-    $("#date-select").change(function() { abc(); });
+    $("#date-select").change(function() { $('#date-prompt').hide(); abc(); });
 
     function check_button() {
         var item_bool = false
@@ -631,10 +640,15 @@
         var pin_bool     = $('#pin-code').val().length > 0 && $("#pin-code").val().length === 6
 
         var val       = $("#date-select").val()
-        var date      = new Date(arrow_time(new Date(val)))
-        var today     = new Date(arrow_time(new Date()))
-        var date_bool = $('#date-select').val().length > 0 && date >= today
-        var time_bool = $('#reschedule-time').val().length > 0
+        var relation  = compareWithToday(val)
+        var date_bool = relation !== null && relation >= 0
+        var chosen_slot = $('#reschedule-time').val() || ''
+        if (chosen_slot && relation === 0) {
+            // The slot may have gone stale since it was picked (time has moved on)
+            var slot_hour = parseInt(($('#reschedule-time option:selected').attr('id') || '').replace('opt_', ''), 10)
+            if (isNaN(slot_hour) || slot_hour < new Date().getHours() + 3) { abc(); chosen_slot = '' }
+        }
+        var time_bool = chosen_slot.length > 0
 
         if (!item_bool) {
             $("#item-alert").show()
