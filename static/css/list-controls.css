@@ -1,3 +1,21 @@
+/* Toolbar control height: Bootstrap "sm" (31px) + 15% on desktop/tablet; mobile (~29px) + 15%. */
+:root {
+    --rf-control-h: 2.23rem;
+    --rf-control-h-mobile: 2.1rem;
+}
+
+div.dataTables_wrapper .list-toolbar .form-control-sm,
+div.dataTables_wrapper .list-toolbar .form-select-sm,
+div.dataTables_wrapper .list-toolbar .rf-select__trigger {
+    height: var(--rf-control-h);
+    min-height: var(--rf-control-h);
+}
+
+div.dataTables_wrapper .list-toolbar .rf-select__trigger {
+    display: flex;
+    align-items: center;
+}
+
 div.dataTables_wrapper .list-toolbar {
     display: flex;
     align-items: center;
@@ -109,8 +127,10 @@ div.dataTables_wrapper div.dataTables_paginate ul.pagination {
     }
 
     div.dataTables_wrapper .list-toolbar .form-control-sm,
+    div.dataTables_wrapper .list-toolbar .form-select-sm,
     div.dataTables_wrapper .list-toolbar .rf-select__trigger {
-        min-height: 34px;
+        height: var(--rf-control-h-mobile);
+        min-height: var(--rf-control-h-mobile);
         padding-top: 0.25rem;
         padding-bottom: 0.25rem;
         font-size: 0.8rem;
@@ -126,5 +146,98 @@ div.dataTables_wrapper div.dataTables_paginate ul.pagination {
 
     div.dataTables_wrapper div.dataTables_info.list-footer__info {
         font-size: 0.78rem;
+    }
+}
+
+/* Row action icons (view / delete) */
+.rf-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    vertical-align: middle;
+}
+
+.rf-action {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    border: 1px solid transparent;
+    border-radius: var(--rf-radius-sm, 8px);
+    font-size: 1.15rem;
+    line-height: 1;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.rf-action i {
+    display: block;
+    margin: 0;
+    line-height: 1;
+}
+
+.rf-action--view {
+    border-color: rgb(10 132 255 / 25%);
+    background-color: rgb(10 132 255 / 10%);
+    color: #0a84ff;
+}
+
+.rf-action--delete {
+    border-color: rgb(220 53 69 / 25%);
+    background-color: rgb(220 53 69 / 10%);
+    color: #dc3545;
+}
+
+.rf-action--view:hover,
+.rf-action--view:focus-visible {
+    border-color: #0a84ff;
+    background-color: #0a84ff;
+    color: #fff;
+}
+
+.rf-action--delete:hover,
+.rf-action--delete:focus-visible {
+    border-color: #dc3545;
+    background-color: #dc3545;
+    color: #fff;
+}
+
+table td .rf-actions {
+    margin: 0;
+}
+
+/* Smaller page action buttons on phones: Add product / Add pickup boy / Cancel / Add new city / Save */
+@media (max-width: 575.98px) {
+    div.add-product {
+        gap: 0.5rem;
+        margin-bottom: 14px;
+    }
+
+    div.add-product a,
+    div.add-product > .login-btn {
+        padding: 0.35rem 0.8rem;
+        font-size: 0.8rem;
+        line-height: 1.4;
+    }
+
+    .custom-cancel-btn {
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: 0.5rem;
+    }
+
+    .custom-cancel-btn .custom-cancel,
+    .custom-cancel-btn button.custom-submit,
+    .custom-cancel-btn .btn,
+    .modal .login-btn.custom-cancel,
+    .modal button.custom-submit {
+        margin: 0;
+        padding: 0.35rem 0.9rem;
+        font-size: 0.8rem;
+        line-height: 1.4;
     }
 }

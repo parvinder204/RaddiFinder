@@ -61,14 +61,11 @@
                                     Rescheduled</span>
                                 {% endif %}
                             </td>
-                            <td>
-                                <!-- Button trigger modal -->
-                                <a href="{% url 'site_admin:view-request' p.pickup_id %}" target="_blank"><button type="button"
-                                        class="btn login-btn btn-sm btn-rounded waves-effect waves-light">
-                                        View Details
-                                </button></a>
-                                <a ord_id="{{p.pickup_id}}" class="btn btn-sm btn-primary-custom c_del"><i class="fa fa-trash" aria-hidden="true"></i>
-                                </a>
+                            <td class="text-nowrap">
+                                <div class="rf-actions">
+                                    <a href="{% url 'site_admin:view-request' p.pickup_id %}" target="_blank" rel="noopener" class="rf-action rf-action--view" title="View details" aria-label="View details of request {{p.reference}}"><i class="mdi mdi-eye-outline" aria-hidden="true"></i></a>
+                                    <a href="javascript:void(0);" ord_id="{{p.pickup_id}}" class="rf-action rf-action--delete c_del" role="button" title="Delete request" aria-label="Delete request {{p.reference}}"><i class="mdi mdi-trash-can-outline" aria-hidden="true"></i></a>
+                                </div>
                             </td>
                         </tr>
                         {% empty %}

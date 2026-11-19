@@ -482,12 +482,10 @@
                                         Rescheduled</span>
                                     {% endif %}
                                 </td>
-                                <td>
-                                    <!-- Button trigger modal -->
-                                    <a href="{% url 'site_admin:view-request' l.pickup_id %}" target="_blank"><button type="button"
-                                        class="btn login-btn btn-sm btn-rounded waves-effect waves-light">
-                                        View Details
-                                    </button></a>
+                                <td class="text-nowrap">
+                                    <div class="rf-actions">
+                                        <a href="{% url 'site_admin:view-request' l.pickup_id %}" target="_blank" rel="noopener" class="rf-action rf-action--view" title="View details" aria-label="View details of request {{l.reference}}"><i class="mdi mdi-eye-outline" aria-hidden="true"></i></a>
+                                    </div>
                                 </td>
                             </tr>
                             {% endfor %}

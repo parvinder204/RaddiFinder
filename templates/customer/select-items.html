@@ -104,7 +104,9 @@
                                                     </div>
                                                     {% endfor %}
                                                 </div>
-                                                <button class="btn btn-primary-custom nextBtn mt-3 pull-right" lock="true" type="button" id="push_it">Next</button>
+                                                <div class="wizard-actions">
+                                                    <button class="btn btn-primary-custom nextBtn mt-3 pull-right" lock="true" type="button" id="push_it">Next</button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -131,8 +133,10 @@
                                                                 </table>
                                                             </div>
                                                         </div>
-                                                        <button class="btn btn-primary-custom mt-3 pull-right" id="check_login">Next</button>
-                                                        <button type="button" class="back_button btn btn-primary-custom mx-2 mt-3 pull-right">Back</button>
+                                                        <div class="wizard-actions">
+                                                            <button type="button" class="back_button btn btn-primary-custom mx-2 mt-3 pull-right">Back</button>
+                                                            <button class="btn btn-primary-custom mt-3 pull-right" id="check_login">Next</button>
+                                                        </div>
                                                         <a class="nextBtn" id="on_step_3" type="button"></a>
                                                     </div>
                                                 </div>
@@ -180,8 +184,10 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <button class="btn btn-primary-custom nextBtn mt-3 pull-right " id="chk_add" type="button">Next</button>
-                                                        <button type="button" class="back_button btn btn-primary-custom mx-2 mt-3 pull-right">Back</button>
+                                                        <div class="wizard-actions">
+                                                            <button type="button" class="back_button btn btn-primary-custom mx-2 mt-3 pull-right">Back</button>
+                                                            <button class="btn btn-primary-custom nextBtn mt-3 pull-right " id="chk_add" type="button">Next</button>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -224,8 +230,10 @@
                                                             <label for="image-select" class="btn btn-primary-custom btn-sm">Add Image (optional)</label>
                                                         </div>
                                                         <input type="file" id="image-select" name="image_data" style="display:none;"> 
-                                                        <button id="confirm-button" class="btn btn-primary-custom mt-3 pull-right defunct-anchor" type="button" data-confirm="Your pickup request will be sent to our team and you will be notified once it is approved." data-confirm-title="Place pickup request?" data-confirm-ok="Place Request">Confirm Request</button>
-                                                        <button type="button" class="back_button btn btn-primary-custom mx-2 mt-3 pull-right">Back</button>
+                                                        <div class="wizard-actions"> 
+                                                            <button type="button" class="back_button btn btn-primary-custom mx-2 mt-3 pull-right">Back</button> 
+                                                            <button id="confirm-button" class="btn btn-primary-custom mt-3 pull-right defunct-anchor" type="button" data-confirm="Your pickup request will be sent to our team and you will be notified once it is approved." data-confirm-title="Place pickup request?" data-confirm-ok="Place Request">Confirm Request</button> 
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
